@@ -6,8 +6,8 @@ p = np.arange(0,1+step,step)
 tmp_alpha = -2
 tmp_gamma = -2
 
-gammas = [0.4,0.4,0.4]
-alphas = [0.2,1,5]
+gammas = [0.4,1,1.6]
+alphas = [0.8,1,1.4]
 
 # plt.figure()
 for i in range(len(gammas)):
@@ -45,8 +45,8 @@ for i in range(len(gammas)):
 # plt.subplot(4,5,j+1)
 plt.figure()
 plt.plot(p,p, 'k-', label="Linear/no weighting")
-plt.plot(p,w, 'k-', label="Inverse-S")
-plt.plot(p,w2, 'k-.', label="S-shape")
+plt.plot(p,w, 'r-', label="Inverse-S")
+plt.plot(p,w2, 'b-.', label="S-shape")
 plt.legend()
 # plt.title(f"\alpha = {alpha}, \gamma = {gamma}")
 plt.ylabel("Decistion weight - $w(x)$", fontsize=14)
