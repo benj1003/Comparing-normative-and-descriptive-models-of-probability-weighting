@@ -45,7 +45,7 @@ for i in range(len(gammas)):
 # plt.subplot(4,5,j+1)
 plt.figure()
 plt.plot(p,p, 'k-', label="Linear/no weighting")
-plt.plot(p,w, 'r-', label="Inverse-S")
+plt.plot(p,w, 'r--', label="Inverse-S")
 plt.plot(p,w2, 'b-.', label="S-shape")
 plt.legend()
 # plt.title(f"\alpha = {alpha}, \gamma = {gamma}")
