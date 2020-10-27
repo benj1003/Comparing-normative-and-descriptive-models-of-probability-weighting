@@ -50,8 +50,8 @@ nSubjects=length(subjList);%number of subjects
 %hard code the upper and lower bounds of hyperpriors, typically uniformly
 %distributed in log space. These values will be imported to JAGS.
 
-%%%%%NOT CORRECT YET!
-if mode==1 %fixed values
+if mode==1:
+  
 
 %beta - prior on log since cannot be less than 0; note same bounds used for independent priors on all utility models
 muLogBetaL=-2.3;muLogBetaU=3.4;muLogBetaM=(muLogBetaL+muLogBetaU)/2; %bounds on mean of distribution log beta
@@ -74,6 +74,70 @@ weight_beta_L=3; weight_beta_U=4;
 weight_alpha_L=2; weight_alpha_U=3;
 
 
+%% Visualise priors at the edges and centre of hyperprior space
+if runPlots==1
+    figName='Hyperprior limits';
+    nVals=1000;x=linspace(-7,8,nVals);%space of log and linear units to visualise
+    figure;nrows=3;ncols=3;
+    
+    %betas calculate normals and normalise
+    y1=pdf('norm',x,muLogBetaL,sigmaLogBetaL);
+    y1=y1/max(y1);
+    y2=pdf('norm',x,muLogBetaM,sigmaLogBetaL);
+    y2=y2/max(y2);
+    
+    y3=pdf('norm',x,muLogBetaU,sigmaLogBetaL);
+    y3=y3/max(y3);
+    y4=pdf('norm',x,muLogBetaL,sigmaLogBetaU);
+    y4=y4/max(y4);
+    
+    y5=pdf('norm',x,muLogBetaM,sigmaLogBetaU);
+    y5=y5/max(y5);
+    y6=pdf('norm',x,muLogBetaU,sigmaLogBetaU);
+    y6=y6/max(y6);
+    
+    y7=exp(y1);
+    y7=y7/max(y7);
+    y8=exp(y2);
+    y8=y8/max(y8);
+    y9=exp(y3);
+    y9=y9/max(y9);
+    y10=exp(y4);
+    y10=y10/max(y10);
+    y11=exp(y5);
+    y11=y11/max(y11);
+    y12=exp(y6);
+    y12=y12/max(y12);
+    
+    subplot(nrows,ncols,1),plot(x,[y1;y2;y3;y4;y5;y6]),xlim([-7,8]);ntitle('log beta')
+    subplot(nrows,ncols,2),plot(exp(x),[y7;y8;y9;y10;y11;y12]),xlim([0,60]);ntitle('beta' )
+    
+    %Alphas calculate normals and normalise
+    y1=pdf('norm',x,muLogAlphaL,sigmaLogAlphaL);y1=y1/max(y1);y2=pdf('norm',x,muLogAlphaM,sigmaLogAlphaL);y2=y2/max(y2);
+    y3=pdf('norm',x,muLogAlphaU,sigmaLogAlphaL);y3=y3/max(y3);y4=pdf('norm',x,muLogAlphaL,sigmaLogAlphaU);y4=y4/max(y4);
+    y5=pdf('norm',x,muLogAlphaM,sigmaLogAlphaU);y5=y5/max(y5);y6=pdf('norm',x,muLogAlphaU,sigmaLogAlphaU);y6=y6/max(y6);
+    y7=exp(y1);y7=y7/max(y7);y8=exp(y2);y8=y8/max(y8);y9=exp(y3);y9=y9/max(y9);y10=exp(y4);y10=y10/max(y10);y11=exp(y5);y11=y11/max(y11);y12=exp(y6);y12=y12/max(y12);
+    subplot(nrows,ncols,3),plot(x,[y1;y2;y3;y4;y5;y6]),xlim([-4.5,2]);ntitle('log Alpha' )
+    subplot(nrows,ncols,4),plot(exp(x),[y7;y8;y9;y10;y11;y12]),xlim([0,1.5]);ntitle('Alpha' )
+    
+    %Lambdas calculate normals and normalise
+    y1=pdf('norm',x,muLogLambdaL,sigmaLogLambdaL);y1=y1/max(y1);y2=pdf('norm',x,muLogLambdaM,sigmaLogLambdaL);y2=y2/max(y2);
+    y3=pdf('norm',x,muLogLambdaU,sigmaLogLambdaL);y3=y3/max(y3);y4=pdf('norm',x,muLogLambdaL,sigmaLogLambdaU);y4=y4/max(y4);
+    y5=pdf('norm',x,muLogLambdaM,sigmaLogLambdaU);y5=y5/max(y5);y6=pdf('norm',x,muLogLambdaU,sigmaLogLambdaU);y6=y6/max(y6);
+    y7=exp(y1);y7=y7/max(y7);y8=exp(y2);y8=y8/max(y8);y9=exp(y3);y9=y9/max(y9);y10=exp(y4);y10=y10/max(y10);y11=exp(y5);y11=y11/max(y11);y12=exp(y6);y12=y12/max(y12);
+    subplot(nrows,ncols,5),plot(x,[y1;y2;y3;y4;y5;y6]),xlim([-1.5,3]);ntitle('log Lambda')
+    subplot(nrows,ncols,6),plot(exp(x),[y7;y8;y9;y10;y11;y12]),xlim([0,7]);ntitle('Lambda'),figtitle(figName);
+    
+    %etas
+    y1=pdf('norm',x,muEtaL,sigmaEtaL);y1=y1/max(y1);y2=pdf('norm',x,muEtaM,sigmaEtaL);y2=y2/max(y2);
+    y3=pdf('norm',x,muEtaU,sigmaEtaL);y3=y3/max(y3);y4=pdf('norm',x,muEtaL,sigmaEtaU);y4=y4/max(y4);
+    y5=pdf('norm',x,muEtaM,sigmaEtaU);y5=y5/max(y5);y6=pdf('norm',x,muEtaU,sigmaEtaU);y6=y6/max(y6);
+    y7=exp(y1);y7=y7/max(y7);y8=exp(y2);y8=y8/max(y8);y9=exp(y3);y9=y9/max(y9);y10=exp(y4);y10=y10/max(y10);y11=exp(y5);y11=y11/max(y11);y12=exp(y6);y12=y12/max(y12);
+    subplot(nrows,ncols,8),plot(x,[y1;y2;y3;y4;y5;y6]),xlim([-7,7]);ntitle('Eta')
+    
+    saveas(gcf,[figDir,'_',figName,datestr(now,'mm-dd-yyyy HH-MM')],'epsc');
+end
+
 %% Print information for user
 disp('**************');
 disp(['running model#_',num2str(runModelNum),':'])
@@ -84,9 +148,6 @@ disp(['with_',priorName])
 disp('**************');
 
 %% Initialise matrices
-
-%%%%%NOT DONE
-
 %initialise matrices with nan values of size subjects x conditions x trials
 choice = nan(nSubjects,nConditions,maxTrials); %initialise choice data matrix 
 dx1 = nan(nSubjects,nConditions,maxTrials); dx2 = dx1; dx3 = dx1; dx4=dx1;%initialise changes in wealth
@@ -94,10 +155,6 @@ out1= dx1;out2=dx1;out3=dx1;out4=dx1;%initialise outcomes
 deuLin= nan(nSubjects,nConditions,maxTrials);deuLog= nan(nSubjects,nConditions,maxTrials);%initialise changes in linear utility / log utility
 
 %% Compile choice & gamble data
-
-
-%%%DO I NEED THIS?
-
 % Jags cannot deal with partial observations, so we need to specify gamble info for all nodes. This doesn't change anything.
 for i = 1:nSubjects
     for c = 1:nConditions
@@ -128,11 +185,63 @@ for i = 1:nSubjects
     end
 end
 
+%% Compute Time average growth for choices
+% since outcomes are specified in terms of linear utility for additive
+% condition and log utility for multiplicative condition, then the average
+% for each gamble corresponds to time average additive growth per trial, or
+% time average multiplicative growth per trial.
+chosen1=choice.*out1;chosen2=choice.*out2;chosen3=abs(choice-1).*out3;chosen4=abs(choice-1).*out4;%outcome of the chosen gamble
+%chosenX is a nSubjects x nConditions x nTrials matrix, 0 if not chosen,
+%growth factor if chosen, nan if trial not presented to subject for each of
+%the four stimuli
+chosenTop=chosen1+chosen3;chosenBot=chosen2+chosen4;%top or bottom outcome of the chosen gamble
+taChosen=(chosenTop+chosenBot)./2;taChosen=nanmean(taChosen,3);%time average of chosen gamble,
+%mean over all trials for every subject for both conditions (nSubjects x
+%nConditions)
+csvwrite([startDir,'/data/data_TimeAveragesChosenGambles'],taChosen);%save in data directory for further analysis later
+
+
+%% Compute trajectories of wealth according to choices for each agent
+%randomise as coinflip between top and bottom
+%multiply the binaries with top,and the not-binary with bottom and sum the
+%two to get the actual outcome. partial sum for additive condition, and
+%product for mult.
+% randi([0 1], n,m)
+% size(ChosenTop)
+
+%% Compute no brainer choice frequencies for statewise dominance
+if runPlots
+    figure;
+    subplot(3,1,1);y=[];for i =1:19;y=[y,mean(NoBrainerChoiceCorrect_multi{i})];end;bar(y);xlabel('Subjects');ylabel('Choice proportion add')
+    subplot(3,1,2),x=[];for i =1:19,x=[x,mean(NoBrainerChoiceCorrect_add{i})];end,bar(x);ylabel('Choice proportion mult')
+    subplot(3,1,3),z=(x+y)/2;bar(z);ylabel('Choice proportion both')
+    figtitle('No brainer choice proportions')
+    csvwrite('data_proportionCorrectNoBrainers',[x',y',z']);
+end
+
+%% Plot isoelastic utility exemplars
+if runPlots
+    figure;
+    figName='isoelastic utility functions';
+    figtitle(figName);
+    dx=-500:100:1000;%change in wealth due to outcome
+    w0=1005;%initial wealth
+    w1=w0+dx;%new wealth at next time step
+    u0Lin=w0;u1Lin=w1;duLin=u1Lin-u0Lin;
+    u0Log=log(w0);u1Log=log(w1);duLog=u1Log-u0Log;
+    eta=-1;%risk seeking
+    u0Iso=((w0.^(1-eta))-1)/(1-eta);u1Iso=((w1.^(1-eta))-1)/(1-eta);duIso=u1Iso-u0Iso;
+    eta=2;%sub log risk aversion
+    u0Iso2=((w0.^(1-eta))-1)/(1-eta);u1Iso2=((w1.^(1-eta))-1)/(1-eta);duIso2=u1Iso2-u0Iso2;
+    plot(dx,duIso/max(duIso),'g',dx,duLin/max(duLin),'b',dx,duLog/max(duLog),'r',dx,duIso2/max(duIso2),'m')
+    xlabel('change in wealth due to outcome');
+    ylabel('utility');
+    legend({'eta -1','eta 0 (LinU)', 'eta 1 (LogU)', 'eta 2'},'Location','SouthEast');
+    axis('square');
+    saveas(gcf,[figDir,'_',figName,datestr(now,'mm-dd-yyyy HH-MM')],'epsc');
+end
 
 %% Compile wealth data
-
-%NOT DONE (NOTHING BELOW NEITHER)
-
 wealths=[Wealth_add;Wealth_multi]
 wealths=wealths(:,subjList) %limits to subjects in subjlist
 
