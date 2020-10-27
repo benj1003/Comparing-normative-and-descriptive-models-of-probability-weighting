@@ -6,8 +6,8 @@ p = np.arange(0,1+step,step)
 tmp_alpha = -2
 tmp_gamma = -2
 
-gammas = [0.4,1,1.6]
-alphas = [0.8,1,1.4]
+gammas = [0.2,0.6,0.6]
+alphas = [0.8,0.8,0.8]
 
 # plt.figure()
 for i in range(len(gammas)):
@@ -26,29 +26,22 @@ for i in range(len(gammas)):
         w2.append(alpha*i**gamma/tmp)
 
 # plt.figure()
-# for j in range(20):
-#     gamma = 0.2*(j+1)
-#     w = []
-#     for i in p:
-#         tmp = ((i**gamma) + (1-i)**gamma)**(1/gamma)
-#         w.append(i**gamma/tmp)
+# plt.plot(p,p, 'k-', label="Linear/no weighting")
+# plt.plot(p,w, 'r--', label="Inverse-S")
+# plt.plot(p,w2, 'b-.', label="S-shape")
+# plt.legend()
+# # plt.title(f"\alpha = {alpha}, \gamma = {gamma}")
+# plt.ylabel("Decistion weight - $w(x)$", fontsize=14)
+# plt.xlabel("Probability - $p(x)$", fontsize=14)
+# plt.xticks([0,0.5,1])
+# plt.yticks([0,0.5,1])
+# plt.show()
 
-    # plt.figure()
-    # plt.scatter(alpha,gamma,marker = 'x')
-    # # plt.scatter(tmp_alpha, tmp_gamma, alpha = 0.5)
-    # plt.xlim([0,1.2])
-    # plt.ylim([0,1.2])
-    # plt.xticks([0,0.5,1])
-    # plt.yticks([0,0.5,1])
-    # tmp_alpha = alpha
-    # tmp_gamma = gamma
-# plt.subplot(4,5,j+1)
+###For dynamic
 plt.figure()
-plt.plot(p,p, 'k-', label="Linear/no weighting")
-plt.plot(p,w, 'r--', label="Inverse-S")
-plt.plot(p,w2, 'b-.', label="S-shape")
-plt.legend()
-# plt.title(f"\alpha = {alpha}, \gamma = {gamma}")
+plt.plot(p,p, 'k-')
+plt.plot(p,w, 'r--')
+plt.plot(p,w2, 'b-.')
 plt.ylabel("Decistion weight - $w(x)$", fontsize=14)
 plt.xlabel("Probability - $p(x)$", fontsize=14)
 plt.xticks([0,0.5,1])
