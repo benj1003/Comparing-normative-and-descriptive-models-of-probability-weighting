@@ -1,6 +1,6 @@
-# Fit specific params for each model for n agents
+# Simulate choises for n Agents with predefined constant priors
 #
-# Prospect Theory (pt)
+# Cumulative Prospect Theory (pt)
 # LML-model (lml)
 
 model{
@@ -69,7 +69,8 @@ for (i in 1:nAgents){
         
 	
         }# end of trials 
-  }# end of subjects
+  }# end of samples
+}# end of agents
 
 ##PRIORS
 #Set to fixed values for simulation
@@ -89,7 +90,7 @@ alpha_lml[i]		= 0.6
 delta_lml[i]		= 1.0
 gamma_lml[i]		= 1.0
 
-}#end of subjects
+}#end of agents
 
 
 ##HYPERPRIORS
