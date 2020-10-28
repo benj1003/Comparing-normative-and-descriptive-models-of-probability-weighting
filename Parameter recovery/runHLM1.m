@@ -20,6 +20,7 @@ Mode=1;
 whichJAGS=1;
 whichQuals=1;
 doParallel=0;
+whichGamble=1; %Set which gamble to run on
 
 %% Call setHLM
-setHLM(runModelNum,Mode,whichJAGS,whichQuals,doParallel)
+setHLM(runModelNum,Mode,whichJAGS,whichQuals,doParallel,whichGamble)
