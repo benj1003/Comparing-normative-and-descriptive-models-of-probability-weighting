@@ -76,16 +76,16 @@ def trial_generation(gambles_df, g, n_TRIAL, n_SESSIONS, permute=False, save=Fal
 
         if save:
             name = f'gamble_{g}_all_sessions_permuted={permute}.mat'
-            scipy.io.savemat(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Simulations','data',name)),datadict,oned_as='row')
-            df_metadata.to_csv(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Simulations','data',f"Gamble_{g}_0_metadata.txt")))
-            df_one_session.to_csv(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Simulations','data',f"Gamble_{g}_1_One_session.txt")))
-            df_all_session.to_csv(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Simulations','data',f"Gamble_{g}_1_all_sessions.txt")))
+            scipy.io.savemat(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Parameter recovery','data',name)),datadict,oned_as='row')
+            df_metadata.to_csv(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Parameter recovery','data',f"Gamble_{g}_0_metadata.txt")))
+            df_one_session.to_csv(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Parameter recovery','data',f"Gamble_{g}_1_One_session.txt")))
+            df_all_session.to_csv(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Parameter recovery','data',f"Gamble_{g}_1_all_sessions.txt")))
     
     return df_metadata, df_one_session, df_all_session
 
 #making sure the path is correct
-if not os.getcwd() == "c:/Users/benja/OneDrive/Dokumenter/DTU\Master Thesis/Python scripts":
-    os.chdir("c:/Users/benja/OneDrive/Dokumenter/DTU\Master Thesis/Python scripts")
+if not os.getcwd() == r'c:\Users\benja\OneDrive\Dokumenter\GitHub\Master-thesis\Python scripts':
+    os.chdir(r'c:\Users\benja\OneDrive\Dokumenter\GitHub\Master-thesis\Python scripts')
 
 #Init variables
 n_TRIAL = 5
