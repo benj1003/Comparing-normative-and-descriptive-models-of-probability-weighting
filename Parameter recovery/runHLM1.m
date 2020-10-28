@@ -20,7 +20,8 @@ Mode=1;
 whichJAGS=1;
 whichQuals=1;
 doParallel=0;
-whichGamble=1; %Set which gamble to run on
+whichGamble=1;
+permuted='False';
 
 %% Call setHLM
-setHLM(runModelNum,Mode,whichJAGS,whichQuals,doParallel,whichGamble)
+setHLM(runModelNum,Mode,whichJAGS,whichQuals,doParallel,whichGamble,permuted)

@@ -1,4 +1,4 @@
-function computeHLM(runModelNum,nBurnin,nSamples,nThin,nChains,subjList,whichJAGS,Mode,doParallel,whichGamble)
+function computeHLM(runModelNum,nBurnin,nSamples,nThin,nChains,subjList,whichJAGS,Mode,doParallel,whichGamble,permuted)
 
 %% Hiercharchical Latent Mixture (HLM) model
 % This is a general script for running several types of hierarchical
@@ -25,8 +25,8 @@ addpath(fullfile(pwd,'/parameter_recovery/data'));%set path to include data fold
 
 %% Choose & load data
 switch Mode
-    case 1, dataSource ='allData_synth_modelRecov'; %All data needed to simulate choices
-    case 2, dataSource ='allData_synth_modelRecov';%Synthetic data for model recovery from 2 different models
+    case 1, dataSource = sprintf('gamble_%s_all_sessions_permuted=%s');%All data needed to simulate choices for specific gamble
+    case 2, dataSource =sprintf('gamble_%s_all_sessions_permuted=%s');%Synthetic data for model recovery from 2 different models
 end
 load(dataSource)
 
@@ -79,9 +79,7 @@ disp('**************');
 %initialise matrices with nan values of size subjects x conditions x trials
 choice = nan(nSubjects,nTrials); %initialise choice data matrix 
 dx1 = nan(nSubjects,nTrials); dx2 = dx1; dx3 = dx1; dx4=dx1;%initialise changes in wealth
-p1 = nan(nSubjects,nTrials); p2 = p1; p3 = p1; p4 = p1; %initialuse channges in 'probabilities'
-out1= dx1;out2=dx1;out3=dx1;out4=dx1;%initialise outcomes
-deuLin= nan(nSubjects,maxTrials);deuLog= nan(nSubjects,nConditions,maxTrials);%initialise changes in linear utility / log utility
+p1  = nan(nSubjects,nTrials); p2 = p1; p3 = p1; p4 = p1; %initialuse channges in 'probabilities'
 
 %% Compile choice & gamble data
 
@@ -90,24 +88,21 @@ deuLin= nan(nSubjects,maxTrials);deuLog= nan(nSubjects,nConditions,maxTrials);%i
 
 % Jags cannot deal with partial observations, so we need to specify gamble info for all nodes. This doesn't change anything.
 for i = 1:nSubjects
-    trialInds=1:length(Choice_add{subjList(i)});%generate indices for each trial
-    choice(i,c,trialInds)=Choice_add{subjList(i)}(trialInds);%assign to temporary variables
-    dx1(i,c,trialInds)=LinU_Gam1_1_add{subjList(i)}(trialInds);%assign changes in wealth dx for outcome 1
-    dx2(i,c,trialInds)=LinU_Gam1_2_add{subjList(i)}(trialInds);%same for outcome 2 etc.
-    dx3(i,c,trialInds)=LinU_Gam2_1_add{subjList(i)}(trialInds);
-    dx4(i,c,trialInds)=LinU_Gam2_2_add{subjList(i)}(trialInds);
-    out1(i,c,trialInds)=dx1(i,c,trialInds);out2(i,c,trialInds)=dx2(i,c,trialInds);%specify as outcomes 1 to 4
-    out3(i,c,trialInds)=dx3(i,c,trialInds);out4(i,c,trialInds)=dx4(i,c,trialInds);
-    deuLin(i,c,trialInds)=delta_EU_Lin_add{subjList(i)}(trialInds);%specify changes in expected utility for each gamble for linear utility
+    trialInds=1:length(Choice);%generate indices for each trial
+    
+    choice(i,trialInds)=Choice(trialInds);%assign to temporary variables
+    
+    dx1(i,trialInds)=maxA(trialInds);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
+    dx2(i,trialInds)=minA(trialInds);%same for outcome 2 etc.
+    dx3(i,trialInds)=maxB(trialInds);
+    dx4(i,trialInds)=minB(trialInds);
+    
+    p1(i,trialInds)=p_maxA(trialInds);%assign changes in 'probability' for outcome 1
+    p2(i,trialInds)=p_minA(trialInds);%same for outcome 2 etc. (note always 1-p_maxA)
+    p3(i,trialInds)=p_maxB(trialInds);
+    p4(i,trialInds)=p_minB(trialInds);
+   
 end
-
-
-%% Compile wealth data
-
-%DON'T UNDERSTAND THIS...
-
-wealths=[Wealth_add];
-wealths=wealths(:,subjList); %limits to subjects in subjlist
 
 %% Nan check
 disp([num2str(length(find(isnan(choice)))),'_nans in choice data']);%nans in choice data do not matter
@@ -123,7 +118,7 @@ disp([num2str(length(find(isnan(deuLin)))),'_nans in deu_lin'])
 switch runModelNum
     case {1} %Simulating choices
         dataStruct = struct(...
-            'wealths',wealths,'nSubjects', nSubjects,'nTrials',nTrials,...
+            'nSubjects', nSubjects,'nTrials',nTrials,...
             'dx1',dx1,'dx2',dx2,'dx3',dx3,'dx4',dx4,...
             'p1',p1,'p2',p2,'p3',p3,'p4',p4);
         

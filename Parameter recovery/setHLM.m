@@ -1,4 +1,4 @@
-function setHLM(runModelNum,Mode,whichJAGS,whichQuals,doParallel,whichGamble)
+function setHLM(runModelNum,Mode,whichJAGS,whichQuals,doParallel,whichGamble,permuted)
 %% setHLM
 % setHLM sets up multiple HLM models to run sequentially according to inputs
 % This function takes the following inputs:
@@ -35,5 +35,5 @@ subjList{25}  = 1:19;subjList{26}=1:19;subjList{27}=1:19;subjList{28}=1:19;%synt
 
 %% Runs HLMs sequentiallt
 for i=1:numRuns
-    computeHLM(runModelNum,nBurnin(whichQuals(i)),nSamples(whichQuals(i)),nThin,nChains(whichQuals(i)),subjList{synthMode},whichJAGS,Mode,doParallel,whichGamble)
+    computeHLM(runModelNum,nBurnin(whichQuals(i)),nSamples(whichQuals(i)),nThin,nChains(whichQuals(i)),subjList{synthMode},whichJAGS,Mode,doParallel,whichGamble,permuted)
 end
