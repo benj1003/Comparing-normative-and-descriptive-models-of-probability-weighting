@@ -25,12 +25,16 @@ def trial_generation(gambles_df, g, n_TRIAL, n_SESSIONS, permute=False, save=Fal
     b_min_s = b_min*n_SESSIONS
     tmp_a = []
     tmp_a_s = []
-    tmp_a_p = []
-    tmp_a_p_s = []
+    tmp_a1_p = []
+    tmp_a2_p = []
+    tmp_a_p1_s = []
+    tmp_a_p2_s = []
     tmp_b = []
     tmp_b_s = []
-    tmp_b_p = []
-    tmp_b_p_s = []
+    tmp_b1_p = []
+    tmp_b2_p = []
+    tmp_b1_p_s = []
+    tmp_b2_p_s = []
     
 
     counter_a = 0
@@ -44,35 +48,41 @@ def trial_generation(gambles_df, g, n_TRIAL, n_SESSIONS, permute=False, save=Fal
                 
                 if tmp_a[jj] == gambles_df["A1_x"][g]:
                     counter_a += 1
-                tmp_a_p.append(counter_a/(jj+1))
+                p_a_tmp = counter_a/(jj+1)
+                tmp_a1_p.append(p_a_tmp)
+                tmp_a2_p.append(1-p_a_tmp)
 
                 tmp_b.append(gambles_df["B1_x"][g] if np.random.uniform(0,1,1) < gambles_df["B1_p"][g] else gambles_df["B2_x"][g])
                 if tmp_b[jj] == gambles_df["B1_x"][g]:
                     counter_b += 1
-                tmp_b_p.append(counter_b/(jj+1))
+                p_b_tmp = counter_b/(jj+1)
+                tmp_b1_p.append(p_b_tmp)
+                tmp_b2_p.append(1-p_b_tmp)
         if permute:
             tmp_a = random.sample(tmp_a,len(tmp_a))
             tmp_a_p = random.sample(tmp_a_p,len(tmp_a_p))
             tmp_b = random.sample(tmp_b,len(tmp_b))
             tmp_b_p = random.sample(tmp_b_p,len(tmp_b_p))
         tmp_a_s += tmp_a 
-        tmp_a_p_s += tmp_a_p 
+        tmp_a1_p_s += tmp_a1_p 
+        tmp_a2_p_s += tmp_a2_p
         tmp_b_s += tmp_b
-        tmp_b_p_s += tmp_b_p
+        tmp_b1_p_s += tmp_b1_p
+        tmp_b2_p_s += tmp_b2_p
 
         trial_count_s += trial_count
 
-        data_multiple_sessions.append([choice_s,gamble_nr_s,session_count,trial_count_s, a_max_s,a_min_s,tmp_a_s,tmp_a_p_s,b_max_s,b_min_s,tmp_b_s,tmp_b_p_s])
+        data_multiple_sessions.append([choice_s,gamble_nr_s,session_count,trial_count_s, a_max_s,a_min_s,tmp_a_s,tmp_a1_p_s,tmp_a2_p_s,b_max_s,b_min_s,tmp_b_s,tmp_b_p1_s,tmp_b2_p_s])
         df_all_session = pd.DataFrame(data =data_multiple_sessions[0]) 
         df_all_session = df_all_session.transpose()
-        df_all_session.columns = ['Choice','Gamble_nr','Session_count','Trial_count','maxA','minA','xA', 'pA','maxB','minB', 'xB', 'pB']
+        df_all_session.columns = ['Choice','Gamble_nr','Session_count','Trial_count','maxA','minA','xA', 'pA1','pA2','maxB','minB', 'xB', 'pB1','pB2']
 
-        data_one_session.append(choice,[gamble_nr,[1]*n_TRIAL,trial_count, a_max,a_min,tmp_a,tmp_a_p,b_max,b_min,tmp_b,tmp_b_p])
+        data_one_session.append(choice,[gamble_nr,[1]*n_TRIAL,trial_count, a_max,a_min,tmp_a,tmp_a1_p,tmp_a2_p,b_max,b_min,tmp_b,tmp_b1_p,tmp_b2_p])
         df_one_session = pd.DataFrame(data =data_one_session[0]) 
         df_one_session = df_one_session.transpose()
-        df_one_session.columns = ['Choice','Gamble_nr','Session_count','Trial_count','maxA','minA','xA', 'pA','maxB','minB', 'xB', 'pB']
+        df_one_session.columns = ['Choice','Gamble_nr','Session_count','Trial_count','maxA','minA','xA', 'pA1','pA2','maxB','minB', 'xB', 'pB1','pB2']
 
-        datadict = {'maxA':a_max_s, 'minA': a_min_s,'xA': tmp_a_s, 'p_maxA': tmp_a_p_s, 'maxB': b_max_s, 'minB': b_min_s, 'xB': tmp_b_s, 'p_maxB': tmp_b_p_s}
+        datadict = {'maxA':a_max_s, 'minA': a_min_s,'xA': tmp_a_s, 'p_maxA': tmp_a1_p_s, 'p_minA':tmp_a2_p_s, 'maxB': b_max_s, 'minB': b_min_s, 'xB': tmp_b_s, 'p_maxB': tmp_b_p_s, 'pminB': tmp_b_p_s}
 
         df_metadata = pd.DataFrame(data={"Gamble": (g+1), "N_sessions": n_SESSIONS, "N_Trials": n_TRIAL, "Permute": permute}, index=[0])
 
