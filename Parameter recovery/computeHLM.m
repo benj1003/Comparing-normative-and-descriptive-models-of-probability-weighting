@@ -25,8 +25,8 @@ addpath(fullfile(pwd,'/parameter_recovery/data'));%set path to include data fold
 
 %% Choose & load data
 switch Mode
-    case 1, dataSource = sprintf('gamble_%s_all_sessions_permuted=%s');%All data needed to simulate choices for specific gamble
-    case 2, dataSource =sprintf('gamble_%s_all_sessions_permuted=%s');%Synthetic data for model recovery from 2 different models
+    case 1, dataSource = sprintf('gamble_%s_all_sessions_permuted=%s',whichGamble,permuted);%All data needed to simulate choices for specific gamble
+    case 2, dataSource =sprintf('gamble_%s_all_sessions_permuted=%s',whichGamble,permuted);%Synthetic data for model recovery from 2 different models
 end
 load(dataSource)
 
