@@ -1,4 +1,5 @@
 
 .ipynb_checkpoints
-allData_from_ergodicity_experiment.mat
 *.asv
+allData_from_ergodicity_experiment.mat
+dir_to_ignore/
