@@ -6,6 +6,8 @@
 % mode        - simulating data or recovering parameters
 % whichJAGS   - which copy of matjags to run on. this allows parallel jobs to run as long as they use different matjags
 % whichQuals  - sets the order of qualities to run
+% whichGamble - sets which underlying gamble is considered
+% permuted    - set if the model should be run on sequence where the trials are permuted among samples
 
 % The idea is that this is written into by the user, then called by a
 % cluster job via the terminal:
@@ -19,9 +21,10 @@ runModelNum=1;
 Mode=1;
 whichJAGS=1;
 whichQuals=1;
-doParallel=0;
 whichGamble=1;
-permuted='False';
+permuted='False'; %True not implemented (yet)
+doParallel=0;
+
 
 %% Call setHLM
 setHLM(runModelNum,Mode,whichJAGS,whichQuals,doParallel,whichGamble,permuted)

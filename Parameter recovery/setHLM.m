@@ -3,10 +3,11 @@ function setHLM(runModelNum,Mode,whichJAGS,whichQuals,doParallel,whichGamble,per
 % setHLM sets up multiple HLM models to run sequentially according to inputs
 % This function takes the following inputs:
 % runModelNum - which models to run
-% Mode        - 1) simulating data or 2) recovering parameters
+% mode        - simulating data or recovering parameters
 % whichJAGS   - which copy of matjags to run on. this allows parallel jobs to run as long as they use different matjags
 % whichQuals  - sets the order of qualities to run
-% whichGamble - sets which underlying choice gamble is used
+% whichGamble - sets which underlying gamble is considered
+% permuted    - set if the model should be run on sequence where the trials are permuted among samples
 % 
 % There are three qualities for several variables, each selected by whichQuals
 % qualities  are 'bronze','silver','gold'
