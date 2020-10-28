@@ -24,10 +24,8 @@ addpath(fullfile(pwd,'/parameter_recovert/matjags'));%set path to include matjag
 addpath(fullfile(pwd,'/parameter_recovery/data'));%set path to include data folder
 
 %% Choose & load data
-
-%%%%%% IF MODE 1 THEN NO DATA
 switch Mode
-    case 1, dataSource ='allData'; %Real experimental data
+    case 1, dataSource ='allData_synth_modelRecov'; %All data needed to simulate choices
     case 2, dataSource ='allData_synth_modelRecov';%Synthetic data for model recovery from 2 different models
 end
 load(dataSource)
@@ -92,32 +90,15 @@ deuLin= nan(nSubjects,maxTrials);deuLog= nan(nSubjects,nConditions,maxTrials);%i
 
 % Jags cannot deal with partial observations, so we need to specify gamble info for all nodes. This doesn't change anything.
 for i = 1:nSubjects
-    for c = 1:nConditions
-        switch c %condition
-            case 1% add
-                trialInds=1:length(Choice_add{subjList(i)});%generate indices for each trial
-                choice(i,c,trialInds)=Choice_add{subjList(i)}(trialInds);%assign to temporary variables
-                dx1(i,c,trialInds)=LinU_Gam1_1_add{subjList(i)}(trialInds);%assign changes in wealth dx for outcome 1
-                dx2(i,c,trialInds)=LinU_Gam1_2_add{subjList(i)}(trialInds);%same for outcome 2 etc.
-                dx3(i,c,trialInds)=LinU_Gam2_1_add{subjList(i)}(trialInds);
-                dx4(i,c,trialInds)=LinU_Gam2_2_add{subjList(i)}(trialInds);
-                out1(i,c,trialInds)=dx1(i,c,trialInds);out2(i,c,trialInds)=dx2(i,c,trialInds);%specify as outcomes 1 to 4
-                out3(i,c,trialInds)=dx3(i,c,trialInds);out4(i,c,trialInds)=dx4(i,c,trialInds);
-                deuLin(i,c,trialInds)=delta_EU_Lin_add{subjList(i)}(trialInds);%specify changes in expected utility for each gamble for linear utility
-                deuLog(i,c,trialInds)=delta_EU_Log_add{subjList(i)}(trialInds);%specify changes in expected utility for each gamble for log utility
-            case 2% multi
-                trialInds=1:length(Choice_multi{subjList(i)});
-                choice(i,c,trialInds)=Choice_multi{subjList(i)}(trialInds);
-                dx1(i,c,trialInds)=LinU_Gam1_1_multi{subjList(i)}(trialInds);
-                dx2(i,c,trialInds)=LinU_Gam1_2_multi{subjList(i)}(trialInds);
-                dx3(i,c,trialInds)=LinU_Gam2_1_multi{subjList(i)}(trialInds);
-                dx4(i,c,trialInds)=LinU_Gam2_2_multi{subjList(i)}(trialInds);
-                out1(i,c,trialInds)=LogU_Gam1_1_multi{subjList(i)}(trialInds);out2(i,c,trialInds)=LogU_Gam1_2_multi{subjList(i)}(trialInds);
-                out3(i,c,trialInds)=LogU_Gam2_1_multi{subjList(i)}(trialInds);out4(i,c,trialInds)=LogU_Gam2_2_multi{subjList(i)}(trialInds);
-                deuLin(i,c,trialInds)=delta_EU_Lin_multi{subjList(i)}(trialInds);
-                deuLog(i,c,trialInds)=delta_EU_Log_multi{subjList(i)}(trialInds);
-        end
-    end
+    trialInds=1:length(Choice_add{subjList(i)});%generate indices for each trial
+    choice(i,c,trialInds)=Choice_add{subjList(i)}(trialInds);%assign to temporary variables
+    dx1(i,c,trialInds)=LinU_Gam1_1_add{subjList(i)}(trialInds);%assign changes in wealth dx for outcome 1
+    dx2(i,c,trialInds)=LinU_Gam1_2_add{subjList(i)}(trialInds);%same for outcome 2 etc.
+    dx3(i,c,trialInds)=LinU_Gam2_1_add{subjList(i)}(trialInds);
+    dx4(i,c,trialInds)=LinU_Gam2_2_add{subjList(i)}(trialInds);
+    out1(i,c,trialInds)=dx1(i,c,trialInds);out2(i,c,trialInds)=dx2(i,c,trialInds);%specify as outcomes 1 to 4
+    out3(i,c,trialInds)=dx3(i,c,trialInds);out4(i,c,trialInds)=dx4(i,c,trialInds);
+    deuLin(i,c,trialInds)=delta_EU_Lin_add{subjList(i)}(trialInds);%specify changes in expected utility for each gamble for linear utility
 end
 
 
