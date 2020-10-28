@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import sys
 
 def trial_generation(gambles_df, g, n_TRIAL, n_SESSIONS, permute=False, save=False):
+    choice = np.nan*n_TRIAL
+    choice_s = np.nan*n_TRIAL*n_SESSIONS
     gamble_nr = [(g+1)]*n_TRIAL
     gamble_nr_s = gamble_nr*n_SESSIONS
     data_one_session = []
