@@ -59,10 +59,11 @@ def trial_generation(gambles_df, g, n_TRIAL, n_SESSIONS, permute=False, save=Fal
                 tmp_b1_p.append(p_b_tmp)
                 tmp_b2_p.append(1-p_b_tmp)
         if permute:
-            tmp_a = random.sample(tmp_a,len(tmp_a))
-            tmp_a_p = random.sample(tmp_a_p,len(tmp_a_p))
-            tmp_b = random.sample(tmp_b,len(tmp_b))
-            tmp_b_p = random.sample(tmp_b_p,len(tmp_b_p))
+            print("PERMUTE NOT IMPLEMENTED!")
+            # tmp_a = random.sample(tmp_a,len(tmp_a))
+            # tmp_a_p = random.sample(tmp_a_p,len(tmp_a_p))
+            # tmp_b = random.sample(tmp_b,len(tmp_b))
+            # tmp_b_p = random.sample(tmp_b_p,len(tmp_b_p))
         tmp_a_s += tmp_a 
         tmp_a1_p_s += tmp_a1_p 
         tmp_a2_p_s += tmp_a2_p
