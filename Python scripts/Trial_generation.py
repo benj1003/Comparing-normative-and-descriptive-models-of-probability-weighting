@@ -27,8 +27,8 @@ def trial_generation(gambles_df, g, n_TRIAL, n_SESSIONS, permute=False, save=Fal
     tmp_a_s = []
     tmp_a1_p = []
     tmp_a2_p = []
-    tmp_a_p1_s = []
-    tmp_a_p2_s = []
+    tmp_a1_p_s = []
+    tmp_a2_p_s = []
     tmp_b = []
     tmp_b_s = []
     tmp_b1_p = []
@@ -73,17 +73,17 @@ def trial_generation(gambles_df, g, n_TRIAL, n_SESSIONS, permute=False, save=Fal
 
         trial_count_s += trial_count
 
-        data_multiple_sessions.append([choice_s,gamble_nr_s,session_count,trial_count_s, a_max_s,a_min_s,tmp_a_s,tmp_a1_p_s,tmp_a2_p_s,b_max_s,b_min_s,tmp_b_s,tmp_b_p1_s,tmp_b2_p_s])
+        data_multiple_sessions.append([choice_s,gamble_nr_s,session_count,trial_count_s, a_max_s,a_min_s,tmp_a_s,tmp_a1_p_s,tmp_a2_p_s,b_max_s,b_min_s,tmp_b_s,tmp_b1_p_s,tmp_b2_p_s])
         df_all_session = pd.DataFrame(data =data_multiple_sessions[0]) 
         df_all_session = df_all_session.transpose()
         df_all_session.columns = ['Choice','Gamble_nr','Session_count','Trial_count','maxA','minA','xA', 'pA1','pA2','maxB','minB', 'xB', 'pB1','pB2']
 
-        data_one_session.append(choice,[gamble_nr,[1]*n_TRIAL,trial_count, a_max,a_min,tmp_a,tmp_a1_p,tmp_a2_p,b_max,b_min,tmp_b,tmp_b1_p,tmp_b2_p])
+        data_one_session.append([choice,gamble_nr,[1]*n_TRIAL,trial_count, a_max,a_min,tmp_a,tmp_a1_p,tmp_a2_p,b_max,b_min,tmp_b,tmp_b1_p,tmp_b2_p])
         df_one_session = pd.DataFrame(data =data_one_session[0]) 
         df_one_session = df_one_session.transpose()
         df_one_session.columns = ['Choice','Gamble_nr','Session_count','Trial_count','maxA','minA','xA', 'pA1','pA2','maxB','minB', 'xB', 'pB1','pB2']
 
-        datadict = {'maxA':a_max_s, 'minA': a_min_s,'xA': tmp_a_s, 'p_maxA': tmp_a1_p_s, 'p_minA':tmp_a2_p_s, 'maxB': b_max_s, 'minB': b_min_s, 'xB': tmp_b_s, 'p_maxB': tmp_b_p_s, 'pminB': tmp_b_p_s}
+        datadict = {'maxA':a_max_s, 'minA': a_min_s,'xA': tmp_a_s, 'p_maxA': tmp_a1_p_s, 'p_minA':tmp_a2_p_s, 'maxB': b_max_s, 'minB': b_min_s, 'xB': tmp_b_s, 'p_maxB': tmp_b1_p_s, 'pminB': tmp_b2_p_s}
 
         df_metadata = pd.DataFrame(data={"Gamble": (g+1), "N_sessions": n_SESSIONS, "N_Trials": n_TRIAL, "Permute": permute}, index=[0])
 
