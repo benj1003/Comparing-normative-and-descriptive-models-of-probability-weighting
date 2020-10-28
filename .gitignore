@@ -2,4 +2,4 @@
 .ipynb_checkpoints
 *.asv
 allData_from_ergodicity_experiment.mat
-dir_to_ignore/
+Vejledningsmøder/
