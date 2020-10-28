@@ -1,4 +1,5 @@
 
 .ipynb_checkpoints
-Parameter recovery/allData_synth_modelRecov.mat
 *.asv
+allData_from_ergodicity_experiment.mat
+dir_to_ignore/
