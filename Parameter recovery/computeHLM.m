@@ -1,4 +1,4 @@
-function computeHLM(runModelNum,nBurnin,nSamples,nThin,nChains,subjList,whichJAGS,Mode,doParallel,whichGamble,permuted)
+function computeHLM(runModelNum,nBurnin,nSamples,nThin,nChains,whichJAGS,Mode,doParallel,whichGamble,permuted,nAgents)
 
 %% Hiercharchical Latent Mixture (HLM) model
 % This is a general script for running several types of hierarchical
@@ -20,12 +20,12 @@ function computeHLM(runModelNum,nBurnin,nSamples,nThin,nChains,subjList,whichJAG
 [startDir,~] = fileparts(mfilename('fullpath'));%specify your starting directory here (where this script runs from)
 cd(startDir);%move to starting directory
 jagsDir=[startDir,'/JAGS'];
-addpath(fullfile(pwd,'/parameter_recovert/matjags'));%set path to include matjags folder
-addpath(fullfile(pwd,'/parameter_recovery/data'));%set path to include data folder
+addpath(fullfile(pwd,'/matjags'));%set path to include matjags folder
+addpath(fullfile(pwd,'/data'));%set path to include data folder
 
 %% Choose & load data
 switch Mode
-    case 1, dataSource = sprintf('gamble_%s_all_sessions_permuted=%s',whichGamble,permuted);%All data needed to simulate choices for specific gamble
+    case 1, dataSource = sprintf('gamble_%d_all_sessions_permuted=%s',whichGamble,permuted);%All data needed to simulate choices for specific gamble
     case 2, dataSource =sprintf('gamble_%s_all_sessions_permuted=%s',whichGamble,permuted);%Synthetic data for model recovery from 2 different models
 end
 load(dataSource)
@@ -43,9 +43,8 @@ switch runModelNum
 end
 
 %% Set key variables
-nTrials=100;%All trials (nTrials*nSamples)
+nTrials=15;%All trials (nTrials*nSamples)
 doDIC=1;%compute Deviance information criteria? This is the hierarchical equivalent of an AIC, the lower the better
-nSubjects=length(subjList);%number of subjects
 
 %% Set bounds of hyperpriors
 %hard code the upper and lower bounds of hyperpriors, typically uniformly
@@ -77,9 +76,9 @@ disp('**************');
 
 %% Initialise matrices
 %initialise matrices with nan values of size subjects x conditions x trials
-choice = nan(nSubjects,nTrials); %initialise choice data matrix 
-dx1 = nan(nSubjects,nTrials); dx2 = dx1; dx3 = dx1; dx4=dx1;%initialise changes in wealth
-p1  = nan(nSubjects,nTrials); p2 = p1; p3 = p1; p4 = p1; %initialuse channges in 'probabilities'
+choice = nan(nAgents,nTrials); %initialise choice data matrix 
+dx1 = nan(nAgents,nTrials); dx2 = dx1; dx3 = dx1; dx4=dx1;%initialise changes in wealth
+p_a1  = nan(nAgents,nTrials); p_a2 = p_a1; p_b1 = p_a1; p_b2 = p_a1; %initialuse channges in 'probabilities'
 
 %% Compile choice & gamble data
 
@@ -87,7 +86,7 @@ p1  = nan(nSubjects,nTrials); p2 = p1; p3 = p1; p4 = p1; %initialuse channges in
 %%IT IS HERE THE DATA INPUT NEEDS TO BE!
 
 % Jags cannot deal with partial observations, so we need to specify gamble info for all nodes. This doesn't change anything.
-for i = 1:nSubjects
+for i = 1:nAgents
     trialInds=1:length(Choice);%generate indices for each trial
     
     choice(i,trialInds)=Choice(trialInds);%assign to temporary variables
@@ -97,10 +96,10 @@ for i = 1:nSubjects
     dx3(i,trialInds)=maxB(trialInds);
     dx4(i,trialInds)=minB(trialInds);
     
-    p1(i,trialInds)=p_maxA(trialInds);%assign changes in 'probability' for outcome 1
-    p2(i,trialInds)=p_minA(trialInds);%same for outcome 2 etc. (note always 1-p_maxA)
-    p3(i,trialInds)=p_maxB(trialInds);
-    p4(i,trialInds)=p_minB(trialInds);
+    p_a1(i,trialInds)=p_maxA(trialInds);%assign changes in 'probability' for outcome 1
+    p_a2(i,trialInds)=p_minA(trialInds);%same for outcome 2 etc. (note always 1-p_maxA)
+    p_b1(i,trialInds)=p_maxB(trialInds);
+    p_b2(i,trialInds)=p_minB(trialInds);
    
 end
 
@@ -110,7 +109,6 @@ disp([num2str(length(find(isnan(dx1)))),'_nans in gambles 1 matrix'])% nans in g
 disp([num2str(length(find(isnan(dx2)))),'_nans in gambles 2 matrix'])
 disp([num2str(length(find(isnan(dx3)))),'_nans in gambles 3 matrix'])
 disp([num2str(length(find(isnan(dx4)))),'_nans in gambles 4 matrix'])
-disp([num2str(length(find(isnan(deuLin)))),'_nans in deu_lin'])
 
 
 %% Configure data structure for graphical model & parameters to monitor
@@ -118,9 +116,9 @@ disp([num2str(length(find(isnan(deuLin)))),'_nans in deu_lin'])
 switch runModelNum
     case {1} %Simulating choices
         dataStruct = struct(...
-            'nSubjects', nSubjects,'nTrials',nTrials,...
+            'nAgents', nAgents,'nTrials',nTrials,...
             'dx1',dx1,'dx2',dx2,'dx3',dx3,'dx4',dx4,...
-            'p1',p1,'p2',p2,'p3',p3,'p4',p4);
+            'p_a1',p_a1,'p_a2',p_a2,'p_b1',p_b1,'p_b2',p_b2);
         
     case {2} %IKKE TAGET STILLING TIL ENDNU 
         dataStruct = struct();
@@ -132,7 +130,7 @@ for i = 1:nChains
     switch runModelNum
         
         case {1}  %Simulating choices
-            monitorParameters = {'dx1','dx2','dx3','dx4','p1','p2','p3','p4',...
+            monitorParameters = {'dx1','dx2','dx3','dx4','p_a1','p_a2','p_b1','p_b2',...
                 'y_pt','alpha_pt','gamma_pt','delta_pt','beta_pt'...
                 'y_lml','alpha_lml','gamma_lml','delta_lml','beta_lml'};
             S=struct; init0(i)=S; %sets initial values as empty so randomly seeded

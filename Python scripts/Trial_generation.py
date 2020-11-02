@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 import sys
 
 def trial_generation(gambles_df, g, n_TRIAL, n_SESSIONS, permute=False, save=False):
-    choice = np.nan*n_TRIAL
-    choice_s = np.nan*n_TRIAL*n_SESSIONS
+    choice = [np.nan]*n_TRIAL
+    choice_s = [np.nan]*n_TRIAL*n_SESSIONS
     gamble_nr = [(g+1)]*n_TRIAL
     gamble_nr_s = gamble_nr*n_SESSIONS
     data_one_session = []
@@ -83,7 +83,7 @@ def trial_generation(gambles_df, g, n_TRIAL, n_SESSIONS, permute=False, save=Fal
         df_one_session = df_one_session.transpose()
         df_one_session.columns = ['Choice','Gamble_nr','Session_count','Trial_count','maxA','minA','xA', 'pA1','pA2','maxB','minB', 'xB', 'pB1','pB2']
 
-        datadict = {'maxA':a_max_s, 'minA': a_min_s,'xA': tmp_a_s, 'p_maxA': tmp_a1_p_s, 'p_minA':tmp_a2_p_s, 'maxB': b_max_s, 'minB': b_min_s, 'xB': tmp_b_s, 'p_maxB': tmp_b1_p_s, 'pminB': tmp_b2_p_s}
+        datadict = {'Choice': choice_s, 'maxA':a_max_s, 'minA': a_min_s,'xA': tmp_a_s, 'p_maxA': tmp_a1_p_s, 'p_minA':tmp_a2_p_s, 'maxB': b_max_s, 'minB': b_min_s, 'xB': tmp_b_s, 'p_maxB': tmp_b1_p_s, 'p_minB': tmp_b2_p_s}
 
         df_metadata = pd.DataFrame(data={"Gamble": (g+1), "N_sessions": n_SESSIONS, "N_Trials": n_TRIAL, "Permute": permute}, index=[0])
 

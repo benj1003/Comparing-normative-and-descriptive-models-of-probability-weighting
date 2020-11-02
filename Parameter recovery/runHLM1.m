@@ -13,18 +13,19 @@
 % cluster job via the terminal:
 
 %% Add to path
-cd .. ;%move to base directory 
-addpath(genpath(pwd));%adds base directory and subfolders to path, important for running shell scripts from terminal
+%cd .. ;%move to base directory 
+%addpath(genpath(pwd));%adds base directory and subfolders to path, important for running shell scripts from terminal
 
 %% Specify variables
 runModelNum=1;
 Mode=1;
 whichJAGS=1;
 whichQuals=1;
-whichGamble=1;
+whichGamble=0;
 permuted='False'; %True not implemented (yet)
 doParallel=0;
+nAgents=100;
 
 
 %% Call setHLM
-setHLM(runModelNum,Mode,whichJAGS,whichQuals,doParallel,whichGamble,permuted)
+setHLM(runModelNum,Mode,whichJAGS,whichQuals,doParallel,whichGamble,permuted,nAgents)

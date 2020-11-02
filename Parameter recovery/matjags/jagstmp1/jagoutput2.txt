@@ -1,0 +1,27 @@
+
+C:\Users\benja\OneDrive\Dokumenter\GitHub\Master-thesis\Parameter recovery\matjags\jagstmp1>setlocal
+
+C:\Users\benja\OneDrive\Dokumenter\GitHub\Master-thesis\Parameter recovery\matjags\jagstmp1>set PATH=C:\Program Files\JAGS\JAGS-4.3.0\x64\bin\;C:\Program Files\MATLAB\R2018b\bin\win64;C:\ProgramData\watcom-1.3\binnt;C:\ProgramData\watcom-1.3\binw;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\Program Files\MATLAB\R2018b\bin;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Intel\WiFi\bin\;C:\Program Files\Common Files\Intel\WirelessCommon\;C:\Program Files\JAGS\JAGS-4.3.0\x64\bin;C:\Users\benja\Anaconda3;C:\Users\benja\Anaconda3\Library\mingw-w64\bin;C:\Users\benja\Anaconda3\Library\usr\bin;C:\Users\benja\Anaconda3\Library\bin;C:\Users\benja\Anaconda3\Scripts;C:\Users\benja\AppData\Local\Microsoft\WindowsApps;C:\Users\benja\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\benja\AppData\Local\GitHubDesktop\bin;%USERPROFILE%\AppData\Local\Microsoft\WindowsApps; 
+
+C:\Users\benja\OneDrive\Dokumenter\GitHub\Master-thesis\Parameter recovery\matjags\jagstmp1>set LTDL_LIBRARY_PATH=C:\Program Files\JAGS\JAGS-4.3.0\x64\modules 
+
+C:\Users\benja\OneDrive\Dokumenter\GitHub\Master-thesis\Parameter recovery\matjags\jagstmp1>cls
+
+C:\Users\benja\OneDrive\Dokumenter\GitHub\Master-thesis\Parameter recovery\matjags\jagstmp1>jags-terminal jagscript2.cmd 
+Welcome to JAGS 4.3.0 on Mon Nov 02 16:55:49 2020
+JAGS is free software and comes with ABSOLUTELY NO WARRANTY
+Loading module: basemod: ok
+Loading module: bugs: ok
+Loading module: wiener: Det angivne modul blev ikke fundet.
+Loading module: glm: ok
+Loading module: dic: ok
+Reading data file jagsdata.R
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+RUNTIME ERROR:
+Compilation error on line 51.
+Unknown variable p_b1
+Either supply values for this variable with the data
+or define it  on the left hand side of a relation.
+Deleting model
