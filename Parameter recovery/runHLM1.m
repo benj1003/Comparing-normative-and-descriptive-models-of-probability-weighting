@@ -14,7 +14,7 @@
 
 %% Add to path
 %cd .. ;%move to base directory 
-%addpath(genpath(pwd));%adds base directory and subfolders to path, important for running shell scripts from terminal
+addpath(genpath(pwd));%adds base directory and subfolders to path, important for running shell scripts from terminal
 
 %% Specify variables
 runModelNum=1;
@@ -24,7 +24,7 @@ whichQuals=1;
 whichGamble=0;
 permuted='False'; %True not implemented (yet)
 doParallel=0;
-nAgents=100;
+nAgents=2 ;
 
 
 %% Call setHLM
