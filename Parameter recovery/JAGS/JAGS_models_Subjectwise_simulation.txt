@@ -6,69 +6,70 @@
 model{
 
 ##LIKELIHOOD
-  
-for (i in 1:nAgents){
-	for (t in 1:nTrials){
+for (g in 1:nGambles){
+	for (i in 1:nAgents){
+		for (t in 1:nTrials){
 
 		#pt-model
-		u_a1_pt[i,t]		= pow(dx1[i,t],alpha_pt[i])						#prospect utility, computed by exponentiating current wealth by alpha   	
-		u_a2_pt[i,t]		= pow(dx2[i,t],alpha_pt[i])						 	
-		u_b1_pt[i,t]		= pow(dx3[i,t],alpha_pt[i])
-		u_b2_pt[i,t]		= pow(dx4[i,t],alpha_pt[i])
+		u_a1_pt[g,i,t]		= pow(dx1[g,i,t],alpha_pt[i])						#prospect utility, computed by exponentiating current wealth by alpha   	
+		u_a2_pt[g,i,t]		= pow(dx2[g,i,t],alpha_pt[i])						 	
+		u_b1_pt[g,i,t]		= pow(dx3[g,i,t],alpha_pt[i])
+		u_b2_pt[g,i,t]		= pow(dx4[g,i,t],alpha_pt[i])
 
-		den_w_a1_pt[i,t]	= delta_pt[i]*pow(pa1[i,t],gamma_pt[i]) + pow(pa2[i,t],gamma_pt[i]) 	#the denominator of the weighting function
-		den_w_a2_pt[i,t]	= delta_pt[i]*pow(pa1[i,t],gamma_pt[i]) + pow(pa2[i,t],gamma_pt[i]) 
-		den_w_b1_pt[i,t]	= delta_pt[i]*pow(pb1[i,t],gamma_pt[i]) + pow(pb2[i,t],gamma_pt[i])
-		den_w_b2_pt[i,t]	= delta_pt[i]*pow(pb1[i,t],gamma_pt[i]) + pow(pb2[i,t],gamma_pt[i])
+		den_w_a1_pt[g,i,t]	= delta_pt[i]*pow(pa1[g,i,t],gamma_pt[i]) + pow(pa2[g,i,t],gamma_pt[i]) #the denominator of the weighting function
+		den_w_a2_pt[g,i,t]	= delta_pt[i]*pow(pa1[g,i,t],gamma_pt[i]) + pow(pa2[g,i,t],gamma_pt[i]) 
+		den_w_b1_pt[g,i,t]	= delta_pt[i]*pow(pb1[g,i,t],gamma_pt[i]) + pow(pb2[g,i,t],gamma_pt[i])
+		den_w_b2_pt[g,i,t]	= delta_pt[i]*pow(pb1[g,i,t],gamma_pt[i]) + pow(pb2[g,i,t],gamma_pt[i])
 
-		w_a1_pt[i,t]		= delta_pt[i]*pow(pa1[i,t],gamma_pt[i]) / den_w_a1_pt[i,t]		#weightfunction calculated with two parameter function (Goldstein and Einhorn (1987))
-		w_a2_pt[i,t]		= delta_pt[i]*pow(pa2[i,t],gamma_pt[i]) / den_w_a2_pt[i,t]			
-		w_b1_pt[i,t]		= delta_pt[i]*pow(pb1[i,t],gamma_pt[i]) / den_w_b1_pt[i,t]
-		w_b2_pt[i,t]		= delta_pt[i]*pow(pb2[i,t],gamma_pt[i]) / den_w_b2_pt[i,t]
+		w_a1_pt[g,i,t]		= delta_pt[i]*pow(pa1[g,i,t],gamma_pt[i]) / den_w_a1_pt[g,i,t]		#weightfunction calculated with two parameter function (Goldstein and Einhorn (1987))
+		w_a2_pt[g,i,t]		= delta_pt[i]*pow(pa2[g,i,t],gamma_pt[i]) / den_w_a2_pt[g,i,t]			
+		w_b1_pt[g,i,t]		= delta_pt[i]*pow(pb1[g,i,t],gamma_pt[i]) / den_w_b1_pt[g,i,t]
+		w_b2_pt[g,i,t]		= delta_pt[i]*pow(pb2[g,i,t],gamma_pt[i]) / den_w_b2_pt[g,i,t]
 
-		ev_a_pt[i,t]		= u_a1_pt[i,t] * w_a1_pt[i,t] + u_a2_pt[i,t] * w_a2_pt[i,t]		#The expectedvalue of the gamble is the utility multiplied with the weight
-		ev_b_pt[i,t]		= u_b1_pt[i,t] * w_b1_pt[i,t] + u_b2_pt[i,t] * w_b2_pt[i,t]
+		ev_a_pt[g,i,t]		= u_a1_pt[g,i,t] * w_a1_pt[g,i,t] + u_a2_pt[g,i,t] * w_a2_pt[g,i,t]	#The expectedvalue of the gamble is the utility multiplied with the weight
+		ev_b_pt[g,i,t]		= u_b1_pt[g,i,t] * w_b1_pt[g,i,t] + u_b2_pt[g,i,t] * w_b2_pt[g,i,t]
 	
-		dev_pt[i,t] 		= ev_a_pt[i,t] - ev_b_pt[i,t]						#difference in expected values 
+		dev_pt[g,i,t] 		= ev_a_pt[g,i,t] - ev_b_pt[g,i,t]					#difference in expected values 
 
-		sdev_pt[i,t]		= -1 * beta_pt[i] * dev_pt[i,t] 					#sensitivity-scaled difference in ev
+		sdev_pt[g,i,t]		= -1 * beta_pt[i] * dev_pt[g,i,t] 					#sensitivity-scaled difference in ev
 
-		theta_pt[i,t] 		= (1)/(1+(exp(sdev_pt[i,t]))) 						#choice probability
+		theta_pt[g,i,t] 	= (1)/(1+(exp(sdev_pt[g,i,t]))) 					#choice probability
 
-		y_pt[i,t]           	~ dbern(theta_pt[i,t])							#choice function
+		y_pt[g,i,t]           	~ dbern(theta_pt[g,i,t])						#choice function
 
 
 
 		#lml-model
-		u_a1_lml[i,t]		= pow(dx1[i,t],alpha_lml[i])							#prospect utility, computed by exponentiating current wealth by alpha   	
-		u_a2_lml[i,t]		= pow(dx2[i,t],alpha_lml[i])	
-		u_b1_lml[i,t]		= pow(dx3[i,t],alpha_lml[i])
-		u_b2_lml[i,t]		= pow(dx4[i,t],alpha_lml[i])
+		u_a1_lml[g,i,t]		= pow(dx1[g,i,t],alpha_lml[i])						#prospect utility, computed by exponentiating current wealth by alpha   	
+		u_a2_lml[g,i,t]		= pow(dx2[g,i,t],alpha_lml[i])	
+		u_b1_lml[g,i,t]		= pow(dx3[g,i,t],alpha_lml[i])
+		u_b2_lml[g,i,t]		= pow(dx4[g,i,t],alpha_lml[i])
 
-		tmp_w_a1_lml[i,t]	= delta_lml[i] * pa1[i,t] + gamma_lml[i] * sqrt(pa1[i,t]/t) 			#weighfunction (numerator)
-		tmp_w_a2_lml[i,t]	= delta_lml[i] * pa2[i,t] + gamma_lml[i] * sqrt(pa2[i,t]/t) 
-		tmp_w_b1_lml[i,t]	= delta_lml[i] * pb1[i,t] + gamma_lml[i] * sqrt(pb1[i,t]/t)
-		tmp_w_b2_lml[i,t]	= delta_lml[i] * pb2[i,t] + gamma_lml[i] * sqrt(pb2[i,t]/t) 
+		tmp_w_a1_lml[g,i,t]	= delta_lml[i] * pa1[g,i,t] + gamma_lml[i] * sqrt(pa1[g,i,t]/t) 	#weighfunction (numerator)
+		tmp_w_a2_lml[g,i,t]	= delta_lml[i] * pa2[g,i,t] + gamma_lml[i] * sqrt(pa2[g,i,t]/t) 
+		tmp_w_b1_lml[g,i,t]	= delta_lml[i] * pb1[g,i,t] + gamma_lml[i] * sqrt(pb1[g,i,t]/t)
+		tmp_w_b2_lml[g,i,t]	= delta_lml[i] * pb2[g,i,t] + gamma_lml[i] * sqrt(pb2[g,i,t]/t) 
 
-		w_a1_lml[i,t]		= tmp_w_a1_lml[i,t] / ( tmp_w_a1_lml[i,t] + tmp_w_a2_lml[i,t] )				#normalizing the weights
-		w_a2_lml[i,t]		= tmp_w_a2_lml[i,t] / ( tmp_w_a1_lml[i,t] + tmp_w_a2_lml[i,t] )
-		w_b1_lml[i,t]		= tmp_w_b1_lml[i,t] / ( tmp_w_b1_lml[i,t] + tmp_w_b2_lml[i,t] )
-		w_b2_lml[i,t]		= tmp_w_b2_lml[i,t] / ( tmp_w_b1_lml[i,t] + tmp_w_b2_lml[i,t] )
+		w_a1_lml[g,i,t]		= tmp_w_a1_lml[g,i,t] / ( tmp_w_a1_lml[g,i,t] + tmp_w_a2_lml[g,i,t] )	#normalizing the weights
+		w_a2_lml[g,i,t]		= tmp_w_a2_lml[g,i,t] / ( tmp_w_a1_lml[g,i,t] + tmp_w_a2_lml[g,i,t] )
+		w_b1_lml[g,i,t]		= tmp_w_b1_lml[g,i,t] / ( tmp_w_b1_lml[g,i,t] + tmp_w_b2_lml[g,i,t] )
+		w_b2_lml[g,i,t]		= tmp_w_b2_lml[g,i,t] / ( tmp_w_b1_lml[g,i,t] + tmp_w_b2_lml[g,i,t] )
 	
-		ev_a_lml[i,t]		= u_a1_lml[i,t] * w_a1_lml[i,t] + u_a2_lml[i,t] * w_a2_lml[i,t]			#The expected value of the gamble is the utility multiplied with the weight
-		ev_b_lml[i,t]		= u_b1_lml[i,t] * w_b1_lml[i,t] + u_b2_lml[i,t] * w_b2_lml[i,t]
+		ev_a_lml[g,i,t]		= u_a1_lml[g,i,t] * w_a1_lml[g,i,t] + u_a2_lml[g,i,t] * w_a2_lml[g,i,t]	#The expected value of the gamble is the utility multiplied with the weight
+		ev_b_lml[g,i,t]		= u_b1_lml[g,i,t] * w_b1_lml[g,i,t] + u_b2_lml[g,i,t] * w_b2_lml[g,i,t]
 
-		dev_lml[i,t] 		= ev_a_lml[i,t] - ev_b_lml[i,t]							#difference in expected values 
+		dev_lml[g,i,t] 		= ev_a_lml[g,i,t] - ev_b_lml[g,i,t]					#difference in expected values 
 
-		sdev_lml[i,t]	  	= -1 * beta_lml[i] * dev_lml[i,t] 						#sensitivity-scaled difference in ev
+		sdev_lml[g,i,t]	  	= -1 * beta_lml[i] * dev_lml[g,i,t] 					#sensitivity-scaled difference in ev
 
-		theta_lml[i,t] 		= (1)/(1+(exp(sdev_lml[i,t]))) 							#choice probability
+		theta_lml[g,i,t] 	= (1)/(1+(exp(sdev_lml[g,i,t]))) 					#choice probability
 
-		y_lml[i,t]           	~ dbern(theta_lml[i,t])								#choice function
+		y_lml[g,i,t]           	~ dbern(theta_lml[g,i,t])						#choice function
         
 	
-        }# end of trials 
-}# end of agents
+        	}# end of trials 
+	}# end of agents
+}# end of gambles
 
 ##PRIORS
 #Set to fixed values for simulation

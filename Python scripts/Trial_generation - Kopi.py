@@ -120,4 +120,4 @@ for g in range(28):
 
 # print(datadict_full)
 name = f'all_sessions_permuted=False.mat'
-scipy.io.savemat(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Parameter recovery','data',name)),{'test':datadict_full},oned_as='row')
+scipy.io.savemat(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Parameter recovery','data',name)),{'Data':datadict_full},oned_as='row')

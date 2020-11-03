@@ -1,4 +1,4 @@
-function computeHLM(runModelNum,nBurnin,nSamples,nThin,nChains,whichJAGS,Mode,doParallel,whichGamble,permuted,nAgents)
+function computeHLM(runModelNum,nBurnin,nSamples,nThin,nChains,whichJAGS,Mode,doParallel,nGambles,permuted,nAgents)
 
 %% Hiercharchical Latent Mixture (HLM) model
 % This is a general script for running several types of hierarchical
@@ -25,8 +25,8 @@ addpath(fullfile(pwd,'/data'));%set path to include data folder
 
 %% Choose & load data
 switch Mode
-    case 1, dataSource = sprintf('gamble_%d_all_sessions_permuted=%s',whichGamble,permuted);%All data needed to simulate choices for specific gamble
-    case 2, dataSource =sprintf('gamble_%s_all_sessions_permuted=%s',whichGamble,permuted);%Synthetic data for model recovery from 2 different models
+    case 1, dataSource = sprintf('all_sessions_permuted=%s',permuted);%All data needed to simulate choices for specific gamble
+    %case 2, dataSource =sprintf('gamble_%s_all_sessions_permuted=%s',whichGamble,permuted);%Synthetic data for model recovery from 2 different models
 end
 load(dataSource)
 
@@ -76,47 +76,38 @@ disp('**************');
 
 %% Initialise matrices
 %initialise matrices with nan values of size subjects x conditions x trials
-choice = nan(nAgents,nTrials); %initialise choice data matrix 
-dx1 = nan(nAgents,nTrials); dx2 = dx1; dx3 = dx1; dx4=dx1;%initialise changes in wealth
-p_a1  = nan(nAgents,nTrials); p_a2 = p_a1; p_b1 = p_a1; p_b2 = p_a1; %initialuse channges in 'probabilities'
+choice = nan(nGambles,nAgents,nTrials); %initialise choice data matrix 
+dx1 = nan(nGambles,nAgents,nTrials); dx2 = dx1; dx3 = dx1; dx4=dx1;%initialise changes in wealth
+p_a1  = nan(nGambles,nAgents,nTrials); p_a2 = p_a1; p_b1 = p_a1; p_b2 = p_a1; %initialuse channges in 'probabilities'
 
 %% Compile choice & gamble data
 
-
 %%IT IS HERE THE DATA INPUT NEEDS TO BE!
-
 % Jags cannot deal with partial observations, so we need to specify gamble info for all nodes. This doesn't change anything.
-for i = 1:nAgents
-    trialInds=1:length(Choice);%generate indices for each trial
-    
-    choice(i,trialInds)=Choice(trialInds);%assign to temporary variables
-    
-    dx1(i,trialInds)=maxA(trialInds);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
-    dx2(i,trialInds)=minA(trialInds);%same for outcome 2 etc.
-    dx3(i,trialInds)=maxB(trialInds);
-    dx4(i,trialInds)=minB(trialInds);
-    
-    p_a1(i,trialInds)=p_maxA(trialInds);%assign changes in 'probability' for outcome 1
-    p_a2(i,trialInds)=p_minA(trialInds);%same for outcome 2 etc. (note always 1-p_maxA)
-    p_b1(i,trialInds)=p_maxB(trialInds);
-    p_b2(i,trialInds)=p_minB(trialInds);
-   
+for g = 1:nGambles
+    for i = 1:nAgents
+        trialInds=1:length(Data{1,g}.Choice);%generate indices for each trial
+
+        choice(g,i,trialInds)=Data{1,g}.Choice(trialInds);%assign to temporary variables
+
+        dx1(g,i,trialInds)=Data{1,g}.maxA(trialInds);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
+        dx2(g,i,trialInds)=Data{1,g}.minA(trialInds);%same for outcome 2 etc.
+        dx3(g,i,trialInds)=Data{1,g}.maxB(trialInds);
+        dx4(g,i,trialInds)=Data{1,g}.minB(trialInds);
+
+        p_a1(g,i,trialInds)=Data{1,g}.p_maxA(trialInds);%assign changes in 'probability' for outcome 1
+        p_a2(g,i,trialInds)=Data{1,g}.p_minA(trialInds);%same for outcome 2 etc. (note always 1-p_maxA)
+        p_b1(g,i,trialInds)=Data{1,g}.p_maxB(trialInds);
+        p_b2(g,i,trialInds)=Data{1,g}.p_minB(trialInds);
+    end
 end 
-
-%% Nan check
-disp([num2str(length(find(isnan(choice)))),'_nans in choice data']);%nans in choice data do not matter
-disp([num2str(length(find(isnan(dx1)))),'_nans in gambles 1 matrix'])% nans in gamble matrices do, since model will not run
-disp([num2str(length(find(isnan(dx2)))),'_nans in gambles 2 matrix'])
-disp([num2str(length(find(isnan(dx3)))),'_nans in gambles 3 matrix'])
-disp([num2str(length(find(isnan(dx4)))),'_nans in gambles 4 matrix'])
-
 
 %% Configure data structure for graphical model & parameters to monitor
 %everything you want jags to use
 switch runModelNum
     case {1} %Simulating choices
         dataStruct = struct(...
-            'nAgents', nAgents,'nTrials',nTrials,...
+            'nGambles',nGambles,'nAgents', nAgents,'nTrials',nTrials,...
             'dx1',dx1,'dx2',dx2,'dx3',dx3,'dx4',dx4,...
             'pa1',p_a1,'pa2',p_a2,'pb1',p_b1,'pb2',p_b2);
         
