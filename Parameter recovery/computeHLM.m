@@ -44,7 +44,7 @@ end
 
 %% Set key variables
 nTrials=15;%All trials (nTrials*nSamples)
-doDIC=1;%compute Deviance information criteria? This is the hierarchical equivalent of an AIC, the lower the better
+doDIC=0;%compute Deviance information criteria? This is the hierarchical equivalent of an AIC, the lower the better
 
 %% Set bounds of hyperpriors
 %hard code the upper and lower bounds of hyperpriors, typically uniformly
@@ -101,7 +101,7 @@ for i = 1:nAgents
     p_b1(i,trialInds)=p_maxB(trialInds);
     p_b2(i,trialInds)=p_minB(trialInds);
    
-end
+end 
 
 %% Nan check
 disp([num2str(length(find(isnan(choice)))),'_nans in choice data']);%nans in choice data do not matter
@@ -174,12 +174,12 @@ save(['samples_stats\', modelName,'_',priorName,'_',dataSource,'_burn_',num2str(
 %% Print readouts
 disp('stats:'),disp(stats)%print out structure of stats output
 disp('samples:'),disp(samples);%print out structure of samples output
-try
-    rhats=fields(stats.Rhat);
-    for lp = 1: length(rhats)
-        disp(['stats.Rhat.',rhats{lp}]);
-        eval(strcat('stats.Rhat.',rhats{lp}))
-    end
-catch
-    disp('no field for stats.Rhat')
+%try
+%    rhats=fields(stats.Rhat);
+%    for lp = 1: length(rhats)
+%        disp(['stats.Rhat.',rhats{lp}]);
+%        eval(strcat('stats.Rhat.',rhats{lp}))
+%    end
+%catch
+%    disp('no field for stats.Rhat')
 end

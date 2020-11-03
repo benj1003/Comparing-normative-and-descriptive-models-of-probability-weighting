@@ -1,6 +1,5 @@
 load wiener
 load glm
-load dic
 model in "C:\Users\benja\OneDrive\Dokumenter\GitHub\Master-thesis\Parameter recovery\JAGS\JAGS_models_Subjectwise_simulation.txt"
 data in jagsdata.R
 compile, nchains(1)
@@ -25,6 +24,5 @@ monitor set alpha_lml, thin(1)
 monitor set gamma_lml, thin(1)
 monitor set delta_lml, thin(1)
 monitor set beta_lml, thin(1)
-monitor deviance
 update 50
 coda *, stem('CODA3')

@@ -50,10 +50,10 @@ for (i in 1:nAgents){
 		tmp_w_b1_lml[i,t]	= delta_lml[i] * pb1[i,t] + gamma_lml[i] * sqrt(pb1[i,t]/t)
 		tmp_w_b2_lml[i,t]	= delta_lml[i] * pb2[i,t] + gamma_lml[i] * sqrt(pb2[i,t]/t) 
 
-		w_a1_lml[i,t]		= w_a1_lml[i,t] / ( w_a1_lml[i,t] + w_a2_lml[i,t] )				#normalizing the weights
-		w_a2_lml[i,t]		= w_a2_lml[i,t] / ( w_a1_lml[i,t] + w_a2_lml[i,t] )
-		w_b1_lml[i,t]		= w_b1_lml[i,t] / ( w_b1_lml[i,t] + w_b2_lml[i,t] )
-		w_b2_lml[i,t]		= w_b2_lml[i,t] / ( w_b1_lml[i,t] + w_b2_lml[i,t] )
+		w_a1_lml[i,t]		= tmp_w_a1_lml[i,t] / ( tmp_w_a1_lml[i,t] + tmp_w_a2_lml[i,t] )				#normalizing the weights
+		w_a2_lml[i,t]		= tmp_w_a2_lml[i,t] / ( tmp_w_a1_lml[i,t] + tmp_w_a2_lml[i,t] )
+		w_b1_lml[i,t]		= tmp_w_b1_lml[i,t] / ( tmp_w_b1_lml[i,t] + tmp_w_b2_lml[i,t] )
+		w_b2_lml[i,t]		= tmp_w_b2_lml[i,t] / ( tmp_w_b1_lml[i,t] + tmp_w_b2_lml[i,t] )
 	
 		ev_a_lml[i,t]		= u_a1_lml[i,t] * w_a1_lml[i,t] + u_a2_lml[i,t] * w_a2_lml[i,t]			#The expected value of the gamble is the utility multiplied with the weight
 		ev_b_lml[i,t]		= u_b1_lml[i,t] * w_b1_lml[i,t] + u_b2_lml[i,t] * w_b2_lml[i,t]
