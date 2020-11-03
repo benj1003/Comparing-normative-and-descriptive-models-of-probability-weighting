@@ -94,7 +94,7 @@ def trial_generation(gambles_df, g, n_TRIAL, n_SESSIONS, permute=False, save=Fal
             df_one_session.to_csv(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Parameter recovery','data',f"Gamble_{g}_1_One_session.txt")))
             df_all_session.to_csv(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Parameter recovery','data',f"Gamble_{g}_1_all_sessions.txt")))
     
-    return df_metadata, df_one_session, df_all_session
+    return df_metadata, df_one_session, df_all_session, datadict
 
 #making sure the path is correct
 if not os.getcwd() == r'c:\Users\benja\OneDrive\Dokumenter\GitHub\Master-thesis\Python scripts':
@@ -103,13 +103,21 @@ if not os.getcwd() == r'c:\Users\benja\OneDrive\Dokumenter\GitHub\Master-thesis\
 #Init variables
 n_TRIAL = 5
 n_SESSIONS = 3
-g = 0
-permute = False
-save = True
 
 #read the file with the gambles
 gambles_df = pd.read_csv('Gambles.csv', sep=";")
 
-#run function
-Meta,df_one,df_multi = trial_generation(gambles_df, g, n_TRIAL, n_SESSIONS, permute=permute, save=save)
+#run function for 1 gamble
+g = 0
+df_metadata, df_one_session, df_all_session, datadict = trial_generation(gambles_df, g, n_TRIAL, n_SESSIONS, permute=False, save=False)
 
+#run function for all gambles
+N = 28 #number of gambles
+datadict_full = []
+for g in range(28):
+    df_metadata, df_one_session, df_all_session, datadict = trial_generation(gambles_df, g, n_TRIAL, n_SESSIONS, permute=False, save=False)
+    datadict_full.append(datadict)
+
+# print(datadict_full)
+name = f'all_sessions_permuted=False.mat'
+scipy.io.savemat(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Parameter recovery','data',name)),{'Data':datadict_full},oned_as='row')
