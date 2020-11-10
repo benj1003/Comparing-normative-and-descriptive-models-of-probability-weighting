@@ -1,13 +1,14 @@
-function setHLM(runModelNum,Mode,whichJAGS,whichQuals,doParallel,nGambles,permuted,nAgents)
+function setHLM(Mode,whichJAGS,whichQuals,doParallel,nGambles,nAgents)
 %% setHLM
 % setHLM sets up multiple HLM models to run sequentially according to inputs
 % This function takes the following inputs:
-% runModelNum - which models to run
-% mode        - simulating data or recovering parameters
+% mode        - 1=simulate CPT choices,2=simulate LML choices, 
+%               3=model recovery, 4=parameter revovery CPT,
+%               5=parameter 'recovery' LML
 % whichJAGS   - which copy of matjags to run on. this allows parallel jobs to run as long as they use different matjags
 % whichQuals  - sets the order of qualities to run
-% whichGamble - sets which underlying gamble is considered
-% permuted    - set if the model should be run on sequence where the trials are permuted among samples
+% nGambles    - Number of gambles to run over
+% nAgents     - number of synthetic agents 
 % 
 % There are three qualities for several variables, each selected by whichQuals
 % qualities  are 'bronze','silver','gold'
@@ -22,5 +23,5 @@ nChains      = [4,4,4,4,4];%
 nThin        = 1;%thinnning factor, 1 = no thinning, 2=every 2nd etc.
 %% Runs HLMs sequentiallt
 for i=1:numRuns
-    computeHLM(runModelNum,nBurnin(whichQuals(i)),nSamples(whichQuals(i)),nThin,nChains(whichQuals(i)),whichJAGS,Mode,doParallel,nGambles,permuted,nAgents)
+    computeHLM(nBurnin(whichQuals(i)),nSamples(whichQuals(i)),nThin,nChains(whichQuals(i)),whichJAGS,Mode,doParallel,nGambles,nAgents)
 end
