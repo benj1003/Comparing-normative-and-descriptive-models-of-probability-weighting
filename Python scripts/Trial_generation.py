@@ -5,119 +5,95 @@ import random
 import matplotlib.pyplot as plt 
 import sys
 
-def trial_generation(gambles_df, g, n_TRIAL, n_SESSIONS, permute=False, save=False):
-    choice = [np.nan]*n_TRIAL
-    choice_s = [np.nan]*n_TRIAL*n_SESSIONS
-    gamble_nr = [(g+1)]*n_TRIAL
-    gamble_nr_s = gamble_nr*n_SESSIONS
-    data_one_session = []
-    data_multiple_sessions = []
-    session_count = []
-    trial_count = []
-    trial_count_s = []
-    a_max = [gambles_df["A1_x"][g]]*n_TRIAL
-    a_min = [gambles_df["A2_x"][g]]*n_TRIAL
-    b_max = [gambles_df["B1_x"][g]]*n_TRIAL
-    b_min = [gambles_df["B2_x"][g]]*n_TRIAL
-    a_max_s = a_max*n_SESSIONS
-    a_min_s = a_min*n_SESSIONS
-    b_max_s = b_max*n_SESSIONS
-    b_min_s = b_min*n_SESSIONS
-    tmp_a = []
-    tmp_a_s = []
-    tmp_a1_p = []
-    tmp_a2_p = []
-    tmp_a1_p_s = []
-    tmp_a2_p_s = []
-    tmp_b = []
-    tmp_b_s = []
-    tmp_b1_p = []
-    tmp_b2_p = []
-    tmp_b1_p_s = []
-    tmp_b2_p_s = []
-    
+def trial_generation(gamble_df, g, nTrial=100, threshold=0.01):
+    gamble_nr = [(g+1)]*nTrial
+    a_max = [gambles_df["A1_x"][g]]*nTrial
+    a_min = [gambles_df["A2_x"][g]]*nTrial
+    b_max = [gambles_df["B1_x"][g]]*nTrial
+    b_min = [gambles_df["B2_x"][g]]*nTrial
 
-    counter_a = 0
-    counter_b = 0
-    for ii in range(n_SESSIONS):
-        session_count += [ii+1]*n_TRIAL
-        if ii == 0:
-            for jj in range(n_TRIAL):
-                trial_count.append(jj+1)
-                tmp_a.append(gambles_df["A1_x"][g] if np.random.uniform(0,1,1) < gambles_df["A1_p"][g] else gambles_df["A2_x"][g]) 
-                
-                if tmp_a[jj] == gambles_df["A1_x"][g]:
-                    counter_a += 1
-                p_a_tmp = counter_a/(jj+1)
-                tmp_a1_p.append(p_a_tmp)
-                tmp_a2_p.append(1-p_a_tmp)
+    accepted = False #bool check if frequency probabilities are sufficiently close to underlying probability
 
-                tmp_b.append(gambles_df["B1_x"][g] if np.random.uniform(0,1,1) < gambles_df["B1_p"][g] else gambles_df["B2_x"][g])
-                if tmp_b[jj] == gambles_df["B1_x"][g]:
-                    counter_b += 1
-                p_b_tmp = counter_b/(jj+1)
-                tmp_b1_p.append(p_b_tmp)
-                tmp_b2_p.append(1-p_b_tmp)
-        if permute:
-            print("PERMUTE NOT IMPLEMENTED!")
-            # tmp_a = random.sample(tmp_a,len(tmp_a))
-            # tmp_a_p = random.sample(tmp_a_p,len(tmp_a_p))
-            # tmp_b = random.sample(tmp_b,len(tmp_b))
-            # tmp_b_p = random.sample(tmp_b_p,len(tmp_b_p))
-        tmp_a_s += tmp_a 
-        tmp_a1_p_s += tmp_a1_p 
-        tmp_a2_p_s += tmp_a2_p
-        tmp_b_s += tmp_b
-        tmp_b1_p_s += tmp_b1_p
-        tmp_b2_p_s += tmp_b2_p
+    while not accepted:
+        data = []
+        trial_count = []
+        choice_a = []      #outcome in trial for choice A
+        prob_max_a = []    #probability of a_max according to frequency 
+        choice_b = []      #outcome in trial for choice B
+        prob_max_b = []    #probability of b_max according to frequency 
+        
+        max_a_counter = 0
+        max_b_counter = 0
+        for ii in range(nTrial):
+            trial_count.append(ii)
 
-        trial_count_s += trial_count
+            #Choice A
+            rnd = np.random.uniform(0,1,1)
+            choice_a.append(gambles_df["A1_x"][g] if rnd < gambles_df["A1_p"][g] else gambles_df["A2_x"][g]) 
 
-        data_multiple_sessions.append([choice_s,gamble_nr_s,session_count,trial_count_s, a_max_s,a_min_s,tmp_a_s,tmp_a1_p_s,tmp_a2_p_s,b_max_s,b_min_s,tmp_b_s,tmp_b1_p_s,tmp_b2_p_s])
-        df_all_session = pd.DataFrame(data =data_multiple_sessions[0]) 
-        df_all_session = df_all_session.transpose()
-        df_all_session.columns = ['Choice','Gamble_nr','Session_count','Trial_count','maxA','minA','xA', 'pA1','pA2','maxB','minB', 'xB', 'pB1','pB2']
+            if choice_a[ii] == gambles_df["A1_x"][g]:
+                max_a_counter += 1
+            p_a_tmp = max_a_counter/(ii+1)
+            prob_max_a.append(p_a_tmp)
 
-        data_one_session.append([choice,gamble_nr,[1]*n_TRIAL,trial_count, a_max,a_min,tmp_a,tmp_a1_p,tmp_a2_p,b_max,b_min,tmp_b,tmp_b1_p,tmp_b2_p])
-        df_one_session = pd.DataFrame(data =data_one_session[0]) 
-        df_one_session = df_one_session.transpose()
-        df_one_session.columns = ['Choice','Gamble_nr','Session_count','Trial_count','maxA','minA','xA', 'pA1','pA2','maxB','minB', 'xB', 'pB1','pB2']
+            #Choice B
+            choice_b.append(gambles_df["B1_x"][g] if np.random.uniform(0,1,1) < gambles_df["B1_p"][g] else gambles_df["B2_x"][g])
 
-        datadict = {'Choice': choice_s, 'maxA':a_max_s, 'minA': a_min_s,'xA': tmp_a_s, 'p_maxA': tmp_a1_p_s, 'p_minA':tmp_a2_p_s, 'maxB': b_max_s, 'minB': b_min_s, 'xB': tmp_b_s, 'p_maxB': tmp_b1_p_s, 'p_minB': tmp_b2_p_s}
+            if choice_b[ii] == gambles_df["B1_x"][g]:
+                max_b_counter += 1
+            p_b_tmp = max_b_counter/(ii+1)
+            prob_max_b.append(p_b_tmp)
 
-        df_metadata = pd.DataFrame(data={"Gamble": (g+1), "N_sessions": n_SESSIONS, "N_Trials": n_TRIAL, "Permute": permute}, index=[0])
+        if abs(prob_max_a[-1] - gambles_df["A1_p"][g]) < threshold and abs(prob_max_b[-1] - gambles_df["B1_p"][g]) < threshold:
+            acceepted = True
+            data.append([gamble_nr,trial_count, a_max,a_min,choice_a,prob_max_a,b_max,b_min,choice_b,prob_max_b])
+            df = pd.DataFrame(data =data[0]) 
+            df = df.transpose()
+            df.columns = ['Gamble_nr','Trial_count','maxA','minA','xA', 'pMaxA','maxB','minB', 'xB', 'pMaxB']
 
-        if save:
-            name = f'gamble_{g}_all_sessions_permuted={permute}.mat'
-            scipy.io.savemat(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Parameter recovery','data',name)),datadict,oned_as='row')
-            df_metadata.to_csv(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Parameter recovery','data',f"Gamble_{g}_0_metadata.txt")))
-            df_one_session.to_csv(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Parameter recovery','data',f"Gamble_{g}_1_One_session.txt")))
-            df_all_session.to_csv(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Parameter recovery','data',f"Gamble_{g}_1_all_sessions.txt")))
-    
-    return df_metadata, df_one_session, df_all_session, datadict
+            return df
+
+def duplicate_trials_to_sessions(data, nSessions):
+    gamble_nr = list(data['Gamble_nr'])*nSessions
+    trial_count = list(data['Trial_count'])*nSessions
+    maxA = list(data['maxA'])*nSessions
+    minA = list(data['minA'])*nSessions
+    xA = list(data['xA'])*nSessions
+    pMaxA = list(data['pMaxA'])*nSessions
+    maxB = list(data['maxB'])*nSessions
+    minB = list(data['minB'])*nSessions
+    xB = list(data['xB'])*nSessions
+    pMaxB = list(data['pMaxB'])*nSessions
+
+    data = [gamble_nr,trial_count, maxA,minA,xA,pMaxA,maxB,minB,xB,pMaxB]
+    df = pd.DataFrame(data =data) 
+    df = df.transpose()
+    df.columns = ['Gamble_nr','Trial_count','maxA','minA','xA', 'pMaxA','maxB','minB', 'xB', 'pMaxB']
+
+    metadata = [gamble_nr[0], maxA[0], minA[0], maxB[0], nSessions, len(gamble_nr)/nSessions]
+
+    datadict = {'maxA':maxA, 'minA': minA,'xA': xA, 'p_maxA': pMaxA, 'maxB': maxB, 'minB': minB, 'xB': xB, 'p_maxB': pMaxB}
+
+    return datadict, metadata
+
 
 #making sure the path is correct
 if not os.getcwd() == r'c:\Users\benja\OneDrive\Dokumenter\GitHub\Master-thesis\Python scripts':
     os.chdir(r'c:\Users\benja\OneDrive\Dokumenter\GitHub\Master-thesis\Python scripts')
 
-#Init variables
-n_TRIAL = 5
-n_SESSIONS = 3
-
-#read the file with the gambles
+#Import gambles
 gambles_df = pd.read_csv('Gambles.csv', sep=";")
+nGambles = gambles_df.shape[0] 
 
-#run function for 1 gamble
-g = 0
-df_metadata, df_one_session, df_all_session, datadict = trial_generation(gambles_df, g, n_TRIAL, n_SESSIONS, permute=False, save=False)
-
-#run function for all gambles
-N = 28 #number of gambles
+cols = ['Gamble_nr','maxA','minA','maxB','nTrials','nSessions']
+df_metadata = pd.DataFrame(columns=cols, index=range(nGambles))
 datadict_full = []
-for g in range(28):
-    df_metadata, df_one_session, df_all_session, datadict = trial_generation(gambles_df, g, n_TRIAL, n_SESSIONS, permute=False, save=False)
+
+for g in range(nGambles):
+    data = trial_generation(gambles_df, g)
+    datadict, metadata = duplicate_trials_to_sessions(data, 50)
+    df_metadata.loc[g] = metadata
     datadict_full.append(datadict)
 
-# print(datadict_full)
-name = f'all_sessions_permuted=False.mat'
-scipy.io.savemat(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Parameter recovery','data',name)),{'Data':datadict_full},oned_as='row')
+df_metadata.to_csv(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Parameter recovery','data',f"metadata.txt")),index=False)
+scipy.io.savemat(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'Parameter recovery','data','all_gambles.mat')),datadict,oned_as='row')
