@@ -1,0 +1,156 @@
+# Latent mixture model used to:
+# 1) Generate data from synthetic agents 
+# 2) Do model recovery 
+# 3) Do parameter recovery/parameter estimation
+#
+# Cumulative Prospect Theory (pt) presented by Tversky and Kahneman (1992)
+# LML model (lml) presented by Peters et al. (2020)
+#
+# Note that the model indicator variable z, is parameter expanded to take on 8 different values rather than 2. This
+# allows better convergence. It allows 8 different values of the indicator variable to map to each model, such that 
+# a z of 1,3,5,7 maps to the pt model, 2,4,6,8 map to the LML model
+
+
+model{
+
+##LIKELIHOOD
+for (g in 1:nGambles){
+	for (i in 1:nAgents){
+		for (t in 1:nTrials){
+
+		#pt-model
+		u_a1_pt[g,i,t]		= pow(dx1[g,i,t],alpha_pt[i])						#prospect utility, computed by exponentiating current wealth by alpha   	
+		u_a2_pt[g,i,t]		= pow(dx2[g,i,t],alpha_pt[i])						 	
+		u_b1_pt[g,i,t]		= pow(dx3[g,i,t],alpha_pt[i])
+		u_b2_pt[g,i,t]		= pow(dx4[g,i,t],alpha_pt[i])
+
+		den_w_a1_pt[g,i,t]	= delta_pt[i]*pow(pa1[g,i,t],gamma_pt[i]) + pow(pa2[g,i,t],gamma_pt[i]) #the denominator of the weighting function
+		den_w_a2_pt[g,i,t]	= delta_pt[i]*pow(pa1[g,i,t],gamma_pt[i]) + pow(pa2[g,i,t],gamma_pt[i]) 
+		den_w_b1_pt[g,i,t]	= delta_pt[i]*pow(pb1[g,i,t],gamma_pt[i]) + pow(pb2[g,i,t],gamma_pt[i])
+		den_w_b2_pt[g,i,t]	= delta_pt[i]*pow(pb1[g,i,t],gamma_pt[i]) + pow(pb2[g,i,t],gamma_pt[i])
+
+		w_a1_pt[g,i,t]		= delta_pt[i]*pow(pa1[g,i,t],gamma_pt[i]) / den_w_a1_pt[g,i,t]		#weightfunction calculated with two parameter function (Goldstein and Einhorn (1987))
+		w_a2_pt[g,i,t]		= delta_pt[i]*pow(pa2[g,i,t],gamma_pt[i]) / den_w_a2_pt[g,i,t]			
+		w_b1_pt[g,i,t]		= delta_pt[i]*pow(pb1[g,i,t],gamma_pt[i]) / den_w_b1_pt[g,i,t]
+		w_b2_pt[g,i,t]		= delta_pt[i]*pow(pb2[g,i,t],gamma_pt[i]) / den_w_b2_pt[g,i,t]
+
+		ev_a_pt[g,i,t]		= u_a1_pt[g,i,t] * w_a1_pt[g,i,t] + u_a2_pt[g,i,t] * w_a2_pt[g,i,t]	#The expectedvalue of the gamble is the utility multiplied with the weight
+		ev_b_pt[g,i,t]		= u_b1_pt[g,i,t] * w_b1_pt[g,i,t] + u_b2_pt[g,i,t] * w_b2_pt[g,i,t]
+	
+		dev_pt[g,i,t] 		= ev_a_pt[g,i,t] - ev_b_pt[g,i,t]					#difference in expected values 
+
+		sdev_pt[g,i,t]		= -1 * beta_pt[i] * dev_pt[g,i,t] 					#sensitivity-scaled difference in ev
+
+		theta[g,i,t,1] 	= (1)/(1+(exp(sdev_pt[g,i,t]))) 						#choice probability
+		theta[g,i,t,3] 	= (1)/(1+(exp(sdev_pt[g,i,t])))
+		theta[g,i,t,5] 	= (1)/(1+(exp(sdev_pt[g,i,t])))
+		theta[g,i,t,7] 	= (1)/(1+(exp(sdev_pt[g,i,t])))
+
+		#lml-model
+		u_a1_lml[g,i,t]		= pow(dx1[g,i,t],alpha_lml[i])						#prospect utility, computed by exponentiating current wealth by alpha   	
+		u_a2_lml[g,i,t]		= pow(dx2[g,i,t],alpha_lml[i])	
+		u_b1_lml[g,i,t]		= pow(dx3[g,i,t],alpha_lml[i])
+		u_b2_lml[g,i,t]		= pow(dx4[g,i,t],alpha_lml[i])
+
+		tmp_w_a1_lml[g,i,t]	= delta_lml[i] * pa1[g,i,t] + gamma_lml[i] * sqrt(pa1[g,i,t]/t) 	#weighfunction (numerator)
+		tmp_w_a2_lml[g,i,t]	= delta_lml[i] * pa2[g,i,t] + gamma_lml[i] * sqrt(pa2[g,i,t]/t) 
+		tmp_w_b1_lml[g,i,t]	= delta_lml[i] * pb1[g,i,t] + gamma_lml[i] * sqrt(pb1[g,i,t]/t)
+		tmp_w_b2_lml[g,i,t]	= delta_lml[i] * pb2[g,i,t] + gamma_lml[i] * sqrt(pb2[g,i,t]/t) 
+
+		w_a1_lml[g,i,t]		= tmp_w_a1_lml[g,i,t] / ( tmp_w_a1_lml[g,i,t] + tmp_w_a2_lml[g,i,t] )	#normalizing the weights
+		w_a2_lml[g,i,t]		= tmp_w_a2_lml[g,i,t] / ( tmp_w_a1_lml[g,i,t] + tmp_w_a2_lml[g,i,t] )
+		w_b1_lml[g,i,t]		= tmp_w_b1_lml[g,i,t] / ( tmp_w_b1_lml[g,i,t] + tmp_w_b2_lml[g,i,t] )
+		w_b2_lml[g,i,t]		= tmp_w_b2_lml[g,i,t] / ( tmp_w_b1_lml[g,i,t] + tmp_w_b2_lml[g,i,t] )
+	
+		ev_a_lml[g,i,t]		= u_a1_lml[g,i,t] * w_a1_lml[g,i,t] + u_a2_lml[g,i,t] * w_a2_lml[g,i,t]	#The expected value of the gamble is the utility multiplied with the weight
+		ev_b_lml[g,i,t]		= u_b1_lml[g,i,t] * w_b1_lml[g,i,t] + u_b2_lml[g,i,t] * w_b2_lml[g,i,t]
+
+		dev_lml[g,i,t] 		= ev_a_lml[g,i,t] - ev_b_lml[g,i,t]					#difference in expected values 
+
+		sdev_lml[g,i,t]	  	= -1 * beta_lml[i] * dev_lml[g,i,t] 					#sensitivity-scaled difference in ev
+
+		theta[g,i,t,2] 		= (1)/(1+(exp(sdev_lml[g,i,t])))
+		theta[g,i,t,4] 		= (1)/(1+(exp(sdev_lml[g,i,t])))
+		theta[g,i,t,6] 		= (1)/(1+(exp(sdev_lml[g,i,t])))
+		theta[g,i,t,8] 		= (1)/(1+(exp(sdev_lml[g,i,t]))) 	
+
+        	# Choice
+        	y[i,c,t]           	~ dbern(theta[i,c,t,z[i]]) 
+
+
+        
+	
+        	}# end of trials 
+	}# end of agents
+}# end of gambles
+
+##PRIORS
+
+#indicator variables 
+#the model indicator variable z can take on any value from 1:n, and is subject to two stochastic processes, to prevent getting stuck
+#the n values map onto just 2 models, and is simply a means of obtaining parameter expansion for the model indication
+for (i in 1:nSubjects){    
+px_z1[i]    ~ dcat(pz[])                                 #parameter expansion variable for z, takes on integers 1:n with equal probability
+px_z2[i]    ~ dcat(pz[])                                 #parameter expansion variable for z, takes on integers 1:n with equal probability
+delta_z1[i] = px_z2[i]-1                                 #parameter expansion variable for z, takes on integers 0:n-1 with equal probability
+sum_z[i]    = px_z1[i]+delta_z1[i]                       #sum takes on integers 1:2*n -1 with equal probability
+z[i]        = (sum_z[i] - (8 * trunc(sum_z[i]/8))) + 1   #modulo n, adding 1 to return to values 1 to 8
+}       
+
+#submodels
+for (i in 1:nAgents){	
+
+#pt
+beta_pt[i]	= exp(log_beta_pt[i])                          	#lognormally distributed priors
+log_beta_pt[i]	~ dnorm(mu_log_beta_pt, tau_log_beta_pt)  	#log beta_pt sampled from normal dist.
+
+alpha_pt[i]	= exp(log_alpha_pt[i])                          #lognormally distributed priors
+log_alpha_pt[i]	~ dnorm(mu_log_alpha_pt, tau_log_alpha_pt)  	#log alpha_pt sampled from normal dist.
+
+delta_pt[i]	= exp(log_delta_pt[i])                          #lognormally distributed priors
+log_delta_pt[i]	~ dnorm(mu_log_delta_pt, tau_log_delta_pt)  	#log delta_pt sampled from normal dist.
+
+gamma_pt[i]	= exp(log_gamma_pt[i])                          #lognormally distributed priors
+log_gamma_pt[i]	~ dnorm(mu_log_gamma_pt, tau_log_gamma_pt)  	#log gamma_pt sampled from normal dist.	
+
+#lml  -----------
+beta_lml[i]		= exp(log_beta_lml[i])                        	#lognormally distributed priors
+log_beta_lml[i]		~ dnorm(mu_log_beta_lml, tau_log_beta_lml)  	#log beta_lml sampled from normal dist.
+
+alpha_lml[i]		= exp(log_alpha_lml[i])                        	#lognormally distributed priors
+log_alpha_lml[i]	~ dnorm(mu_log_alpha_lml, tau_log_alpha_lml)	#log alpha_lml sampled from normal dist.
+
+delta_lml[i]		= exp(log_delta_lml[i])                        	#lognormally distributed priors
+log_delta_lml[i]	~ dnorm(mu_log_delta_lml, tau_log_delta_lml)  	#log delta_lml sampled from normal dist.
+
+gamma_lml[i]		= exp(log_gamma_lml[i])                        	#lognormally distributed priors
+log_gamma_lml[i]	~ dnorm(mu_log_gamma_lml, tau_log_gamma_lml)  	#log gamma_lml sampled from normal dist.	
+
+}#end of subjects
+
+
+##HYPERPRIORS
+
+#pt -----------
+mu_log_beta_pt       ~ dunif(muLogBetaL,muLogBetaU)  		#prior on mean of dist. of log beta_pt
+tau_log_beta_pt      = pow(sigma_log_beta_pt,-2)   		#prior on precision of dist. of log beta_pt
+sigma_log_beta_pt    ~ dunif(sigmaLogBetaL,sigmaLogBetaU)	#prior on std of dist. of log beta_pt
+
+mu_log_alpha_pt      ~ dunif(muLogAlphaL,muLogAlphaU)         	#prior on mean of dist. of log alpha_pt 
+tau_log_alpha_pt     = pow(mu_log_alpha_pt,-2)          	#prior on precision of dist. of log alpha_pt
+sigma_log_alpha_pt   ~ dunif(0.01,1.6)   			#prior on std of dist. of log alpha_pt
+
+mu_log_delta_pt      ~ dunif(muLogDeltaL,muLogDeltaU)         	#prior on mean of dist. of log delta_pt
+tau_log_delta_pt     = powmu_log_delta_pt,-2)           	#prior on precision of dist. of log delta_pt
+sigma_log_delta_pt   ~ dunif(sigmaLogDeltaL,sigmaLogDeltaU)   	#prior on std of dist. of log delta_pt
+
+mu_log_gamma_pt      ~ dunif(muLogGammaL,muLogGammaU)          	#prior on mean of dist. of log gamma_pt
+tau_log_gamma_pt     = powmu_log_gamma_pt,-2)           	#prior on precision of dist. of log gamma_pt
+sigma_log_gamma_pt   ~ dunif(sigmaLogGammaL,sigmaLogGammaU)  	#prior on std of dist. of log gamma_pt
+
+
+#lml -----------
+mu_log_beta_lml       ~ dunif(muLogBetaL,muLogBetaU)		#prior on mean of dist. of log beta_lml
+tau_log_beta_lml      = pow(sigma_log_beta_lml,-2)   		#prior on precision of dist. of log beta_lml
+sigma_log_beta_lml    ~ dunif(sigmaLogBetaL,sigmaLogBetaU)      #prior on std of dist. of log beta_lml
+
