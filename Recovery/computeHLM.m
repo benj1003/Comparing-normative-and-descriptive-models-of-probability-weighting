@@ -55,7 +55,7 @@ load(dataSource)
 modelName = 'JAGS' %Note same model used for all modes
 
 %% Set key variables
-nTrials=15;%All trials (nTrials*nSamples)
+nTrials=length(Data{1,1}.Choice);
 doDIC=0;%compute Deviance information criteria? This is the hierarchical equivalent of an AIC, the lower the better
 
 %% Set bounds of hyperpriors
@@ -116,15 +116,15 @@ for g = 1:nGambles
     for i = 1:nAgents
         trialInds=1:length(Data{1,g}.Choice);%generate indices for each trial
 
-        choice(g,i,trialInds)=Data{1,g}.Choice(trialInds);%assign to temporary variables
+        choice(g,i,trialInds)=Data{i,g}.Choice(trialInds);%assign to temporary variables
 
-        dx1(g,i,trialInds)=Data{1,g}.maxA(trialInds);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
-        dx2(g,i,trialInds)=Data{1,g}.minA(trialInds);%same for outcome 2 etc.
-        dx3(g,i,trialInds)=Data{1,g}.maxB(trialInds);
-        dx4(g,i,trialInds)=Data{1,g}.minB(trialInds);
+        dx1(g,i,trialInds)=Data{i,g}.maxA(trialInds);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
+        dx2(g,i,trialInds)=Data{i,g}.minA(trialInds);%same for outcome 2 etc.
+        dx3(g,i,trialInds)=Data{i,g}.maxB(trialInds);
+        dx4(g,i,trialInds)=Data{i,g}.minB(trialInds);
 
-        p_a1(g,i,trialInds)=Data{1,g}.p_maxA(trialInds);%assign changes in 'probability' for outcome 1
-        p_b1(g,i,trialInds)=Data{1,g}.p_maxB(trialInds);
+        p_a1(g,i,trialInds)=Data{i,g}.p_maxA(trialInds);%assign changes in 'probability' for outcome 1
+        p_b1(g,i,trialInds)=Data{i,g}.p_maxB(trialInds);
     end
 end 
 

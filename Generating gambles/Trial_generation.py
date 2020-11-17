@@ -74,4 +74,4 @@ for g in range(nGambles):
     data_all_gamles.append(data_one_gamble)
 
 df_metadata_all_gambles.to_csv(os.path.abspath(os.path.join(os.path.dirname( __file__ ),'..', 'Recovery','data',f"metadata.txt")),index=False)
-scipy.io.savemat(os.path.abspath(os.path.join(os.path.dirname( __file__ ),'..', 'Recovery','data','all_gambles.mat')),{'datadict':data_all_gamles},oned_as='row') 
+scipy.io.savemat(os.path.abspath(os.path.join(os.path.dirname( __file__ ),'..', 'Recovery','data','all_gambles.mat')),{'Data':data_all_gamles},oned_as='row') 
