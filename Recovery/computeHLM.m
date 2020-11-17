@@ -27,37 +27,42 @@ switch mode
     case 1 %simulate choices with CPT
         dataSource = 'all_gambles';
         outputName = 'Choices_simulated_from_CPT'; priorName='';
-        pz=[1,0,1,0,1,0,1,0]
+        pz=[1,0,1,0,1,0,1,0];
+        nChunks=2;
         
     case 2 %simulate choices with LML
         dataSource = 'all_gambles';
         outputName = 'Choices_simulated_from_CPT'; priorName='';
-        pz=[0,1,0,1,0,1,0,1]
+        pz=[0,1,0,1,0,1,0,1];
+        nChunks=1;
         
-    case 3 %Model comparison
-        dataSource = %%% MISSING
-        outputName = 'model_comparison'; priorName='flat prior';
-        pz=repmat(1/8,1,8);
-        
-    case 4 %parameter recovery for CPT data
-        dataSource = %%% MISSING
-        outputName = 'parameter_recovery_CPT'; priorName='';
-        pz=[1,0,1,0,1,0,1,0]
-        
-    case 5 %parameter recovery for LML data
-        dataSource = %%% MISSING
-        outputName = 'parameter_recovery_LML'; priorName='';
-        pz=[1,0,1,0,1,0,1,0]
+%    case 3 %Model comparison
+%        dataSource = %%% MISSING
+%        outputName = 'model_comparison'; priorName='flat prior';
+%        pz=repmat(1/8,1,8);
+%        nChunks=1;
+%        
+%    case 4 %parameter recovery for CPT data
+%        dataSource = %%% MISSING
+%        outputName = 'parameter_recovery_CPT'; priorName='';
+%        pz=[1,0,1,0,1,0,1,0]
+%        nChunks=10; #NOTE MORE CHUNKS HERE
+%        
+%    case 5 %parameter recovery for LML data
+%        nChunks=10; #NOTE MORE CHUNKS HERE
+end
+%%        dataSource = %%% MISSING
+ %       outputName = 'parameter_recovery_LML'; priorName='';
+ %       pz=[1,0,1,0,1,0,1,0]
 
 load(dataSource)
 
 %% Set model name
-modelName = 'JAGS' %Note same model used for all modes
+modelName = 'JAGS'; %Note same model used for all modes
 
 %% Set key variables
 nTrials=length(Data{1,1}.Choice);
-nChunks=nTrials/10;
-chunkLength = nTrials/nChunks;
+chunkLength=nTrials/nChunks;
 doDIC=0;%compute Deviance information criteria? This is the hierarchical equivalent of an AIC, the lower the better
 
 %% Set bounds of hyperpriors
@@ -97,7 +102,7 @@ switch mode
         muLogGammaL=-2.3;muLogGammaU=0;muLogGammaM=(muLogGammaL+muLogGammaU)/2;%bounds on mean of distribution of log Gamma
         sigmaLogGammaL=0.01;sigmaLogGammaU=sqrt(((muLogGammaU-muLogGammaL)^2)/12);sigmaLogGammaM=(sigmaLogGammaL+sigmaLogGammaU)/2; %bounds on std of distribution of log Gamma
 
-
+end
 %% Print information for user
 disp('**************');
 disp(['running model#_',outputName,':'])
@@ -109,26 +114,29 @@ disp('**************');
 
 %% Initialise matrices
 %initialise matrices with nan values of size subjects x conditions x trials
-choice = nan(nGambles,nAgents,nTrials); %initialise choice data matrix 
-dx1 = nan(nGambles,nAgents,nTrials); dx2 = dx1; dx3 = dx1; dx4=dx1;%initialise changes in wealth
-p_a1  = nan(nGambles,nAgents,nTrials); p_a2 = p_a1; p_b1 = p_a1; p_b2 = p_a1; %initialise channges in 'probabilities'
+choice = nan(nGambles,nAgents,nChunks,nTrials/nChunks); %initialise choice data matrix 
+dx1 = nan(nGambles,nAgents,nChunks,nTrials/nChunks); dx2 = dx1; dx3 = dx1; dx4=dx1;%initialise changes in wealth
+p_a1  = nan(nGambles,nAgents,nChunks,nTrials/nChunks); p_a2 = p_a1; p_b1 = p_a1; p_b2 = p_a1; %initialise channges in 'probabilities'
 
 %% Compile choice & gamble data
 for g = 1:nGambles
     for i = 1:nAgents
-        trialInds=1:length(Data{1,g}.Choice);%generate indices for each trial
+        trialInds=1:length(Data{g,1}.Choice);%generate indices for each trial
+        for c = 1:nChunks
+            chunkInds=1:(length(Data{g,1}.Choice)/nChunks);
+            trialInds_tmp = trialInds(c*chunkLength-(chunkLength-1):c*chunkLength);
+            choice(g,i,c,chunkInds)=Data{g,i}.Choice(trialInds_tmp);%assign to temporary variables
 
-        choice(g,i,trialInds)=Data{i,g}.Choice(trialInds);%assign to temporary variables
+            dx1(g,i,c,chunkInds)=Data{g,i}.maxA(trialInds_tmp);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
+            dx2(g,i,c,chunkInds)=Data{g,i}.minA(trialInds_tmp);%same for outcome 2 etc.
+            dx3(g,i,c,chunkInds)=Data{g,i}.maxB(trialInds_tmp);
+            dx4(g,i,c,chunkInds)=Data{g,i}.minB(trialInds_tmp);
 
-        dx1(g,i,trialInds)=Data{i,g}.maxA(trialInds);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
-        dx2(g,i,trialInds)=Data{i,g}.minA(trialInds);%same for outcome 2 etc.
-        dx3(g,i,trialInds)=Data{i,g}.maxB(trialInds);
-        dx4(g,i,trialInds)=Data{i,g}.minB(trialInds);
-
-        p_a1(g,i,trialInds)=Data{i,g}.p_maxA(trialInds);%assign changes in 'probability' for outcome 1
-        p_b1(g,i,trialInds)=Data{i,g}.p_maxB(trialInds);
-    end
-end 
+            p_a1(g,i,c,chunkInds)=Data{g,i}.p_maxA(trialInds_tmp);%assign changes in 'probability' for outcome 1
+            p_b1(g,i,c,chunkInds)=Data{g,i}.p_maxB(trialInds_tmp);
+        end
+    end    
+end
 
 %% Configure data structure for graphical model & parameters to monitor
 %everything you want jags to use
@@ -138,10 +146,10 @@ switch mode
             'nGambles',nGambles,'nAgents', nAgents,'nChunks',nChunks,'chunkLength',chunkLength,'nTrials',nTrials,...
             'dx1',dx1,'dx2',dx2,'dx3',dx3,'dx4',dx4,...
             'pa1',p_a1,'pb1',p_b1,...
-            'muLogBetaU',muLogBetaU,'sigmaLogBetaL',sigmaLogBetaL,'sigmaLogBetaU',sigmaLogBetaU,...
-            'muLogAlphaL',muLogAlphaL,'muLogAlphaU',muLogAlphaU,'sigmaLogAlphaL',sigmaLogAlphaL,...
-            'muLogDeltaU',muLogDeltaU,'sigmaLogDeltaL',sigmaLogDeltaL,'sigmaLogDeltaU',sigmaLogDeltaU,...
-            'muLogGammaL',muLogGammaL,'muLogGammaU',muLogGammaU,'sigmaLogGammaL',sigmaLogGammaL...
+            'muLogBetaL',muLogBetaL,'muLogBetaU',muLogBetaU,'sigmaLogBetaL',sigmaLogBetaL,'sigmaLogBetaU',sigmaLogBetaU,...
+            'muLogAlphaL',muLogAlphaL,'muLogAlphaU',muLogAlphaU,'sigmaLogAlphaL',sigmaLogAlphaL,'sigmaLogAlphaU',sigmaLogAlphaU,...
+            'muLogDeltaL',muLogDeltaL,'muLogDeltaU',muLogDeltaU,'sigmaLogDeltaL',sigmaLogDeltaL,'sigmaLogDeltaU',sigmaLogDeltaU,...
+            'muLogGammaL',muLogGammaL,'muLogGammaU',muLogGammaU,'sigmaLogGammaL',sigmaLogGammaL,'sigmaLogGammaU',sigmaLogGammaU,...
             'pz',pz);
         
     case {2} %Simulating LML choices
@@ -152,16 +160,16 @@ switch mode
             'muLogBetaU',muLogBetaU,'sigmaLogBetaL',sigmaLogBetaL,'sigmaLogBetaU',sigmaLogBetaU,...
             'muLogAlphaL',muLogAlphaL,'muLogAlphaU',muLogAlphaU,'sigmaLogAlphaL',sigmaLogAlphaL,...
             'muLogDeltaU',muLogDeltaU,'sigmaLogDeltaL',sigmaLogDeltaL,'sigmaLogDeltaU',sigmaLogDeltaU,...
-            'muLogGammaL',muLogGammaL,'muLogGammaU',muLogGammaU,'sigmaLogGammaL',sigmaLogGammaL...
+            'muLogGammaL',muLogGammaL,'muLogGammaU',muLogGammaU,'sigmaLogGammaL',sigmaLogGammaL,...
             'pz',pz);
         
-    case {3} %Model recovery: IKKE TAGET STILLING TIL ENDNU 
+    %case {3} %Model recovery: IKKE TAGET STILLING TIL ENDNU 
         
 
 end
 
 for i = 1:nChains
-    switch runModelNum
+    switch mode
         
         case {1}  %Simulating CPT choices
             monitorParameters = {'dx1','dx2','dx3','dx4','pa1','pb1',...
