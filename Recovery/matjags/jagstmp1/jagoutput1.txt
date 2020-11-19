@@ -8,26 +8,12 @@ C:\Users\benja\OneDrive\Dokumenter\GitHub\Master-thesis\Recovery\matjags\jagstmp
 C:\Users\benja\OneDrive\Dokumenter\GitHub\Master-thesis\Recovery\matjags\jagstmp1>cls
 
 C:\Users\benja\OneDrive\Dokumenter\GitHub\Master-thesis\Recovery\matjags\jagstmp1>jags-terminal jagscript1.cmd 
-Welcome to JAGS 4.3.0 on Tue Nov 17 16:58:27 2020
+Welcome to JAGS 4.3.0 on Thu Nov 19 11:07:25 2020
 JAGS is free software and comes with ABSOLUTELY NO WARRANTY
 Loading module: basemod: ok
 Loading module: bugs: ok
 Loading module: wiener: Det angivne modul blev ikke fundet.
 Loading module: glm: ok
-Reading data file jagsdata.R
-Compiling model graph
-   Resolving undeclared variables
-   Allocating nodes
-Graph information:
-   Observed stochastic nodes: 0
-   Unobserved stochastic nodes: 140
-   Total graph size: 2119
 
-WARNING: Unused variable(s) in data table:
-chunkLength
-nChunks
-
-Reading parameter file jagsinit1.R
-Initializing model
-Updating 100
-Updating 50
+Error parsing model file:
+syntax error on line 157 near ""

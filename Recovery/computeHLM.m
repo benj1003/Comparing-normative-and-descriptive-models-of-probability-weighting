@@ -20,6 +20,7 @@ cd(startDir);%move to starting directory
 jagsDir=[startDir,'/JAGS'];
 addpath(fullfile(pwd,'/matjags'));%set path to include matjags folder
 addpath(fullfile(pwd,'/data'));%set path to include data folder
+addpath(fullfile(pwd,'/samples_stats'));%set path to include samples_stats folder
 
 %% Choose & load data
 
@@ -28,37 +29,42 @@ switch mode
         dataSource = 'all_gambles';
         outputName = 'Choices_simulated_from_CPT'; priorName='';
         pz=[1,0,1,0,1,0,1,0];
-        nChunks=2;
+        nChunks = 2;
         
     case 2 %simulate choices with LML
         dataSource = 'all_gambles';
-        outputName = 'Choices_simulated_from_CPT'; priorName='';
+        outputName = 'Choices_simulated_from_LML'; priorName='';
         pz=[0,1,0,1,0,1,0,1];
-        nChunks=1;
+        nChunks = 1;
         
-%    case 3 %Model comparison
-%        dataSource = %%% MISSING
-%        outputName = 'model_comparison'; priorName='flat prior';
-%        pz=repmat(1/8,1,8);
-%        nChunks=1;
-%        
-%    case 4 %parameter recovery for CPT data
-%        dataSource = %%% MISSING
-%        outputName = 'parameter_recovery_CPT'; priorName='';
-%        pz=[1,0,1,0,1,0,1,0]
-%        nChunks=10; #NOTE MORE CHUNKS HERE
-%        
-%    case 5 %parameter recovery for LML data
-%        nChunks=10; #NOTE MORE CHUNKS HERE
+    case 3 %Model comparison on data from CPT
+        dataSource = 'Choices_simulated_from_CPT';
+        outputName = 'model_comparison'; priorName='flat prior';
+        pz=repmat(1/8,1,8);
+        nChunks = 1;
+
+    case 4 %Model comparison on data from LML
+        dataSource = 'Choices_simulated_from_LML';
+        outputName = 'model_comparison'; priorName='flat prior';
+        pz=repmat(1/8,1,8);
+        nChunks = 1;
+        
+    case 5 %parameter recovery for CPT data
+        dataSource = 'Choices_simulated_from_CPT';
+        outputName = 'parameter_recovery_CPT'; priorName='';
+        pz=[1/4,0,1/4,0,1/4,0,1/4,0];
+        nChunks = 10; %to examine changes over time
+        
+    case 6 %parameter recovery for LML data
+        dataSource = 'Choices_simulated_from_LML';
+        pz=[0,1/4,0,1/4,0,1/4,0,1/4];
+        nChunks = 10; %to examine changes over time
 end
-%%        dataSource = %%% MISSING
- %       outputName = 'parameter_recovery_LML'; priorName='';
- %       pz=[1,0,1,0,1,0,1,0]
 
 load(dataSource)
 
 %% Set model name
-modelName = 'JAGS'; %Note same model used for all modes
+modelName = 'JAGS'; %same model used for all modes
 
 %% Set key variables
 nTrials=length(Data{1,1}.Choice);
@@ -74,6 +80,40 @@ switch mode
         sigmaLogBetaL=0.01;sigmaLogBetaU=sqrt(((muLogBetaU-muLogBetaL)^2)/12);sigmaLogBetaM=(sigmaLogBetaL+sigmaLogBetaU)/2;%bounds on the std of distribution of log beta
         
         %Alpha - prior on log since cannot be less than 0; note same bounds used for independent priors on all models
+        muLogAlphaL=-0.01;muLogAlphaU=0.01;muLogAlphaM=(muLogAlphaL+muLogAlphaU)/2;%bounds on mean of distribution of log Alpha
+        sigmaLogAlphaL=sqrt(((muLogAlphaU-muLogAlphaL)^2)/12)-0.01;sigmaLogAlphaU=sqrt(((muLogAlphaU-muLogAlphaL)^2)/12)+0.01;sigmaLogAlphaM=(sigmaLogAlphaL+sigmaLogAlphaU)/2; %bounds on std of distribution of log Alpha
+
+        %Delta - prior on log since cannot be less than 0
+        muLogDeltaL=-0.71;muLogDeltaU=-0.69;muLogDeltaM=(muLogDeltaL+muLogDeltaU)/2;%bounds on mean of distribution of log Delta
+        sigmaLogDeltaL=sqrt(((muLogDeltaU-muLogDeltaL)^2)/12)-0.01;sigmaLogDeltaU=sqrt(((muLogDeltaU-muLogDeltaL)^2)/12)+0.01;sigmaLogDeltaM=(sigmaLogDeltaL+sigmaLogDeltaU)/2; %bounds on std of distribution of log Delta
+
+        %Gamma - prior on log since cannot be less than 0
+        muLogGammaL=-0.21;muLogGammaU=-0.19;muLogGammaM=(muLogGammaL+muLogGammaU)/2;%bounds on mean of distribution of log Gamma
+        sigmaLogGammaL=sqrt(((muLogGammaU-muLogGammaL)^2)/12)-0.01;sigmaLogGammaU=sqrt(((muLogGammaU-muLogGammaL)^2)/12)+0.01;sigmaLogGammaM=(sigmaLogGammaL+sigmaLogGammaU)/2; %bounds on std of distribution of log Gamma
+
+    case 2
+        %beta - prior on log since cannot be less than 0; note same bounds used for independent priors on all models
+        muLogBetaL=-2.3;muLogBetaU=3.4;muLogBetaM=(muLogBetaL+muLogBetaU)/2; %bounds on mean of distribution log beta
+        sigmaLogBetaL=0.01;sigmaLogBetaU=sqrt(((muLogBetaU-muLogBetaL)^2)/12);sigmaLogBetaM=(sigmaLogBetaL+sigmaLogBetaU)/2;%bounds on the std of distribution of log beta
+        
+        %Alpha - prior on log since cannot be less than 0; note same bounds used for independent priors on all models
+        muLogAlphaL=-0.01;muLogAlphaU=0.01;muLogAlphaM=(muLogAlphaL+muLogAlphaU)/2;%bounds on mean of distribution of log Alpha
+        sigmaLogAlphaL=sqrt(((muLogAlphaU-muLogAlphaL)^2)/12)-0.01;sigmaLogAlphaU=sqrt(((muLogAlphaU-muLogAlphaL)^2)/12)+0.01;sigmaLogAlphaM=(sigmaLogAlphaL+sigmaLogAlphaU)/2; %bounds on std of distribution of log Alpha
+
+        %Delta - prior on log since cannot be less than 0
+        muLogDeltaL=-0.71;muLogDeltaU=-0.69;muLogDeltaM=(muLogDeltaL+muLogDeltaU)/2;%bounds on mean of distribution of log Delta
+        sigmaLogDeltaL=sqrt(((muLogDeltaU-muLogDeltaL)^2)/12)-0.01;sigmaLogDeltaU=sqrt(((muLogDeltaU-muLogDeltaL)^2)/12)+0.01;sigmaLogDeltaM=(sigmaLogDeltaL+sigmaLogDeltaU)/2; %bounds on std of distribution of log Delta
+
+        %Gamma - prior on log since cannot be less than 0
+        muLogGammaL=-0.21;muLogGammaU=-0.19;muLogGammaM=(muLogGammaL+muLogGammaU)/2;%bounds on mean of distribution of log Gamma
+        sigmaLogGammaL=sqrt(((muLogGammaU-muLogGammaL)^2)/12)-0.01;sigmaLogGammaU=sqrt(((muLogGammaU-muLogGammaL)^2)/12)+0.01;sigmaLogGammaM=(sigmaLogGammaL+sigmaLogGammaU)/2; %bounds on std of distribution of log Gamma
+       
+    case 3
+        %beta - prior on log since cannot be less than 0; note same bounds used for independent priors on all models
+        muLogBetaL=-2.3;muLogBetaU=3.4;muLogBetaM=(muLogBetaL+muLogBetaU)/2; %bounds on mean of distribution log beta
+        sigmaLogBetaL=0.01;sigmaLogBetaU=sqrt(((muLogBetaU-muLogBetaL)^2)/12);sigmaLogBetaM=(sigmaLogBetaL+sigmaLogBetaU)/2;%bounds on the std of distribution of log beta
+        
+        %Alpha - prior on log since cannot be less than 0; note same bounds used for independent priors on all models
         muLogAlphaL=-2.3;muLogAlphaU=0;muLogAlphaM=(muLogAlphaL+muLogAlphaU)/2;%bounds on mean of distribution of log Alpha
         sigmaLogAlphaL=0.01;sigmaLogAlphaU=sqrt(((muLogAlphaU-muLogAlphaL)^2)/12);sigmaLogAlphaM=(sigmaLogAlphaL+sigmaLogAlphaU)/2; %bounds on std of distribution of log Alpha
 
@@ -84,8 +124,42 @@ switch mode
         %Gamma - prior on log since cannot be less than 0
         muLogGammaL=-2.3;muLogGammaU=0;muLogGammaM=(muLogGammaL+muLogGammaU)/2;%bounds on mean of distribution of log Gamma
         sigmaLogGammaL=0.01;sigmaLogGammaU=sqrt(((muLogGammaU-muLogGammaL)^2)/12);sigmaLogGammaM=(sigmaLogGammaL+sigmaLogGammaU)/2; %bounds on std of distribution of log Gamma
+    
+    case 4
+        %beta - prior on log since cannot be less than 0; note same bounds used for independent priors on all models
+        muLogBetaL=-2.3;muLogBetaU=3.4;muLogBetaM=(muLogBetaL+muLogBetaU)/2; %bounds on mean of distribution log beta
+        sigmaLogBetaL=0.01;sigmaLogBetaU=sqrt(((muLogBetaU-muLogBetaL)^2)/12);sigmaLogBetaM=(sigmaLogBetaL+sigmaLogBetaU)/2;%bounds on the std of distribution of log beta
+        
+        %Alpha - prior on log since cannot be less than 0; note same bounds used for independent priors on all models
+        muLogAlphaL=-2.3;muLogAlphaU=0;muLogAlphaM=(muLogAlphaL+muLogAlphaU)/2;%bounds on mean of distribution of log Alpha
+        sigmaLogAlphaL=0.01;sigmaLogAlphaU=sqrt(((muLogAlphaU-muLogAlphaL)^2)/12);sigmaLogAlphaM=(sigmaLogAlphaL+sigmaLogAlphaU)/2; %bounds on std of distribution of log Alpha
 
-    case 3
+        %Delta - prior on log since cannot be less than 0
+        muLogDeltaL=-2.3;muLogDeltaU=0;muLogDeltaM=(muLogDeltaL+muLogDeltaU)/2;%bounds on mean of distribution of log Delta
+        sigmaLogDeltaL=0.01;sigmaLogDeltaU=sqrt(((muLogDeltaU-muLogDeltaL)^2)/12);sigmaLogDeltaM=(sigmaLogDeltaL+sigmaLogDeltaU)/2; %bounds on std of distribution of log Delta
+
+        %Gamma - prior on log since cannot be less than 0
+        muLogGammaL=-2.3;muLogGammaU=0;muLogGammaM=(muLogGammaL+muLogGammaU)/2;%bounds on mean of distribution of log Gamma
+        sigmaLogGammaL=0.01;sigmaLogGammaU=sqrt(((muLogGammaU-muLogGammaL)^2)/12);sigmaLogGammaM=(sigmaLogGammaL+sigmaLogGammaU)/2; %bounds on std of distribution of log Gamma
+    
+    case 5
+        %beta - prior on log since cannot be less than 0; note same bounds used for independent priors on all models
+        muLogBetaL=-2.3;muLogBetaU=3.4;muLogBetaM=(muLogBetaL+muLogBetaU)/2; %bounds on mean of distribution log beta
+        sigmaLogBetaL=0.01;sigmaLogBetaU=sqrt(((muLogBetaU-muLogBetaL)^2)/12);sigmaLogBetaM=(sigmaLogBetaL+sigmaLogBetaU)/2;%bounds on the std of distribution of log beta
+        
+        %Alpha - prior on log since cannot be less than 0; note same bounds used for independent priors on all models
+        muLogAlphaL=-2.3;muLogAlphaU=0;muLogAlphaM=(muLogAlphaL+muLogAlphaU)/2;%bounds on mean of distribution of log Alpha
+        sigmaLogAlphaL=0.01;sigmaLogAlphaU=sqrt(((muLogAlphaU-muLogAlphaL)^2)/12);sigmaLogAlphaM=(sigmaLogAlphaL+sigmaLogAlphaU)/2; %bounds on std of distribution of log Alpha
+
+        %Delta - prior on log since cannot be less than 0
+        muLogDeltaL=-2.3;muLogDeltaU=0;muLogDeltaM=(muLogDeltaL+muLogDeltaU)/2;%bounds on mean of distribution of log Delta
+        sigmaLogDeltaL=0.01;sigmaLogDeltaU=sqrt(((muLogDeltaU-muLogDeltaL)^2)/12);sigmaLogDeltaM=(sigmaLogDeltaL+sigmaLogDeltaU)/2; %bounds on std of distribution of log Delta
+
+        %Gamma - prior on log since cannot be less than 0
+        muLogGammaL=-2.3;muLogGammaU=0;muLogGammaM=(muLogGammaL+muLogGammaU)/2;%bounds on mean of distribution of log Gamma
+        sigmaLogGammaL=0.01;sigmaLogGammaU=sqrt(((muLogGammaU-muLogGammaL)^2)/12);sigmaLogGammaM=(sigmaLogGammaL+sigmaLogGammaU)/2; %bounds on std of distribution of log Gamma
+    
+    case 6
         %beta - prior on log since cannot be less than 0; note same bounds used for independent priors on all models
         muLogBetaL=-2.3;muLogBetaU=3.4;muLogBetaM=(muLogBetaL+muLogBetaU)/2; %bounds on mean of distribution log beta
         sigmaLogBetaL=0.01;sigmaLogBetaU=sqrt(((muLogBetaU-muLogBetaL)^2)/12);sigmaLogBetaM=(sigmaLogBetaL+sigmaLogBetaU)/2;%bounds on the std of distribution of log beta
@@ -119,31 +193,129 @@ dx1 = nan(nGambles,nAgents,nChunks,nTrials/nChunks); dx2 = dx1; dx3 = dx1; dx4=d
 p_a1  = nan(nGambles,nAgents,nChunks,nTrials/nChunks); p_a2 = p_a1; p_b1 = p_a1; p_b2 = p_a1; %initialise channges in 'probabilities'
 
 %% Compile choice & gamble data
-for g = 1:nGambles
-    for i = 1:nAgents
-        trialInds=1:length(Data{g,1}.Choice);%generate indices for each trial
-        for c = 1:nChunks
-            chunkInds=1:(length(Data{g,1}.Choice)/nChunks);
-            trialInds_tmp = trialInds(c*chunkLength-(chunkLength-1):c*chunkLength);
-            choice(g,i,c,chunkInds)=Data{g,i}.Choice(trialInds_tmp);%assign to temporary variables
+%split into chunks for parameter recovery (mode 5 and 6)
 
-            dx1(g,i,c,chunkInds)=Data{g,i}.maxA(trialInds_tmp);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
-            dx2(g,i,c,chunkInds)=Data{g,i}.minA(trialInds_tmp);%same for outcome 2 etc.
-            dx3(g,i,c,chunkInds)=Data{g,i}.maxB(trialInds_tmp);
-            dx4(g,i,c,chunkInds)=Data{g,i}.minB(trialInds_tmp);
+for g = 1:nGambles %wrapped around the rest as JAGS cannot handle higher than 3 dimensions
 
-            p_a1(g,i,c,chunkInds)=Data{g,i}.p_maxA(trialInds_tmp);%assign changes in 'probability' for outcome 1
-            p_b1(g,i,c,chunkInds)=Data{g,i}.p_maxB(trialInds_tmp);
+switch mode
+    case 1
+        for i = 1:nAgents
+            for c = 1:nChunks
+                trialInds=1:length(Data{g,1}.Choice);%generate indices for each trial
+                choice(g,i,c,trialInds)=Data{g,i}.Choice(trialInds);%assign to temporary variables
+
+                dx1(g,i,c,trialInds)=Data{g,i}.maxA(trialInds);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
+                dx2(g,i,c,trialInds)=Data{g,i}.minA(trialInds);%same for outcome 2 etc.
+                dx3(g,i,c,trialInds)=Data{g,i}.maxB(trialInds);
+                dx4(g,i,c,trialInds)=Data{g,i}.minB(trialInds);
+
+                p_a1(g,i,c,trialInds)=Data{g,i}.p_maxA(trialInds);%assign changes in 'probability' for outcome 1
+                p_b1(g,i,c,trialInds)=Data{g,i}.p_maxB(trialInds);
         end
     end    
-end
+    
+    case 2
+        for g = 1:nGambles
+            for i = 1:nAgents
+                for c = 1:nChunks
+                    trialInds=1:length(Data{g,1}.Choice);%generate indices for each trial
+                    choice(g,i,c,trialInds)=Data{g,i}.Choice(trialInds);%assign to temporary variables
 
+                    dx1(g,i,c,trialInds)=Data{g,i}.maxA(trialInds);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
+                    dx2(g,i,c,trialInds)=Data{g,i}.minA(trialInds);%same for outcome 2 etc.
+                    dx3(g,i,c,trialInds)=Data{g,i}.maxB(trialInds);
+                    dx4(g,i,c,trialInds)=Data{g,i}.minB(trialInds);
+
+                    p_a1(g,i,c,trialInds)=Data{g,i}.p_maxA(trialInds);%assign changes in 'probability' for outcome 1
+                    p_b1(g,i,c,trialInds)=Data{g,i}.p_maxB(trialInds);
+                end
+            end
+        end    
+        
+    case 3
+        for g = 1:nGambles
+            for i = 1:nAgents
+                trialInds=1:length(samples.y(1,1,1,:,1));%generate indices for each trial
+                for c = 1:nChunks
+                    choice(g,i,c,trialInds)=samples.y(1,1,1,trianInds,1);%assign to temporary variables
+
+                    dx1(g,i,c,trialInds)=samples.dx1(1,1,1,trianInds,1);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
+                    dx2(g,i,c,trialInds)=samples.dx2(1,1,1,trianInds,1);%same for outcome 2 etc.
+                    dx3(g,i,c,trialInds)=samples.dx3(1,1,1,trianInds,1);
+                    dx4(g,i,c,trialInds)=samples.dx4(1,1,1,trianInds,1);
+
+                    p_a1(g,i,c,trialInds)=samples.pa1(1,1,1,trianInds,1);%assign changes in 'probability' for outcome 1
+                    p_b1(g,i,c,trialInds)=samples.pb1(1,1,1,trianInds,1);
+                end 
+            end
+        end 
+        
+    case 4
+        for g = 1:nGambles
+            for i = 1:nAgents
+                trialInds=1:length(samples.y(1,1,1,:,1));%generate indices for each trial
+                for c = 1:nChunks
+                    choice(g,i,c,trialInds)=samples.y(1,1,1,trianInds,1);%assign to temporary variables
+
+                    dx1(g,i,c,trialInds)=samples.dx1(1,1,1,trianInds,1);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
+                    dx2(g,i,c,trialInds)=samples.dx2(1,1,1,trianInds,1);%same for outcome 2 etc.
+                    dx3(g,i,c,trialInds)=samples.dx3(1,1,1,trianInds,1);
+                    dx4(g,i,c,trialInds)=samples.dx4(1,1,1,trianInds,1);
+
+                    p_a1(g,i,c,trialInds)=samples.pa1(1,1,1,trianInds,1);%assign changes in 'probability' for outcome 1
+                    p_b1(g,i,c,trialInds)=samples.pb1(1,1,1,trianInds,1);
+                end 
+            end
+        end 
+        
+    case 5
+        for g = 1:nGambles
+            for i = 1:nAgents
+                trialInds_all=1:length(samples.y(1,1,1,:,1));%generate indices for each trial
+                for c = 1:nChunks
+                    chunkInds=1:(length(Data{g,1}.Choice)/nChunks);
+                    trialInds = trialInds_all(c*chunkLength-(chunkLength-1):c*chunkLength);
+                    
+                    choice(g,i,c,chunkInds)=samples.y(1,1,1,trianInds,1);%assign to temporary variables
+
+                    dx1(g,i,c,chunkInds)=samples.dx1(1,1,1,trianInds,1);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
+                    dx2(g,i,c,chunkInds)=samples.dx2(1,1,1,trianInds,1);%same for outcome 2 etc.
+                    dx3(g,i,c,chunkInds)=samples.dx3(1,1,1,trianInds,1);
+                    dx4(g,i,c,chunkInds)=samples.dx4(1,1,1,trianInds,1);
+
+                    p_a1(g,i,c,chunkInds)=samples.pa1(1,1,1,trianInds,1);%assign changes in 'probability' for outcome 1
+                    p_b1(g,i,c,chunkInds)=samples.pb1(1,1,1,trianInds,1);
+                end 
+            end
+        end 
+        
+    case 6
+        for g = 1:nGambles
+            for i = 1:nAgents
+                trialInds_all=1:length(samples.y(1,1,1,:,1));%generate indices for each trial
+                for c = 1:nChunks
+                    chunkInds=1:(length(Data{g,1}.Choice)/nChunks);
+                    trialInds = trialInds_all(c*chunkLength-(chunkLength-1):c*chunkLength);
+                    
+                    choice(g,i,c,chunkInds)=samples.y(1,1,1,trianInds,1);%assign to temporary variables
+
+                    dx1(g,i,c,chunkInds)=samples.dx1(1,1,1,trianInds,1);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
+                    dx2(g,i,c,chunkInds)=samples.dx2(1,1,1,trianInds,1);%same for outcome 2 etc.
+                    dx3(g,i,c,chunkInds)=samples.dx3(1,1,1,trianInds,1);
+                    dx4(g,i,c,chunkInds)=samples.dx4(1,1,1,trianInds,1);
+
+                    p_a1(g,i,c,chunkInds)=samples.pa1(1,1,1,trianInds,1);%assign changes in 'probability' for outcome 1
+                    p_b1(g,i,c,chunkInds)=samples.pb1(1,1,1,trianInds,1);
+                end 
+            end
+        end 
+end
 %% Configure data structure for graphical model & parameters to monitor
-%everything you want jags to use
+%everything you want JAGS to use
 switch mode
     case {1} %Simulating CPT choices
         dataStruct = struct(...
-            'nGambles',nGambles,'nAgents', nAgents,'nChunks',nChunks,'chunkLength',chunkLength,'nTrials',nTrials,...
+            'nGambles',nGambles,'nAgents', nAgents,'nChunks',nChunks,'nTrials',nTrials,...
             'dx1',dx1,'dx2',dx2,'dx3',dx3,'dx4',dx4,...
             'pa1',p_a1,'pb1',p_b1,...
             'muLogBetaL',muLogBetaL,'muLogBetaU',muLogBetaU,'sigmaLogBetaL',sigmaLogBetaL,'sigmaLogBetaU',sigmaLogBetaU,...
@@ -163,25 +335,97 @@ switch mode
             'muLogGammaL',muLogGammaL,'muLogGammaU',muLogGammaU,'sigmaLogGammaL',sigmaLogGammaL,...
             'pz',pz);
         
-    %case {3} %Model recovery: IKKE TAGET STILLING TIL ENDNU 
+    case {3} %Model recovery CPT data
+        dataStruct = struct(...
+            'nGambles',nGambles,'nAgents', nAgents,'nTrials',nTrials,'y',choice,...
+            'dx1',dx1,'dx2',dx2,'dx3',dx3,'dx4',dx4,...
+            'pa1',p_a1,'pb1',p_b1,...
+            'muLogBetaU',muLogBetaU,'sigmaLogBetaL',sigmaLogBetaL,'sigmaLogBetaU',sigmaLogBetaU,...
+            'muLogAlphaL',muLogAlphaL,'muLogAlphaU',muLogAlphaU,'sigmaLogAlphaL',sigmaLogAlphaL,...
+            'muLogDeltaU',muLogDeltaU,'sigmaLogDeltaL',sigmaLogDeltaL,'sigmaLogDeltaU',sigmaLogDeltaU,...
+            'muLogGammaL',muLogGammaL,'muLogGammaU',muLogGammaU,'sigmaLogGammaL',sigmaLogGammaL,...
+            'pz',pz);
+        
+    case {4} %Model recovery LML data
+        dataStruct = struct(...
+            'nGambles',nGambles,'nAgents', nAgents,'nTrials',nTrials,'y',choice,...
+            'dx1',dx1,'dx2',dx2,'dx3',dx3,'dx4',dx4,...
+            'pa1',p_a1,'pb1',p_b1,...
+            'muLogBetaU',muLogBetaU,'sigmaLogBetaL',sigmaLogBetaL,'sigmaLogBetaU',sigmaLogBetaU,...
+            'muLogAlphaL',muLogAlphaL,'muLogAlphaU',muLogAlphaU,'sigmaLogAlphaL',sigmaLogAlphaL,...
+            'muLogDeltaU',muLogDeltaU,'sigmaLogDeltaL',sigmaLogDeltaL,'sigmaLogDeltaU',sigmaLogDeltaU,...
+            'muLogGammaL',muLogGammaL,'muLogGammaU',muLogGammaU,'sigmaLogGammaL',sigmaLogGammaL,...
+            'pz',pz);
+        
+    case {5} %Parameter recovery for CPT data
+        dataStruct = struct(...
+            'nGambles',nGambles,'nAgents', nAgents,'nTrials',nTrials,'y',choice,...
+            'dx1',dx1,'dx2',dx2,'dx3',dx3,'dx4',dx4,...
+            'pa1',p_a1,'pb1',p_b1,...
+            'muLogBetaU',muLogBetaU,'sigmaLogBetaL',sigmaLogBetaL,'sigmaLogBetaU',sigmaLogBetaU,...
+            'muLogAlphaL',muLogAlphaL,'muLogAlphaU',muLogAlphaU,'sigmaLogAlphaL',sigmaLogAlphaL,...
+            'muLogDeltaU',muLogDeltaU,'sigmaLogDeltaL',sigmaLogDeltaL,'sigmaLogDeltaU',sigmaLogDeltaU,...
+            'muLogGammaL',muLogGammaL,'muLogGammaU',muLogGammaU,'sigmaLogGammaL',sigmaLogGammaL,...
+            'pz',pz);
+        
+    case {6} %Parameter recovery for LML data
+        dataStruct = struct(...
+            'nGambles',nGambles,'nAgents', nAgents,'nTrials',nTrials,'y',choice,...
+            'dx1',dx1,'dx2',dx2,'dx3',dx3,'dx4',dx4,...
+            'pa1',p_a1,'pb1',p_b1,...
+            'muLogBetaU',muLogBetaU,'sigmaLogBetaL',sigmaLogBetaL,'sigmaLogBetaU',sigmaLogBetaU,...
+            'muLogAlphaL',muLogAlphaL,'muLogAlphaU',muLogAlphaU,'sigmaLogAlphaL',sigmaLogAlphaL,...
+            'muLogDeltaU',muLogDeltaU,'sigmaLogDeltaL',sigmaLogDeltaL,'sigmaLogDeltaU',sigmaLogDeltaU,...
+            'muLogGammaL',muLogGammaL,'muLogGammaU',muLogGammaU,'sigmaLogGammaL',sigmaLogGammaL,...
+            'pz',pz);
         
 
 end
 
 for i = 1:nChains
-    switch mode
-        
+    switch mode  
         case {1}  %Simulating CPT choices
             monitorParameters = {'dx1','dx2','dx3','dx4','pa1','pb1',...
-                'y','alpha_pt','gamma_pt','delta_pt','beta_pt'};
+                'y',...
+                'alpha_pt','gamma_pt','delta_pt','beta_pt',...
+                'beta_lml', 'alpha_lml'};
             S=struct; init0(i)=S; %sets initial values as empty so randomly seeded
             
-        case {2} %Simulating CPT choices
-            monitorParameters = {'dx1','dx2','dx3','dx4','pa1','pb1','y'};
+        case {2}  %Simulating LML choices
+            monitorParameters = {'dx1','dx2','dx3','dx4','pa1','pb1',...
+                'y',...
+                'alpha_pt','gamma_pt','delta_pt','beta_pt',...
+                'beta_lml', 'alpha_lml'};
             S=struct; init0(i)=S; %sets initial values as empty so randomly seeded
             
-        case {3} %Model recovery - IKKE TAGET STILLING TIL ENDNU 
-               
+        case {3}  %Model recovery CPT data
+            monitorParameters = {'dx1','dx2','dx3','dx4','pa1','pb1',...
+                'y',...
+                'alpha_pt','gamma_pt','delta_pt','beta_pt',...
+                'beta_lml', 'alpha_lml'};
+            S=struct; init0(i)=S; %sets initial values as empty so randomly seeded
+            
+        case {4}  %Model recovery LML data
+            monitorParameters = {'dx1','dx2','dx3','dx4','pa1','pb1',...
+                'y',...
+                'alpha_pt','gamma_pt','delta_pt','beta_pt',...
+                'beta_lml', 'alpha_lml'};
+            S=struct; init0(i)=S; %sets initial values as empty so randomly seeded
+            
+        case {5}  %Parameter recovery for CPT data
+            monitorParameters = {'dx1','dx2','dx3','dx4','pa1','pb1',...
+                'y',...
+                'alpha_pt','gamma_pt','delta_pt','beta_pt',...
+                'beta_lml', 'alpha_lml'};
+            S=struct; init0(i)=S; %sets initial values as empty so randomly seeded
+
+        case {6}  %Parameter recovery for LML data
+            monitorParameters = {'dx1','dx2','dx3','dx4','pa1','pb1',...
+                'y',...
+                'alpha_pt','gamma_pt','delta_pt','beta_pt',...
+                'beta_lml', 'alpha_lml'};
+            S=struct; init0(i)=S; %sets initial values as empty so randomly seeded
+                      
     end
 end
 
@@ -209,8 +453,9 @@ toc % end clock
 
 %% Save stats and samples
 disp('saving samples and stats...')
-save(['samples_stats\', modelName,'_',priorName,'_',dataSource,'_burn_',num2str(nBurnin),'_samps_',num2str(nSamples),'_chains_',num2str(nChains),'_',datestr(now,'mm-dd-yyyy HH-MM')],'stats','samples','-v7.3')
-
+%save(['samples_stats\', modelName,'_',priorName,'_',dataSource,'_burn_',num2str(nBurnin),'_samps_',num2str(nSamples),'_chains_',num2str(nChains),'_',datestr(now,'mm-dd-yyyy HH-MM')],'stats','samples','-v7.3')
+save(['samples_stats\', outputName,'Gamble',g],'stats','samples','-v7.3')
+end %and wrapping of gambles
 %% Print readouts
 disp('stats:'),disp(stats)%print out structure of stats output
 disp('samples:'),disp(samples);%print out structure of samples output

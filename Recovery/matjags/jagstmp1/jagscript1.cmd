@@ -17,5 +17,7 @@ monitor set alpha_pt, thin(1)
 monitor set gamma_pt, thin(1)
 monitor set delta_pt, thin(1)
 monitor set beta_pt, thin(1)
+monitor set beta_lml, thin(1)
+monitor set alpha_lml, thin(1)
 update 50
 coda *, stem('CODA1')
