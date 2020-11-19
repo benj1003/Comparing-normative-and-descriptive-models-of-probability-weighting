@@ -18,10 +18,10 @@
 addpath(genpath(pwd));%adds base directory and subfolders to path, important for running shell scripts from terminal
 
 %% Specify variables
-mode=1;
+mode=3;
 whichJAGS=1;
 whichQuals=1;
-nGambles=28;
+nGambles=1;
 doParallel=0;
 nAgents=2 ;
 
