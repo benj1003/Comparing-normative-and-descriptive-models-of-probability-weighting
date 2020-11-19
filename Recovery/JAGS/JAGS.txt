@@ -14,73 +14,72 @@
 model{
 
 ##LIKELIHOOD
-for (g in 1:nGambles){
 for (i in 1:nAgents){
 for (c in 1:nChunks){
 for (t in 1:nTrials){
 
 	#-----------pt-model-----------
-	u_a1_pt[g,i,c,t]		= pow(dx1[g,i,c,c,t],alpha_pt[i,c])						#prospect utility, computed by exponentiating current wealth by alpha   	
-	u_a2_pt[g,i,c,c,t]		= pow(dx2[g,i,c,c,t],alpha_pt[i,c])						 	
-	u_b1_pt[g,i,c,c,t]		= pow(dx3[g,i,c,c,t],alpha_pt[i,c])
-	u_b2_pt[g,i,c,c,t]		= pow(dx4[g,i,c,c,t],alpha_pt[i,c])
+	u_a1_pt[i,c,t]		= pow(dx1[i,c,t],alpha_pt[i,c])						#prospect utility, computed by exponentiating current wealth by alpha   	
+	u_a2_pt[i,c,t]		= pow(dx2[i,c,t],alpha_pt[i,c])						 	
+	u_b1_pt[i,c,t]		= pow(dx3[i,c,t],alpha_pt[i,c])
+	u_b2_pt[i,c,t]		= pow(dx4[i,c,t],alpha_pt[i,c])
 
-	den_w_a1_pt[g,i,c,c,t]	= delta_pt[i,c]*pow(pa1[g,i,c,c,t],gamma_pt[i,c]) + pow((1-pa1[g,i,c,c,t]),gamma_pt[i,c]) #the denominator of the weighting function
-	den_w_a2_pt[g,i,c,c,t]	= delta_pt[i,c]*pow(pa1[g,i,c,c,t],gamma_pt[i,c]) + pow((1-pa1[g,i,c,c,t]),gamma_pt[i,c]) 
-	den_w_b1_pt[g,i,c,c,t]	= delta_pt[i,c]*pow(pb1[g,i,c,c,t],gamma_pt[i,c]) + pow((1-pb1[g,i,c,c,t]),gamma_pt[i,c])
-	den_w_b2_pt[g,i,c,c,t]	= delta_pt[i,c]*pow(pb1[g,i,c,c,t],gamma_pt[i,c]) + pow((1-pb1[g,i,c,c,t]),gamma_pt[i,c])
+	den_w_a1_pt[i,c,t]	= delta_pt[i,c]*pow(pa1[i,c,t],gamma_pt[i,c]) + pow((1-pa1[i,c,t]),gamma_pt[i,c]) #the denominator of the weighting function
+	den_w_a2_pt[i,c,t]	= delta_pt[i,c]*pow(pa1[i,c,t],gamma_pt[i,c]) + pow((1-pa1[i,c,t]),gamma_pt[i,c]) 
+	den_w_b1_pt[i,c,t]	= delta_pt[i,c]*pow(pb1[i,c,t],gamma_pt[i,c]) + pow((1-pb1[i,c,t]),gamma_pt[i,c])
+	den_w_b2_pt[i,c,t]	= delta_pt[i,c]*pow(pb1[i,c,t],gamma_pt[i,c]) + pow((1-pb1[i,c,t]),gamma_pt[i,c])
 
-	w_a1_pt[g,i,c,c,t]		= delta_pt[i,c]*pow(pa1[g,i,c,c,t],gamma_pt[i,c]) / den_w_a1_pt[g,i,c,c,t]		#weightfunction calculated with two parameter function (Goldstein and Einhorn (1987))
-	w_a2_pt[g,i,c,c,t]		= delta_pt[i,c]*pow((1-pa1[g,i,c,c,t]),gamma_pt[i,c]) / den_w_a2_pt[g,i,c,c,t]			
-	w_b1_pt[g,i,c,c,t]		= delta_pt[i,c]*pow(pb1[g,i,c,c,t],gamma_pt[i,c]) / den_w_b1_pt[g,i,c,c,t]
-	w_b2_pt[g,i,c,c,t]		= delta_pt[i,c]*pow((1-pb1[g,i,c,t]),gamma_pt[i,c]) / den_w_b2_pt[g,i,c,t]
+	w_a1_pt[i,c,t]		= delta_pt[i,c]*pow(pa1[i,c,t],gamma_pt[i,c]) / den_w_a1_pt[i,c,t]		#weightfunction calculated with two parameter function (Goldstein and Einhorn (1987))
+	w_a2_pt[i,c,t]		= delta_pt[i,c]*pow((1-pa1[i,c,t]),gamma_pt[i,c]) / den_w_a2_pt[i,c,t]			
+	w_b1_pt[i,c,t]		= delta_pt[i,c]*pow(pb1[i,c,t],gamma_pt[i,c]) / den_w_b1_pt[i,c,t]
+	w_b2_pt[i,c,t]		= delta_pt[i,c]*pow((1-pb1[i,c,t]),gamma_pt[i,c]) / den_w_b2_pt[i,c,t]
 
-	ev_a_pt[g,i,c,t]		= u_a1_pt[g,i,c,t] * w_a1_pt[g,i,c,t] + u_a2_pt[g,i,c,t] * w_a2_pt[g,i,c,t]	#The expectedvalue of the gamble is the utility multiplied with the weight
-	ev_b_pt[g,i,c,t]		= u_b1_pt[g,i,c,t] * w_b1_pt[g,i,c,t] + u_b2_pt[g,i,c,t] * w_b2_pt[g,i,c,t]
+	ev_a_pt[i,c,t]		= u_a1_pt[i,c,t] * w_a1_pt[i,c,t] + u_a2_pt[i,c,t] * w_a2_pt[i,c,t]	#The expectedvalue of the gamble is the utility multiplied with the weight
+	ev_b_pt[i,c,t]		= u_b1_pt[i,c,t] * w_b1_pt[i,c,t] + u_b2_pt[i,c,t] * w_b2_pt[i,c,t]
 	
-	dev_pt[g,i,c,t] 		= ev_a_pt[g,i,c,t] - ev_b_pt[g,i,c,t]					#difference in expected values 
+	dev_pt[i,c,t] 		= ev_a_pt[i,c,t] - ev_b_pt[i,c,t]					#difference in expected values 
 
-	sdev_pt[g,i,c,t]		= -1 * beta_pt[i,c] * dev_pt[g,i,c,t] 					#sensitivity-scaled difference in ev
+	sdev_pt[i,c,t]		= -1 * beta_pt[i,c] * dev_pt[i,c,t] 					#sensitivity-scaled difference in ev
 
-	theta[g,i,c,t,1] 	= (1)/(1+(exp(sdev_pt[g,i,c,t]))) 						#choice probability
-	theta[g,i,c,t,3] 	= (1)/(1+(exp(sdev_pt[g,i,c,t])))
-	theta[g,i,c,t,5] 	= (1)/(1+(exp(sdev_pt[g,i,c,t])))
-	theta[g,i,c,t,7] 	= (1)/(1+(exp(sdev_pt[g,i,c,t])))
+	theta[i,c,t,1] 	= (1)/(1+(exp(sdev_pt[i,c,t]))) 						#choice probability
+	theta[i,c,t,3] 	= (1)/(1+(exp(sdev_pt[i,c,t])))
+	theta[i,c,t,5] 	= (1)/(1+(exp(sdev_pt[i,c,t])))
+	theta[i,c,t,7] 	= (1)/(1+(exp(sdev_pt[i,c,t])))
 
 	#-----------lml-model-----------
-	u_a1_lml[g,i,c,t]		= pow(dx1[g,i,c,t],alpha_lml[i,c])						#prospect utility, computed by exponentiating current wealth by alpha   	
-	u_a2_lml[g,i,c,t]		= pow(dx2[g,i,c,t],alpha_lml[i,c])	
-	u_b1_lml[g,i,c,t]		= pow(dx3[g,i,c,t],alpha_lml[i,c])
-	u_b2_lml[g,i,c,t]		= pow(dx4[g,i,c,t],alpha_lml[i,c])
+	u_a1_lml[i,c,t]		= pow(dx1[i,c,t],alpha_lml[i,c])						#prospect utility, computed by exponentiating current wealth by alpha   	
+	u_a2_lml[i,c,t]		= pow(dx2[i,c,t],alpha_lml[i,c])	
+	u_b1_lml[i,c,t]		= pow(dx3[i,c,t],alpha_lml[i,c])
+	u_b2_lml[i,c,t]		= pow(dx4[i,c,t],alpha_lml[i,c])
 
-	tmp_w_a1_lml[g,i,c,t]	= pa1[g,i,c,t] + sqrt(pa1[g,i,c,t]/t) 					#weighfunction (numerator)
-	tmp_w_a2_lml[g,i,c,t]	= (1-pa1[g,i,c,t]) + sqrt((1-pa1[g,i,c,t])/t) 
-	tmp_w_b1_lml[g,i,c,t]	= pb1[g,i,c,t] + sqrt(pb1[g,i,c,t]/t)
-	tmp_w_b2_lml[g,i,c,t]	= (1-pb1[g,i,c,t]) + sqrt((1-pb1[g,i,c,t])/t) 
+	tmp_w_a1_lml[i,c,t]	= pa1[i,c,t] + sqrt(pa1[i,c,t]/t) 					#weighfunction (numerator)
+	tmp_w_a2_lml[i,c,t]	= (1-pa1[i,c,t]) + sqrt((1-pa1[i,c,t])/t) 
+	tmp_w_b1_lml[i,c,t]	= pb1[i,c,t] + sqrt(pb1[i,c,t]/t)
+	tmp_w_b2_lml[i,c,t]	= (1-pb1[i,c,t]) + sqrt((1-pb1[i,c,t])/t) 
 
-	w_a1_lml[g,i,c,t]		= tmp_w_a1_lml[g,i,c,t] / ( tmp_w_a1_lml[g,i,c,t] + tmp_w_a2_lml[g,i,c,t] )	#normalizing the weights
-	w_a2_lml[g,i,c,t]		= tmp_w_a2_lml[g,i,c,t] / ( tmp_w_a1_lml[g,i,c,t] + tmp_w_a2_lml[g,i,c,t] )
-	w_b1_lml[g,i,c,t]		= tmp_w_b1_lml[g,i,c,t] / ( tmp_w_b1_lml[g,i,c,t] + tmp_w_b2_lml[g,i,c,t] )
-	w_b2_lml[g,i,c,t]		= tmp_w_b2_lml[g,i,c,t] / ( tmp_w_b1_lml[g,i,c,t] + tmp_w_b2_lml[g,i,c,t] )
+	w_a1_lml[i,c,t]		= tmp_w_a1_lml[i,c,t] / ( tmp_w_a1_lml[i,c,t] + tmp_w_a2_lml[i,c,t] )	#normalizing the weights
+	w_a2_lml[i,c,t]		= tmp_w_a2_lml[i,c,t] / ( tmp_w_a1_lml[i,c,t] + tmp_w_a2_lml[i,c,t] )
+	w_b1_lml[i,c,t]		= tmp_w_b1_lml[i,c,t] / ( tmp_w_b1_lml[i,c,t] + tmp_w_b2_lml[i,c,t] )
+	w_b2_lml[i,c,t]		= tmp_w_b2_lml[i,c,t] / ( tmp_w_b1_lml[i,c,t] + tmp_w_b2_lml[i,c,t] )
 	
-	ev_a_lml[g,i,c,t]		= u_a1_lml[g,i,c,t] * w_a1_lml[g,i,c,t] + u_a2_lml[g,i,c,t] * w_a2_lml[g,i,c,t]	#The expected value of the gamble is the utility multiplied with the weight
-	ev_b_lml[g,i,c,t]		= u_b1_lml[g,i,c,t] * w_b1_lml[g,i,c,t] + u_b2_lml[g,i,c,t] * w_b2_lml[g,i,c,t]
+	ev_a_lml[i,c,t]		= u_a1_lml[i,c,t] * w_a1_lml[i,c,t] + u_a2_lml[i,c,t] * w_a2_lml[i,c,t]	#The expected value of the gamble is the utility multiplied with the weight
+	ev_b_lml[i,c,t]		= u_b1_lml[i,c,t] * w_b1_lml[i,c,t] + u_b2_lml[i,c,t] * w_b2_lml[i,c,t]
 
-	dev_lml[g,i,c,t] 		= ev_a_lml[g,i,c,t] - ev_b_lml[g,i,c,t]					#difference in expected values 
+	dev_lml[i,c,t] 		= ev_a_lml[i,c,t] - ev_b_lml[i,c,t]					#difference in expected values 
 
-	sdev_lml[g,i,c,t]	  	= -1 * beta_lml[i,c] * dev_lml[g,i,c,t] 					#sensitivity-scaled difference in ev
+	sdev_lml[i,c,t]	  	= -1 * beta_lml[i,c] * dev_lml[i,c,t] 					#sensitivity-scaled difference in ev
 
-	theta[g,i,c,t,2] 		= (1)/(1+(exp(sdev_lml[g,i,c,t])))
-	theta[g,i,c,t,4] 		= (1)/(1+(exp(sdev_lml[g,i,c,t])))
-	theta[g,i,c,t,6] 		= (1)/(1+(exp(sdev_lml[g,i,c,t])))
-	theta[g,i,c,t,8] 		= (1)/(1+(exp(sdev_lml[g,i,c,t]))) 	
+	theta[i,c,t,2] 		= (1)/(1+(exp(sdev_lml[i,c,t])))
+	theta[i,c,t,4] 		= (1)/(1+(exp(sdev_lml[i,c,t])))
+	theta[i,c,t,6] 		= (1)/(1+(exp(sdev_lml[i,c,t])))
+	theta[i,c,t,8] 		= (1)/(1+(exp(sdev_lml[i,c,t]))) 	
 
         # Choice
-        y[g,i,c,t]           	~ dbern(theta[g,i,c,t,z[i]]) 
+        y[i,c,t]           	~ dbern(theta[i,c,t,z[i]]) 
 
 }# end of trials 
+}# end of chunks
 }# end of agents
-}# end of gambles
 
 ##PRIORS
 
@@ -88,11 +87,11 @@ for (t in 1:nTrials){
 #the model indicator variable z can take on any value from 1:n, and is subject to two stochastic processes, to prevent getting stuck
 #the n values map onto just 2 models, and is simply a means of obtaining parameter expansion for the model indication
 for (i in 1:nAgents){    
-px_z1[i]    ~ dcat(pz[])                                 #parameter expansion variable for z, takes on integers 1:n with equal probability
-px_z2[i]    ~ dcat(pz[])                                 #parameter expansion variable for z, takes on integers 1:n with equal probability
-delta_z1[i] = px_z2[i]-1                                 #parameter expansion variable for z, takes on integers 0:n-1 with equal probability
-sum_z[i]    = px_z1[i]+delta_z1[i]                       #sum takes on integers 1:2*n -1 with equal probability
-z[i]        = (sum_z[i] - (8 * trunc(sum_z[i]/8))) + 1   #modulo n, adding 1 to return to values 1 to 8
+	px_z1[i]    ~ dcat(pz[])                                 #parameter expansion variable for z, takes on integers 1:n with equal probability
+	px_z2[i]    ~ dcat(pz[])                                 #parameter expansion variable for z, takes on integers 1:n with equal probability
+	delta_z1[i] = px_z2[i]-1                                 #parameter expansion variable for z, takes on integers 0:n-1 with equal probability
+	sum_z[i]    = px_z1[i]+delta_z1[i]                       #sum takes on integers 1:2*n -1 with equal probability
+	z[i]        = (sum_z[i] - (8 * trunc(sum_z[i]/8))) + 1   #modulo n, adding 1 to return to values 1 to 8
 }#end of agents       
 
 #submodels
@@ -120,7 +119,7 @@ alpha_lml[i,c]		= exp(log_alpha_lml[i,c])                        	#lognormally d
 log_alpha_lml[i,c]	~ dnorm(mu_log_alpha_lml[c], tau_log_alpha_lml[c])	#log alpha_lml sampled from normal dist.	
 
 }#end of chunks
-}#end of subjects
+}#end of agents
 
 
 ##HYPERPRIORS
