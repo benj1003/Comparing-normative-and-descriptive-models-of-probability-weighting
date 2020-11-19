@@ -97,7 +97,7 @@ z[i]        = (sum_z[i] - (8 * trunc(sum_z[i]/8))) + 1   #modulo n, adding 1 to 
 
 #submodels
 for (i in 1:nAgents){	
-for (c in 1:nChunks={
+for (c in 1:nChunks){
 
 #-----------pt-----------
 beta_pt[i,c]	= exp(log_beta_pt[i,c])                          	#lognormally distributed priors
@@ -125,31 +125,32 @@ log_alpha_lml[i,c]	~ dnorm(mu_log_alpha_lml[c], tau_log_alpha_lml[c])	#log alpha
 
 ##HYPERPRIORS
 for (c in 1:nChunks){
-#-----------pt----------- 
-mu_log_beta_pt[c]       ~ dunif(muLogBetaL,muLogBetaU)  		#prior on mean of dist. of log beta_pt
-tau_log_beta_pt[c]      = pow(sigma_log_beta_pt[c],-2)   		#prior on precision of dist. of log beta_pt
-sigma_log_beta_pt[c]    ~ dunif(sigmaLogBetaL,sigmaLogBetaU)	#prior on std of dist. of log beta_pt
+	#-----------pt----------- 
+	mu_log_beta_pt[c]       ~ dunif(muLogBetaL,muLogBetaU)  		#prior on mean of dist. of log beta_pt
+	tau_log_beta_pt[c]      = pow(sigma_log_beta_pt[c],-2)   		#prior on precision of dist. of log beta_pt
+	sigma_log_beta_pt[c]    ~ dunif(sigmaLogBetaL,sigmaLogBetaU)	#prior on std of dist. of log beta_pt
 
-mu_log_alpha_pt[c]      ~ dunif(muLogAlphaL,muLogAlphaU)         	#prior on mean of dist. of log alpha_pt 
-tau_log_alpha_pt[c]     = pow(sigma_log_alpha_pt[c],-2)          	#prior on precision of dist. of log alpha_pt
-sigma_log_alpha_pt[c]   ~ dunif(sigmaLogAlphaL,sigmaLogAlphaU)   	#prior on std of dist. of log alpha_pt
+	mu_log_alpha_pt[c]      ~ dunif(muLogAlphaL,muLogAlphaU)         	#prior on mean of dist. of log alpha_pt 
+	tau_log_alpha_pt[c]     = pow(sigma_log_alpha_pt[c],-2)          	#prior on precision of dist. of log alpha_pt
+	sigma_log_alpha_pt[c]   ~ dunif(sigmaLogAlphaL,sigmaLogAlphaU)   	#prior on std of dist. of log alpha_pt
 
-mu_log_delta_pt[c]      ~ dunif(muLogDeltaL,muLogDeltaU)         	#prior on mean of dist. of log delta_pt
-tau_log_delta_pt[c]     = pow(sigma_log_delta_pt[c],-2)           	#prior on precision of dist. of log delta_pt
-sigma_log_delta_pt[c]   ~ dunif(sigmaLogDeltaL,sigmaLogDeltaU)   	#prior on std of dist. of log delta_pt
+	mu_log_delta_pt[c]      ~ dunif(muLogDeltaL,muLogDeltaU)         	#prior on mean of dist. of log delta_pt
+	tau_log_delta_pt[c]     = pow(sigma_log_delta_pt[c],-2)           	#prior on precision of dist. of log delta_pt
+	sigma_log_delta_pt[c]   ~ dunif(sigmaLogDeltaL,sigmaLogDeltaU)   	#prior on std of dist. of log delta_pt
 
-mu_log_gamma_pt[c]      ~ dunif(muLogGammaL,muLogGammaU)          	#prior on mean of dist. of log gamma_pt
-tau_log_gamma_pt[c]     = pow(sigma_log_gamma_pt[c],-2)           	#prior on precision of dist. of log gamma_pt
-sigma_log_gamma_pt[c]   ~ dunif(sigmaLogGammaL,sigmaLogGammaU)  	#prior on std of dist. of log gamma_pt
+	mu_log_gamma_pt[c]      ~ dunif(muLogGammaL,muLogGammaU)          	#prior on mean of dist. of log gamma_pt
+	tau_log_gamma_pt[c]     = pow(sigma_log_gamma_pt[c],-2)           	#prior on precision of dist. of log gamma_pt
+	sigma_log_gamma_pt[c]   ~ dunif(sigmaLogGammaL,sigmaLogGammaU)  	#prior on std of dist. of log gamma_pt
 
 
-#-----------lml-----------
-mu_log_beta_lml[c]       ~ dunif(muLogBetaL,muLogBetaU)		#prior on mean of dist. of log beta_lml
-tau_log_beta_lml[c]      = pow(sigma_log_beta_lml[c],-2)   		#prior on precision of dist. of log beta_lml
-sigma_log_beta_lml[c]    ~ dunif(sigmaLogBetaL,sigmaLogBetaU)      #prior on std of dist. of log beta_lml
+	#-----------lml-----------
+	mu_log_beta_lml[c]       ~ dunif(muLogBetaL,muLogBetaU)		#prior on mean of dist. of log beta_lml
+	tau_log_beta_lml[c]      = pow(sigma_log_beta_lml[c],-2)   		#prior on precision of dist. of log beta_lml
+	sigma_log_beta_lml[c]    ~ dunif(sigmaLogBetaL,sigmaLogBetaU)      #prior on std of dist. of log beta_lml
 
-mu_log_alpha_lml[c]      ~ dunif(muLogAlphaL,muLogAlphaU)         	#prior on mean of dist. of log alpha_pt 
-tau_log_alpha_lml[c]     = pow(sigma_log_alpha_lml[c],-2)          	#prior on precision of dist. of log alpha_pt
-sigma_log_alpha_lml[c]   ~ dunif(sigmaLogAlphaL,sigmaLogAlphaU) 	#prior on std of dist. of log alpha_pt
+	mu_log_alpha_lml[c]      ~ dunif(muLogAlphaL,muLogAlphaU)         	#prior on mean of dist. of log alpha_pt 
+	tau_log_alpha_lml[c]     = pow(sigma_log_alpha_lml[c],-2)          	#prior on precision of dist. of log alpha_pt
+	sigma_log_alpha_lml[c]   ~ dunif(sigmaLogAlphaL,sigmaLogAlphaU) 	#prior on std of dist. of log alpha_pt
 }#end of chunks
+
 }
