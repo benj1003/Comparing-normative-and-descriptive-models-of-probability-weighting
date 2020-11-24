@@ -21,18 +21,14 @@ The analyses have been performed with, or called from Matlab. The Hierarchical B
 JAGS is run via matjags - see https://github.com/msteyvers/matjags for detailed description of instalation.
 
 ## Detailed Setup Instructions - running JAGS
-Runnning a model starts with setting up the script runHLM#.m where # indicates the version number. There are multiple versions according to the aims of the model, which can vary by the aim (simulating choices, model recovery or parameter recovery)
-
-To call a given runHLM# you need to run the job runHLM_job#.sh in the "jobs" directory. #NOTE!!!
-
-Each version of runHLM contains different specifications for running a JAGS model, pertaining to the following key variables: 
+Runnning a model starts with setting up the script runHLM.m, which contains different specifications for running a JAGS model, pertaining to the following key variables: 
 - mode: 1=simulate CPT choices,2=simulate LML choices, 3=model recovery for CPT choices, 4=model recovery for LML choices, 5=parameter revovery CPT, 6=parameter 'recovery' LML
 - whichJAGS: which copy of matjags to run on. this allows parallel jobs to run as long as they use different matjags
 - whichQuals: sets the order of qualities to run
 - nGambles: number of gambles to run over
 - nAgents: number of synthetic agents 
 
-runHLM# runHLM#.m (in folder 'jobs') calls setHLM.m (in "Recovery" folder) which contains preset information about what the different quality levels mean in terms of burn-in, number of samples etc.
+To call a given runHLM you need to run the job runHLM_job.sh in the "Recovery/jobs" directory. runHLM.m (in folder 'jobs') calls setHLM.m (in "Recovery" folder) which contains preset information about what the different quality levels mean in terms of burn-in, number of samples etc.
 
 setHLM setHLM then calls computeHLM which is the main script for computing the hieararchical bayesian models. This script processes the data, and principally calls matjags to run the model. This is done by calling the different versions of the "JAGS_..." scripts using JAGS code, to be found in the folder "Recovery/JAGS"
 
