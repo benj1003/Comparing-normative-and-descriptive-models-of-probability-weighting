@@ -8,7 +8,7 @@ The reposetory contains all data needed to replicate all findings. However, it a
 ## Platform/Environment
 The raw data (the underlying gambles) is in .csv format. A python script (Python 3.7.1) reads this and generate the trials for each gamble (converting from decision from description to decisions from experience).
 
-Most subsequent analyses have been performed with, or called from Matlab. The Hierarchical Bayesian modelling has been run with JAGS (via matjags, which allows running JAGS via matlab code).
+The analyses have been performed with, or called from Matlab. The Hierarchical Bayesian modelling has been run with JAGS (via matjags, which allows running JAGS via matlab code).
 
 ## Folder summary
 
