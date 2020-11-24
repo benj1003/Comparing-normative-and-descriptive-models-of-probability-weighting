@@ -64,14 +64,17 @@ def trial_generation(gamble_df, g, nTrial, nAgent, threshold=1):
 gambles_df = pd.read_csv('Generating gambles\Gambles.csv', sep=";")
 nGambles = gambles_df.shape[0] 
 
+#Generate empty dataframe
 cols = ['Gamble_nr','maxA','minA','maxB','nAgents','nTrials']
 df_metadata_all_gambles = pd.DataFrame(columns=cols, index=range(nGambles))
 
+#Generate trials
 data_all_gamles = []
 for g in range(nGambles):
-    data_one_gamble, metadata_one_gamble = trial_generation(gambles_df, g, 2, 2)
+    data_one_gamble, metadata_one_gamble = trial_generation(gambles_df, g, nTrial=1000, nAgent=100)
     df_metadata_all_gambles.loc[g] = metadata_one_gamble
     data_all_gamles.append(data_one_gamble)
 
+#Save Trials
 df_metadata_all_gambles.to_csv(os.path.abspath(os.path.join(os.path.dirname( __file__ ),'..', 'Recovery','data',f"metadata.txt")),index=False)
 scipy.io.savemat(os.path.abspath(os.path.join(os.path.dirname( __file__ ),'..', 'Recovery','data','all_gambles.mat')),{'Data':data_all_gamles},oned_as='row') 
