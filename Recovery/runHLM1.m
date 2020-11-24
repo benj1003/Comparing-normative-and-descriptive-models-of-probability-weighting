@@ -23,7 +23,7 @@ whichJAGS=1;
 whichQuals=1;
 nGambles=2;
 doParallel=0;
-nAgents=100;
+nAgents=10;
 
 
 %% Call setHLM

@@ -181,7 +181,7 @@ end
 load(dataSource)
 
 %% Set key variables
-nTrials=1000;
+nTrials=100;
 
 chunkLength=nTrials/nChunks;
 doDIC=0;%compute Deviance information criteria? This is the hierarchical equivalent of an AIC, the lower the better
