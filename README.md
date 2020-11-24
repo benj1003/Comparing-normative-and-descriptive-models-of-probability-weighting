@@ -1,4 +1,4 @@
-# Master-thesis
+# Master-thesis: Normative accounts of Probability Weighting in Decision Science
 
 This reposetory contains all code needed to replicate the work done in the final project done to fulfill the requirements to obtain a masters degree in Mathematical Modelling and Computation from the Technical University of Denmark (DTU) by stud. polyt Benjamin Skjold Frederiksen. 
 
