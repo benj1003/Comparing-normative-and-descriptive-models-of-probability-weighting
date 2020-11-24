@@ -143,12 +143,16 @@ switch mode
         outputName = 'Choices_simulated_from_CPT'; priorName='';
         pz=[1,0,1,0,1,0,1,0];
         nChunks = 1;
+        nSamples = 1;
+        nChains = 1;
         
     case 2 %simulate choices with LML
         dataSource = 'all_gambles';
         outputName = 'Choices_simulated_from_LML'; priorName='';
         pz=[0,1,0,1,0,1,0,1];
         nChunks = 1;
+        nSamples = 1;
+        nChains = 1;
         
     case 3 %Model comparison on data from CPT
         dataSource = sprintf('Choices_simulated_from_CPT_Gamble_%.0f',g);
@@ -177,7 +181,7 @@ end
 load(dataSource)
 
 %% Set key variables
-nTrials=2;
+nTrials=3;
 
 chunkLength=nTrials/nChunks;
 doDIC=0;%compute Deviance information criteria? This is the hierarchical equivalent of an AIC, the lower the better
