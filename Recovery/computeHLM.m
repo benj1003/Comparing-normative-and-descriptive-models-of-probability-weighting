@@ -147,7 +147,7 @@ tic;
 %nChains = 0;
 %samples = [];
 
-parfor g = 1:nGambles %wrapped around the rest as JAGS cannot handle higher than 3 dimensions (until line 458)
+for g = 1:nGambles %wrapped around the rest as JAGS cannot handle higher than 3 dimensions (until line 458)
 switch mode
     case 1 %simulate choices with CPT
         dataSource = 'all_gambles';
