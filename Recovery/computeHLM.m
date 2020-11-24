@@ -167,7 +167,7 @@ switch mode
         nChunks = 1;
         
     case 5 %parameter recovery for CPT data
-        dataSource = sprintf('Choices_simulated_from_CPT_Gamble_%.0f',g)';
+        dataSource = sprintf('Choices_simulated_from_CPT_Gamble_%.0f',g);
         outputName = 'parameter_recovery_CPT'; priorName='';
         pz=[1/4,0,1/4,0,1/4,0,1/4,0];
         nChunks = 10; %to examine changes over time
@@ -181,7 +181,7 @@ end
 load(dataSource)
 
 %% Set key variables
-nTrials=3;
+nTrials=1000;
 
 chunkLength=nTrials/nChunks;
 doDIC=0;%compute Deviance information criteria? This is the hierarchical equivalent of an AIC, the lower the better
@@ -197,9 +197,9 @@ disp('**************');
 
 %% Initialise matrices
 %initialise matrices with nan values of size subjects x conditions x trials
-choice = nan(nAgents,nChunks,nTrials/nChunks); %initialise choice data matrix 
-dx1 = nan(nAgents,nChunks,nTrials/nChunks); dx2 = dx1; dx3 = dx1; dx4=dx1;%initialise changes in wealth
-p_a1  = nan(nAgents,nChunks,nTrials/nChunks); p_a2 = p_a1; p_b1 = p_a1; p_b2 = p_a1; %initialise channges in 'probabilities'
+choice = nan(nAgents,nChunks,chunkLength); %initialise choice data matrix 
+dx1 = nan(nAgents,nChunks,chunkLength); dx2 = dx1; dx3 = dx1; dx4=dx1;%initialise changes in wealth
+p_a1  = nan(nAgents,nChunks,chunkLength); p_a2 = p_a1; p_b1 = p_a1; p_b2 = p_a1; %initialise channges in 'probabilities'
 
 %% Compile choice & gamble data
 %split into chunks for parameter recovery (mode 5 and 6)
@@ -207,7 +207,7 @@ p_a1  = nan(nAgents,nChunks,nTrials/nChunks); p_a2 = p_a1; p_b1 = p_a1; p_b2 = p
 switch mode
     case 1
         for i = 1:nAgents
-            for c = 1:nChunks
+            for c = 1:nChunks %nChunks = 1
                 trialInds=1:length(Data{g,1}.Choice);%generate indices for each trial
                 choice(i,c,trialInds)=Data{g,i}.Choice(trialInds);%assign to temporary variables
 
@@ -223,7 +223,7 @@ switch mode
     
     case 2
         for i = 1:nAgents
-            for c = 1:nChunks
+            for c = 1:nChunks %nChunks = 1
                 trialInds=1:length(Data{g,1}.Choice);%generate indices for each trial
                 choice(i,c,trialInds)=Data{g,i}.Choice(trialInds);%assign to temporary variables
 
@@ -240,70 +240,70 @@ switch mode
     case 3
         for i = 1:nAgents
             trialInds=1:length(samples.y(1,1,:,1,1));%generate indices for each trial
-            for c = 1:nChunks
-                choice(i,c,trialInds)=samples.y(1,1,trialInds,1,1);%assign to temporary variables
+            for c = 1:nChunks %nChunks = 1
+                choice(i,c,trialInds)=samples.y(1,1,i,c,trialInds);%assign to temporary variables
 
-                dx1(i,c,trialInds)=samples.dx1(1,1,trialInds,1,1);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
-                dx2(i,c,trialInds)=samples.dx2(1,1,trialInds,1,1);%same for outcome 2 etc.
-                dx3(i,c,trialInds)=samples.dx3(1,1,trialInds,1,1);
-                dx4(i,c,trialInds)=samples.dx4(1,1,trialInds,1,1);
+                dx1(i,c,trialInds)=samples.dx1(1,1,i,c,trialInds);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
+                dx2(i,c,trialInds)=samples.dx2(1,1,i,c,trialInds);%same for outcome 2 etc.
+                dx3(i,c,trialInds)=samples.dx3(1,1,i,c,trialInds);
+                dx4(i,c,trialInds)=samples.dx4(1,1,i,c,trialInds);
 
-                p_a1(i,c,trialInds)=samples.pa1(1,1,trialInds,1,1);%assign changes in 'probability' for outcome 1
-                p_b1(i,c,trialInds)=samples.pb1(1,1,trialInds,1,1);
+                p_a1(i,c,trialInds)=samples.pa1(1,1,i,c,trialInds);%assign changes in 'probability' for outcome 1
+                p_b1(i,c,trialInds)=samples.pb1(1,1,i,c,trialInds);
             end 
         end
 
     case 4
         for i = 1:nAgents
             trialInds=1:length(samples.y(1,1,:,1,1));%generate indices for each trial
-            for c = 1:nChunks
-                choice(i,c,trialInds)=samples.y(1,1,trialInds,1,1);%assign to temporary variables
+            for c = 1:nChunks %nChunks = 1
+                choice(i,c,trialInds)=samples.y(1,1,i,c,trialInds);%assign to temporary variables
 
-                dx1(i,c,trialInds)=samples.dx1(1,1,trialInds,1,1);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
-                dx2(i,c,trialInds)=samples.dx2(1,1,trialInds,1,1);%same for outcome 2 etc.
-                dx3(i,c,trialInds)=samples.dx3(1,1,trialInds,1,1);
-                dx4(i,c,trialInds)=samples.dx4(1,1,trialInds,1,1);
+                dx1(i,c,trialInds)=samples.dx1(1,1,i,c,trialInds);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
+                dx2(i,c,trialInds)=samples.dx2(1,1,i,c,trialInds);%same for outcome 2 etc.
+                dx3(i,c,trialInds)=samples.dx3(1,1,i,c,trialInds);
+                dx4(i,c,trialInds)=samples.dx4(1,1,i,c,trialInds);
 
-                p_a1(i,c,trialInds)=samples.pa1(1,1,trialInds,1,1);%assign changes in 'probability' for outcome 1
-                p_b1(i,c,trialInds)=samples.pb1(1,1,trialInds,1,1);
+                p_a1(i,c,trialInds)=samples.pa1(1,1,i,c,trialInds);%assign changes in 'probability' for outcome 1
+                p_b1(i,c,trialInds)=samples.pb1(1,1,i,c,trialInds);
             end 
         end
         
     case 5
         for i = 1:nAgents
-            trialInds_all=1:length(samples.y(1,1,:,1,1));%generate indices for each trial
+            trialInds_all=1:length(samples.y(1,1,1,1,:));%generate indices for each trial
             for c = 1:nChunks
-                chunkInds=1:(length(Data{g,1}.Choice)/nChunks);
+                chunkInds=1:(length(samples.y(1,1,1,1,:))/nChunks);
                 trialInds = trialInds_all(c*chunkLength-(chunkLength-1):c*chunkLength);
 
-                choice(i,c,chunkInds)=samples.y(1,1,trialInds,1,1);%assign to temporary variables
+                choice(i,c,chunkInds)=samples.y(1,1,i,1,trialInds);%assign to temporary variables
 
-                dx1(i,c,chunkInds)=samples.dx1(1,1,trialInds,1,1);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
-                dx2(i,c,chunkInds)=samples.dx2(1,1,trialInds,1,1);%same for outcome 2 etc.
-                dx3(i,c,chunkInds)=samples.dx3(1,1,trialInds,1,1);
-                dx4(i,c,chunkInds)=samples.dx4(1,1,trialInds,1,1);
+                dx1(i,c,chunkInds)=samples.dx1(1,1,i,1,trialInds);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
+                dx2(i,c,chunkInds)=samples.dx2(1,1,i,1,trialInds);%same for outcome 2 etc.
+                dx3(i,c,chunkInds)=samples.dx3(1,1,i,1,trialInds);
+                dx4(i,c,chunkInds)=samples.dx4(1,1,i,1,trialInds);
 
-                p_a1(i,c,chunkInds)=samples.pa1(1,1,trialInds,1,1);%assign changes in 'probability' for outcome 1
-                p_b1(i,c,chunkInds)=samples.pb1(1,1,trialInds,1,1);
+                p_a1(i,c,chunkInds)=samples.pa1(1,1,i,1,trialInds);%assign changes in 'probability' for outcome 1
+                p_b1(i,c,chunkInds)=samples.pb1(1,1,i,1,trialInds);
             end 
         end 
         
     case 6
         for i = 1:nAgents
-            trialInds_all=1:length(samples.y(1,1,:,1,1));%generate indices for each trial
+            trialInds_all=1:length(samples.y(1,1,1,1,:));%generate indices for each trial
             for c = 1:nChunks
-                chunkInds=1:(length(Data{g,1}.Choice)/nChunks);
+                chunkInds=1:(length(samples.y(1,1,1,1,:))/nChunks);
                 trialInds = trialInds_all(c*chunkLength-(chunkLength-1):c*chunkLength);
 
-                choice(i,c,chunkInds)=samples.y(1,1,trialInds,1,1);%assign to temporary variables
+                choice(i,c,chunkInds)=samples.y(1,1,i,1,trialInds);%assign to temporary variables
 
-                dx1(i,c,chunkInds)=samples.dx1(1,1,trialInds,1,1);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
-                dx2(i,c,chunkInds)=samples.dx2(1,1,trialInds,1,1);%same for outcome 2 etc.
-                dx3(i,c,chunkInds)=samples.dx3(1,1,trialInds,1,1);
-                dx4(i,c,chunkInds)=samples.dx4(1,1,trialInds,1,1);
+                dx1(i,c,chunkInds)=samples.dx1(1,1,i,1,trialInds);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
+                dx2(i,c,chunkInds)=samples.dx2(1,1,i,1,trialInds);%same for outcome 2 etc.
+                dx3(i,c,chunkInds)=samples.dx3(1,1,i,1,trialInds);
+                dx4(i,c,chunkInds)=samples.dx4(1,1,i,1,trialInds);
 
-                p_a1(i,c,chunkInds)=samples.pa1(1,1,trialInds,1,1);%assign changes in 'probability' for outcome 1
-                p_b1(i,c,chunkInds)=samples.pb1(1,1,trialInds,1,1);
+                p_a1(i,c,chunkInds)=samples.pa1(1,1,i,1,trialInds);%assign changes in 'probability' for outcome 1
+                p_b1(i,c,chunkInds)=samples.pb1(1,1,i,1,trialInds);
             end 
         end 
 end
