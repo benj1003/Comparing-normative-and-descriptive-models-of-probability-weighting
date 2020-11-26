@@ -135,17 +135,6 @@ switch mode
 end
 
 %% Choose & load data
-tic;
-
-%% Initialize tmp variables
-%dataSource = '';
-%outputName = '';
-%priorName = '';
-%pz = [];
-%nChunks = 0;
-%nSamples = 0;
-%nChains = 0;
-%samples = [];
 
 for g = 1:nGambles %wrapped around the rest as JAGS cannot handle higher than 3 dimensions (until line 458)
 switch mode
@@ -436,7 +425,7 @@ for i = 1:nChains
 end
 
 %% Run JAGS sampling via matJAGS
-%tic;
+tic;
 fprintf( 'Running JAGS ...\n' ); % start clock to time % display
 
 [samples, stats] = matjags( ...
@@ -456,7 +445,7 @@ fprintf( 'Running JAGS ...\n' ); % start clock to time % display
     'cleanup' , 0 ,...                        % clean up of temporary files?
     'rndseed',1);                             % Randomise seed; 0=no; 1=yes
 
-%toc % end clock
+toc % end clock
 
 %% Save stats and samples
 disp('saving samples and stats...')
@@ -465,7 +454,7 @@ save(['samples_stats\',sprintf('%s_Gamble_%.0f',outputName,g)],'stats','samples'
 
 %['samples_stats\', outputName," Gamble_",int2str(g)],'stats','samples','-v7.3')
 end %and wrapping of gambles
-toc;
+
 %% Print readouts
 disp('stats:'),disp(stats)%print out structure of stats output
 disp('samples:'),disp(samples);%print out structure of samples output
