@@ -5,6 +5,8 @@ import random
 import matplotlib.pyplot as plt 
 import sys
 
+print(os.path.dirname( __file__ ))
+sys.exit(0)
 def trial_generation(gamble_df, g, nTrial, nAgent, threshold=1):
     gamble_nr = [(g+1)]*nTrial
     choice = [np.nan]*nTrial
@@ -72,7 +74,7 @@ df_metadata_all_gambles = pd.DataFrame(columns=cols, index=range(nGambles))
 data_all_gamles = []
 for g in range(nGambles):
     print(g)
-    data_one_gamble, metadata_one_gamble = trial_generation(gambles_df, g, nTrial=100, nAgent=50)
+    data_one_gamble, metadata_one_gamble = trial_generation(gambles_df, g, nTrial=500, nAgent=50)
     df_metadata_all_gambles.loc[g] = metadata_one_gamble
     data_all_gamles.append(data_one_gamble)
 

@@ -156,13 +156,13 @@ switch mode
         
     case 3 %Model comparison on data from CPT
         dataSource = sprintf('Choices_simulated_from_CPT_Gamble_%.0f',g);
-        outputName = 'model_comparison'; priorName='flat prior';
+        outputName = 'model_comparison_CPT'; priorName='flat prior';
         pz=repmat(1/8,1,8);
         nChunks = 1;
 
     case 4 %Model comparison on data from LML
-        dataSource = sprintf('Choices_simulated_from_LML_Gamble_%.0f',g)';
-        outputName = 'model_comparison'; priorName='flat prior';
+        dataSource = sprintf('Choices_simulated_from_LML_Gamble_%.0f',g);
+        outputName = 'model_comparison_LML'; priorName='flat prior';
         pz=repmat(1/8,1,8);
         nChunks = 1;
         
@@ -173,7 +173,8 @@ switch mode
         nChunks = 10; %to examine changes over time
         
     case 6 %parameter recovery for LML data
-        dataSource = sprintf('Choices_simulated_from_LML_Gamble_%.0f',g)';
+        dataSource = sprintf('Choices_simulated_from_LML_Gamble_%.0f',g);
+        outputName = 'parameter_recovery_LML'; priorName='';
         pz=[0,1/4,0,1/4,0,1/4,0,1/4];
         nChunks = 10; %to examine changes over time
 end
@@ -181,7 +182,7 @@ end
 load(dataSource)
 
 %% Set key variables
-nTrials=100;
+nTrials=500;
 
 chunkLength=nTrials/nChunks;
 doDIC=0;%compute Deviance information criteria? This is the hierarchical equivalent of an AIC, the lower the better
@@ -239,7 +240,7 @@ switch mode
         
     case 3
         for i = 1:nAgents
-            trialInds=1:length(samples.y(1,1,:,1,1));%generate indices for each trial
+            trialInds=1:length(samples.y(1,1,1,1,:));%generate indices for each trial
             for c = 1:nChunks %nChunks = 1
                 choice(i,c,trialInds)=samples.y(1,1,i,c,trialInds);%assign to temporary variables
 
@@ -255,7 +256,7 @@ switch mode
 
     case 4
         for i = 1:nAgents
-            trialInds=1:length(samples.y(1,1,:,1,1));%generate indices for each trial
+            trialInds=1:length(samples.y(1,1,1,1,:));%generate indices for each trial
             for c = 1:nChunks %nChunks = 1
                 choice(i,c,trialInds)=samples.y(1,1,i,c,trialInds);%assign to temporary variables
 
