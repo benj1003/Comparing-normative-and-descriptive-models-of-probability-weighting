@@ -5,8 +5,6 @@ import random
 import matplotlib.pyplot as plt 
 import sys
 
-print(os.path.dirname( __file__ ))
-sys.exit(0)
 def trial_generation(gamble_df, g, nTrial, nAgent, threshold=1):
     gamble_nr = [(g+1)]*nTrial
     choice = [np.nan]*nTrial
