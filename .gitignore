@@ -1,6 +1,7 @@
 
 *.ipynb_checkpoints
 *.asv
+*.mat
 Recovery/matjags/
 0Udskrifter/
 1Papers/
