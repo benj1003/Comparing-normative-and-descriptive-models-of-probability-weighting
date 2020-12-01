@@ -44,7 +44,7 @@ switch mode
 
         %Gamma - prior on log since cannot be less than 0
         muLogGammaL=-0.81;muLogGammaU=-0.79;muLogGammaM=(muLogGammaL+muLogGammaU)/2;%bounds on mean of distribution of log Gamma
-        sigmaLogGammaL=1.5;1.6;sigmaLogGammaM=(sigmaLogGammaL+sigmaLogGammaU)/2; %bounds on std of distribution of log Gamma
+        sigmaLogGammaL=1.5;sigmaLogGammaU=1.6;sigmaLogGammaM=(sigmaLogGammaL+sigmaLogGammaU)/2; %bounds on std of distribution of log Gamma
 
     case 2
         %beta - prior on log since cannot be less than 0; note same bounds used for independent priors on all models
