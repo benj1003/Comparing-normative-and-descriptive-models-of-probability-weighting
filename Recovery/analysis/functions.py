@@ -60,3 +60,23 @@ def cpt_weighting_function(x, delta, gamma):
         denumerator = delta*i**gamma + delta*(1-i)**gamma
         w.append(delta*i**gamma/denumerator)
     return w
+
+
+def model_select(z, n_subjects, n_chains, n_samples):
+    lml = 0
+    cpt = 0
+    z_choices_subject = []
+    for i in range(n_subjects):
+        lml_subject = 0
+        cpt_subject = 0
+        for j in range(n_chains):
+            for s in range(n_samples):
+                if z[i,s,j] in [1,3,5,7]:
+                    cpt += 1
+                    cpt_subject += 1
+                else:
+                    lml += 1
+                    lml_subject += 1
+        z_choices_subject.append([cpt_subject/(n_samples*n_chains),lml_subject/(n_samples*n_chains)])
+    z_choices = [cpt/(n_subjects*n_samples*n_chains),lml/(n_subjects*n_samples*n_chains)]
+    return z_choices, z_choices_subject

@@ -1,4 +1,4 @@
-from functions import read_output, process_params, cpt_weighting_function
+from functions import *
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -51,7 +51,7 @@ for i in range(n_chunks):
     plt.suptitle("Weighting function parameters envolvment over time for CPT species")
     plt.subplot(2,5,i+1)
     plt.title(f"Chunk {i+1}")
-    plt.scatter(map_chunks_delta[i], map_chunks_gamma[i])
+    plt.scatter(map_subjects_delta[i], map_subjects_gamma[i])
     plt.xlim([0,1])
     plt.ylim([0,1])
 
@@ -70,6 +70,8 @@ print("\nPlotting...")
 plt.show()
 
 print("------------------------------------")
+
+sys.exit()
 print("Evaluating LML data\n")
 print("Reading output...")
 _,_,beta_cpt,beta_lml,delta,gamma = read_output(lml_file_name,'parameter_recovery')
