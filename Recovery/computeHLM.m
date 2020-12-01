@@ -39,12 +39,12 @@ switch mode
         %sqrt(((muLogAlphaU-muLogAlphaL)^2)/12)-0.01;sigmaLogAlphaU=sqrt(((muLogAlphaU-muLogAlphaL)^2)/12)+0.01;sigmaLogAlphaM=(sigmaLogAlphaL+sigmaLogAlphaU)/2; %bounds on std of distribution of log Alpha
 
         %Delta - prior on log since cannot be less than 0
-        muLogDeltaL=-0.71;muLogDeltaU=-0.69;muLogDeltaM=(muLogDeltaL+muLogDeltaU)/2;%bounds on mean of distribution of log Delta
-        sigmaLogDeltaL=sqrt(((muLogDeltaU-muLogDeltaL)^2)/12)-0.01;sigmaLogDeltaU=sqrt(((muLogDeltaU-muLogDeltaL)^2)/12)+0.01;sigmaLogDeltaM=(sigmaLogDeltaL+sigmaLogDeltaU)/2; %bounds on std of distribution of log Delta
+        muLogDeltaL=-0.21;muLogDeltaU=-0.19;muLogDeltaM=(muLogDeltaL+muLogDeltaU)/2;%bounds on mean of distribution of log Delta
+        sigmaLogDeltaL=1.5;sigmaLogDeltaU=1.6;sigmaLogDeltaM=(sigmaLogDeltaL+sigmaLogDeltaU)/2; %bounds on std of distribution of log Delta
 
         %Gamma - prior on log since cannot be less than 0
-        muLogGammaL=-0.21;muLogGammaU=-0.19;muLogGammaM=(muLogGammaL+muLogGammaU)/2;%bounds on mean of distribution of log Gamma
-        sigmaLogGammaL=sqrt(((muLogGammaU-muLogGammaL)^2)/12)-0.01;sigmaLogGammaU=sqrt(((muLogGammaU-muLogGammaL)^2)/12)+0.01;sigmaLogGammaM=(sigmaLogGammaL+sigmaLogGammaU)/2; %bounds on std of distribution of log Gamma
+        muLogGammaL=-0.81;muLogGammaU=-0.79;muLogGammaM=(muLogGammaL+muLogGammaU)/2;%bounds on mean of distribution of log Gamma
+        sigmaLogGammaL=1.5;1.6;sigmaLogGammaM=(sigmaLogGammaL+sigmaLogGammaU)/2; %bounds on std of distribution of log Gamma
 
     case 2
         %beta - prior on log since cannot be less than 0; note same bounds used for independent priors on all models
@@ -57,12 +57,12 @@ switch mode
         %sqrt(((muLogAlphaU-muLogAlphaL)^2)/12)-0.01;sigmaLogAlphaU=sqrt(((muLogAlphaU-muLogAlphaL)^2)/12)+0.01;sigmaLogAlphaM=(sigmaLogAlphaL+sigmaLogAlphaU)/2; %bounds on std of distribution of log Alpha
 
         %Delta - prior on log since cannot be less than 0
-        muLogDeltaL=-0.71;muLogDeltaU=-0.69;muLogDeltaM=(muLogDeltaL+muLogDeltaU)/2;%bounds on mean of distribution of log Delta
-        sigmaLogDeltaL=sqrt(((muLogDeltaU-muLogDeltaL)^2)/12)-0.01;sigmaLogDeltaU=sqrt(((muLogDeltaU-muLogDeltaL)^2)/12)+0.01;sigmaLogDeltaM=(sigmaLogDeltaL+sigmaLogDeltaU)/2; %bounds on std of distribution of log Delta
+        muLogDeltaL=-0.21;muLogDeltaU=-0.19;muLogDeltaM=(muLogDeltaL+muLogDeltaU)/2;%bounds on mean of distribution of log Delta
+        sigmaLogDeltaL=1.5;1.6;sigmaLogDeltaM=(sigmaLogDeltaL+sigmaLogDeltaU)/2; %bounds on std of distribution of log Delta
 
         %Gamma - prior on log since cannot be less than 0
-        muLogGammaL=-0.21;muLogGammaU=-0.19;muLogGammaM=(muLogGammaL+muLogGammaU)/2;%bounds on mean of distribution of log Gamma
-        sigmaLogGammaL=sqrt(((muLogGammaU-muLogGammaL)^2)/12)-0.01;sigmaLogGammaU=sqrt(((muLogGammaU-muLogGammaL)^2)/12)+0.01;sigmaLogGammaM=(sigmaLogGammaL+sigmaLogGammaU)/2; %bounds on std of distribution of log Gamma
+        muLogGammaL=-0.81;muLogGammaU=-0.79;muLogGammaM=(muLogGammaL+muLogGammaU)/2;%bounds on mean of distribution of log Gamma
+        sigmaLogGammaL=1.5;sigmaLogGammaU=1.6;sigmaLogGammaM=(sigmaLogGammaL+sigmaLogGammaU)/2; %bounds on std of distribution of log Gamma
        
     case 3
         %beta - prior on log since cannot be less than 0; note same bounds used for independent priors on all models
