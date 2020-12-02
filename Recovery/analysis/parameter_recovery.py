@@ -30,40 +30,53 @@ print("\nProcessing Delta...")
 map_marginal_delta, map_chunks_delta, map_subjects_delta = process_params(delta, n_chunks, n_subjects, n_chains, n_samples, output="map")
 
 plt.figure()
-for i in range(n_chunks):
-    plt.subplot(2,5,i+1)
-    plt.scatter(delta_true,map_subjects_delta[i])
+plt.suptitle("Correlation of $\\delta_t$ and $\\delta_e$ for each subject from the CPT-species", fontsize=18)
+for c in range(n_chunks):
+    plt.subplot(2,5,c+1)
+    plt.title(f"Chunk {c+1}", fontsize=16)
+    plt.scatter(delta_true,map_subjects_delta[c])
+    plt.ylabel("Estimated $\\delta$", fontsize=14)
+    plt.xlabel("True $\\delta$", fontsize=14)
 
 #--------gamma----------#
 print("\nProcessing Gamma...")
 map_marginal_gamma, map_chunks_gamma, map_subjects_gamma = process_params(gamma, n_chunks, n_subjects, n_chains, n_samples, output="map")
 
 plt.figure()
-for i in range(n_chunks):
-    plt.subplot(2,5,i+1)
-    plt.scatter(gamma_true,map_subjects_gamma[i])
+plt.suptitle("Correlation of $\\gamma_t$ and $\\gamma_e$ for each subject from the CPT-species", fontsize=18)
+for c in range(n_chunks):
+    plt.subplot(2,5,c+1)
+    plt.title(f"Chunk {c+1}", fontsize=16)
+    plt.scatter(gamma_true,map_subjects_gamma[c])
+    plt.ylabel("Estimated $\\gamma$", fontsize=14)
+    plt.xlabel("True $\\gamma$", fontsize=14)
 
 
 #--------w over chunks (delta,gamma)----------#
 print("\nProcessing w...")
 plt.figure()
-for i in range(n_chunks):
-    plt.suptitle("Weighting function parameters envolvment over time for CPT species")
-    plt.subplot(2,5,i+1)
-    plt.title(f"Chunk {i+1}")
-    plt.scatter(map_subjects_delta[i], map_subjects_gamma[i])
+for c in range(n_chunks):
+    plt.suptitle("Weighting function parameters envolvment for each subject from the CPT-species", fontsize=18)
+    plt.subplot(2,5,c+1)
+    plt.title(f"Chunk {i+1}", fontsize=16)
+    plt.scatter(map_subjects_delta[i], map_subjects_gamma[c])
     plt.xlim([0,1])
     plt.ylim([0,1])
+    plt.ylabel("$\\delta_e$", fontsize=14)
+    plt.xlabel("$\\gamma_e$", fontsize=14)
 
 plt.figure()
+plt.suptitle("Weighting function envolvment for CPT-species", fontsize=18)
 x = np.linspace(0,1,100)
-for i in range(n_chunks):
-    w = cpt_weighting_function(x,map_chunks_gamma[i], map_chunks_delta[i])
+for c in range(n_chunks):
+    w = cpt_weighting_function(x,map_chunks_gamma[c], map_chunks_delta[c])
     w_true = cpt_weighting_function(x, np.median(gamma_true), np.median(delta_true))
     
-    plt.subplot(2,5,i+1)
-    plt.plot(x,w, label="est")
+    plt.subplot(2,5,c+1)
+    plt.plot(x,w, label="Estimated")
     plt.plot(x,w_true, label="True")
+    plt.ylabel("Probability weight - $w(x)$", fontsize=14)
+    plt.xlabel("Probability - $p(x)$", fontsize=14)
     plt.legend()
 
 print("\nPlotting...")
@@ -98,22 +111,27 @@ map_marginal_gamma, map_chunks_gamma, map_subjects_gamma = process_params(gamma,
 #--------w over chunks (delta,gamma)----------#
 print("\nProcessing w...")
 plt.figure()
-for i in range(n_chunks):
-    plt.suptitle("Weighting function parameters envolvment over time for CPT species")
-    plt.subplot(2,5,i+1)
-    plt.title(f"Chunk {i+1}")
-    plt.scatter(map_chunks_delta[i], map_chunks_gamma[i])
+for c in range(n_chunks):
+    plt.suptitle("Weighting function parameters envolvment for each subject from the LML-species", fontsize=18)
+    plt.subplot(2,5,c+1)
+    plt.title(f"Chunk {c+1}", fontsize=16)
+    plt.scatter(map_chunks_delta[c], map_chunks_gamma[c])
+    plt.ylabel("$\\delta_e$", fontsize=14)
+    plt.xlabel("$\\gamma_e$", fontsize=14)
     plt.xlim([0,1])
     plt.ylim([0,1])
 
 plt.figure()
+plt.suptitle("Weighting function envolvment for LML-species", fontsize=18)
 x = np.linspace(0,1,100)
-for i in range(n_chunks):
-    w = cpt_weighting_function(x,map_chunks_gamma[i], map_chunks_delta[i])
+for c in range(n_chunks):
+    w = cpt_weighting_function(x,map_chunks_gamma[c], map_chunks_delta[c])
     
-    plt.subplot(2,5,i+1)
+    plt.subplot(2,5,c+1)
     plt.plot(x,w, label="est")
-    plt.plot(x,w_true, label="True")
+    # plt.plot(x,w_true, label="True") #MUST BE CHANGED!
+    plt.ylabel("Probability weight - $w(x)$", fontsize=14)
+    plt.xlabel("Probability - $p(x)$", fontsize=14)
     plt.legend()
 
 print("\nPlotting...")
