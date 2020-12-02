@@ -3,7 +3,9 @@
 This reposetory contains all code and code needed to replicate the work done in the final project done to fulfill the requirements to obtain a masters degree in Mathematical Modelling and Computation from the Technical University of Denmark (DTU) by stud. polyt Benjamin Skjold Frederiksen. 
 
 ## Data
-The reposetory contains all data needed to replicate all findings. However, it also contains the code that was used to generate the pseudo-random data, such that the full process can be replicated. 
+The reposetory contains the data needed to replicate all findings. Due to size limitations no output files are uploaded, but can be requested. I though emphasize that all code used to generate the pseudo-random data is uploaded and one can therefore produce the output files and thus replicate all findings. 
+
+However, it also contains the code that was used to generate the pseudo-random data, such that the full process can be replicated. 
 
 ## Platform/Environment
 The raw data (the underlying gambles) is in .csv format. A python script (Python 3.7.1) reads this and generate the trials for each gamble (converting from decision from description to decisions from experience).
