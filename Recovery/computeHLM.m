@@ -169,13 +169,13 @@ switch mode
     case 5 %parameter recovery for CPT data
         dataSource = sprintf('Choices_simulated_from_CPT_Gamble_%.0f',g);
         outputName = 'parameter_recovery_CPT'; priorName='';
-        pz=[1/4,0,1/4,0,1/4,0,1/4,0];
+        pz=[1,0,1,0,1,0,1,0];
         nChunks = 5; %to examine changes over time
         
     case 6 %parameter recovery for LML data
         dataSource = sprintf('Choices_simulated_from_LML_Gamble_%.0f',g);
         outputName = 'parameter_recovery_LML'; priorName='';
-        pz=[0,1/4,0,1/4,0,1/4,0,1/4];
+        pz=[1,0,1,0,1,0,1,0];
         nChunks = 5; %to examine changes over time
 end
 
