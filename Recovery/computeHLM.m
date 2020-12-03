@@ -89,24 +89,28 @@ switch mode
         outputName = 'model_comparison_CPT'; priorName='flat prior';
         pz=[1/2,1/2];
         nChunks = 1;
+        load('all_gambles');
 
     case 4 %Model comparison on data from LML
         dataSource = sprintf('Choices_simulated_from_LML_Gamble_%.0f',g);
         outputName = 'model_comparison_LML'; priorName='flat prior';
         pz=[1/2,1/2];
         nChunks = 1;
+        load('all_gambles');
         
     case 5 %parameter recovery for CPT data
         dataSource = sprintf('Choices_simulated_from_CPT_Gamble_%.0f',g);
         outputName = 'parameter_recovery_CPT'; priorName='';
         pz=[1,0];
         nChunks = 5; %to examine changes over time
+        load('all_gambles');
         
     case 6 %parameter recovery for LML data
         dataSource = sprintf('Choices_simulated_from_LML_Gamble_%.0f',g);
         outputName = 'parameter_recovery_LML'; priorName='';
         pz=[1,0];
         nChunks = 5; %to examine changes over time
+        load('all_gambles');
 end
 
 load(dataSource)
@@ -157,13 +161,13 @@ switch mode
             for c = 1:nChunks %nChunks = 1
                 choice(i,c,trialInds)=samples.y(1,1,i,c,trialInds);%assign to temporary variables
 
-                dx1(i,c,trialInds)=samples.dx1(1,1,i,c,trialInds);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
-                dx2(i,c,trialInds)=samples.dx2(1,1,i,c,trialInds);%same for outcome 2 etc.
-                dx3(i,c,trialInds)=samples.dx3(1,1,i,c,trialInds);
-                dx4(i,c,trialInds)=samples.dx4(1,1,i,c,trialInds);
+                dx1(i,c,trialInds)=Data{g,i}.maxA(trialInds);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
+                dx2(i,c,trialInds)=Data{g,i}.minA(trialInds);%same for outcome 2 etc.
+                dx3(i,c,trialInds)=Data{g,i}.maxB(trialInds);
+                dx4(i,c,trialInds)=Data{g,i}.minB(trialInds);
 
-                p_a1(i,c,trialInds)=samples.pa1(1,1,i,c,trialInds);%assign changes in 'probability' for outcome 1
-                p_b1(i,c,trialInds)=samples.pb1(1,1,i,c,trialInds);
+                p_a1(i,c,trialInds)=Data{g,i}.p_maxA(trialInds);%assign changes in 'probability' for outcome 1
+                p_b1(i,c,trialInds)=Data{g,i}.p_maxB(trialInds);
             end 
         end
         
@@ -176,13 +180,13 @@ switch mode
 
                 choice(i,c,chunkInds)=samples.y(1,1,i,1,trialInds);%assign to temporary variables
 
-                dx1(i,c,chunkInds)=samples.dx1(1,1,i,1,trialInds);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
-                dx2(i,c,chunkInds)=samples.dx2(1,1,i,1,trialInds);%same for outcome 2 etc.
-                dx3(i,c,chunkInds)=samples.dx3(1,1,i,1,trialInds);
-                dx4(i,c,chunkInds)=samples.dx4(1,1,i,1,trialInds);
+                dx1(i,c,trialInds)=Data{g,i}.maxA(trialInds);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
+                dx2(i,c,trialInds)=Data{g,i}.minA(trialInds);%same for outcome 2 etc.
+                dx3(i,c,trialInds)=Data{g,i}.maxB(trialInds);
+                dx4(i,c,trialInds)=Data{g,i}.minB(trialInds);
 
-                p_a1(i,c,chunkInds)=samples.pa1(1,1,i,1,trialInds);%assign changes in 'probability' for outcome 1
-                p_b1(i,c,chunkInds)=samples.pb1(1,1,i,1,trialInds);
+                p_a1(i,c,trialInds)=Data{g,i}.p_maxA(trialInds);%assign changes in 'probability' for outcome 1
+                p_b1(i,c,trialInds)=Data{g,i}.p_maxB(trialInds);
             end 
         end 
 
@@ -256,7 +260,7 @@ fprintf( 'Running JAGS ...\n' ); % start clock to time % display
     'cleanup' , 0 ,...                        % clean up of temporary files?
     'rndseed',1);                             % Randomise seed; 0=no; 1=yes
 
-disp('**************');
+disp('\n**************');
 toc % end clock
 
 %% Save stats and samples
