@@ -256,25 +256,25 @@ fprintf( 'Running JAGS ...\n' ); % start clock to time % display
     'cleanup' , 0 ,...                        % clean up of temporary files?
     'rndseed',1);                             % Randomise seed; 0=no; 1=yes
 
+disp('**************');
 toc % end clock
 
 %% Save stats and samples
 disp('saving samples and stats...')
-%save(['samples_stats\', modelName,'_',priorName,'_',dataSource,'_burn_',num2str(nBurnin),'_samps_',num2str(nSamples),'_chains_',num2str(nChains),'_',datestr(now,'mm-dd-yyyy HH-MM')],'stats','samples','-v7.3')
 save(['samples_stats\',sprintf('%s_Gamble_%.0f',outputName,g)],'stats','samples','-v7.3')
+disp('**************');
 
-%['samples_stats\', outputName," Gamble_",int2str(g)],'stats','samples','-v7.3')
 end %and wrapping of gambles
 
 %% Print readouts
 disp('stats:'),disp(stats)%print out structure of stats output
 disp('samples:'),disp(samples);%print out structure of samples output
-%try
-%    rhats=fields(stats.Rhat);
-%    for lp = 1: length(rhats)
-%        disp(['stats.Rhat.',rhats{lp}]);
-%        eval(strcat('stats.Rhat.',rhats{lp}))
-%    end
-%catch
-%    disp('no field for stats.Rhat')
+try
+    rhats=fields(stats.Rhat);
+    for lp = 1: length(rhats)
+        disp(['stats.Rhat.',rhats{lp}]);
+        eval(strcat('stats.Rhat.',rhats{lp}))
+    end
+catch
+    disp('no field for stats.Rhat')
 end
