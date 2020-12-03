@@ -63,14 +63,15 @@ switch mode
         sigmaLogGammaL=0.01;sigmaLogGammaU=1.60;%bounds on std of distribution of log Gamma
 end
 
-%% Choose & load data
+%%wrapped around the rest as JAGS cannot handle higher than 3 dimensions (until line 458)
+for g = 1:nGambles 
 
-for g = 1:nGambles %wrapped around the rest as JAGS cannot handle higher than 3 dimensions (until line 458)
+%% Choose & load data    
 switch mode
     case 1 %simulate choices with CPT
         dataSource = 'all_gambles';
         outputName = 'Choices_simulated_from_CPT'; priorName='';
-        pz=[1,0,1,0,1,0,1,0];
+        pz=[1,0];
         nChunks = 1;
         nSamples = 1;
         nChains = 1;
@@ -78,7 +79,7 @@ switch mode
     case 2 %simulate choices with LML
         dataSource = 'all_gambles';
         outputName = 'Choices_simulated_from_LML'; priorName='';
-        pz=[0,1,0,1,0,1,0,1];
+        pz=[0,1];
         nChunks = 1;
         nSamples = 1;
         nChains = 1;
@@ -86,25 +87,25 @@ switch mode
     case 3 %Model comparison on data from CPT
         dataSource = sprintf('Choices_simulated_from_CPT_Gamble_%.0f',g);
         outputName = 'model_comparison_CPT'; priorName='flat prior';
-        pz=repmat(1/8,1,8);
+        pz=[1/2,1/2];
         nChunks = 1;
 
     case 4 %Model comparison on data from LML
         dataSource = sprintf('Choices_simulated_from_LML_Gamble_%.0f',g);
         outputName = 'model_comparison_LML'; priorName='flat prior';
-        pz=repmat(1/8,1,8);
+        pz=[1/2,1/2];
         nChunks = 1;
         
     case 5 %parameter recovery for CPT data
         dataSource = sprintf('Choices_simulated_from_CPT_Gamble_%.0f',g);
         outputName = 'parameter_recovery_CPT'; priorName='';
-        pz=[1,0,1,0,1,0,1,0];
+        pz=[1,0];
         nChunks = 5; %to examine changes over time
         
     case 6 %parameter recovery for LML data
         dataSource = sprintf('Choices_simulated_from_LML_Gamble_%.0f',g);
         outputName = 'parameter_recovery_LML'; priorName='';
-        pz=[1,0,1,0,1,0,1,0];
+        pz=[1,0];
         nChunks = 5; %to examine changes over time
 end
 
