@@ -119,11 +119,10 @@ doDIC=0;%compute Deviance information criteria? This is the hierarchical equival
 
 %% Print information for user
 disp('**************');
-disp(['running model#_',modelName,':'])
+disp(['running model_',modelName,':'])
+disp(['for_',outputName])
 disp(['_started:_',datestr(clock)])
-disp(['MCMC number_',num2str(whichJAGS)])
 disp(['running on_',dataSource])
-disp(['with_',priorName])
 disp('**************');
 
 %% Initialise matrices
