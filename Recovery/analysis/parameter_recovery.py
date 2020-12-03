@@ -13,6 +13,7 @@ print("Reading output...")
 _,_,beta_cpt,beta_lml,delta,gamma = read_output(cpt_file_name,'parameter_recovery')
 _,_,beta_cpt_true,beta_lml_true,delta_true,gamma_true = read_output('Choices_simulated_from_CPT_Gamble_1.mat','parameter_recovery')
 
+
 n_chunks = np.shape(beta_cpt)[0]
 n_subjects = np.shape(beta_cpt)[1]
 n_samples = np.shape(beta_cpt)[2]
@@ -27,12 +28,74 @@ print('---')
 
 #--------delta----------#
 print("\nProcessing Delta...")
-map_marginal_delta, map_chunks_delta, map_subjects_delta = process_params(delta, n_chunks, n_subjects, n_chains, n_samples, output="map")
+# map_marginal_delta, map_chunks_delta, map_subjects_delta = process_params(delta, n_chunks, n_subjects, n_chains, n_samples, output="map")
+
+dist_marginal, dist_subjects, dist_chunks=  process_params(delta, n_chunks, n_subjects, n_chains, n_samples, output="distributions")
+
+print(np.shape(dist_marginal))
+print(np.shape(dist_subjects))
+print(np.shape(dist_chunks))
+
+plt.figure()
+plt.hist(delta_true[:,0,0], bins=20)
+
+plt.figure()
+plt.hist(dist_marginal,bins=20)
+plt.show()
+sys.exit()
+
+plt.figure()
+plt.suptitle(f"Marginal distribution for $\eta$")
+sns.kdeplot(dist_marginal, label = 'Additive')
+for i in range(50):
+    plt.axvline(delta_true[i,0,0])
+plt.legend(loc = 'upper left')
+plt.show()
+
+dist_marginal, dist_subjects, dist_chunks=  process_params(gamma, n_chunks, n_subjects, n_chains, n_samples, output="distributions")
+dist_marginal_t, dist_subjects, dist_chunks=  process_params(gamma_true, n_chunks, n_subjects, n_chains, n_samples, output="distributions")
+
+
+print(np.shape(dist_marginal))
+print(np.shape(dist_subjects))
+print(np.shape(dist_chunks))
+
+plt.figure()
+plt.suptitle(f"Marginal distribution for $\eta$")
+sns.kdeplot(dist_marginal, label = 'Additive')
+sns.kdeplot(dist_marginal_t, label = 'true')
+plt.legend(loc = 'upper left')
+plt.show()
+
+sys.exit()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 plt.figure()
 plt.suptitle("Correlation of $\\delta_t$ and $\\delta_e$ for each subject from the CPT-species", fontsize=18)
 for c in range(n_chunks):
-    plt.subplot(2,5,c+1)
+    plt.subplot(1,5,c+1)
     plt.title(f"Chunk {c+1}", fontsize=16)
     plt.scatter(delta_true,map_subjects_delta[c])
     plt.ylabel("Estimated $\\delta$", fontsize=14)
@@ -45,21 +108,22 @@ map_marginal_gamma, map_chunks_gamma, map_subjects_gamma = process_params(gamma,
 plt.figure()
 plt.suptitle("Correlation of $\\gamma_t$ and $\\gamma_e$ for each subject from the CPT-species", fontsize=18)
 for c in range(n_chunks):
-    plt.subplot(2,5,c+1)
+    plt.subplot(1,5,c+1)
     plt.title(f"Chunk {c+1}", fontsize=16)
     plt.scatter(gamma_true,map_subjects_gamma[c])
     plt.ylabel("Estimated $\\gamma$", fontsize=14)
     plt.xlabel("True $\\gamma$", fontsize=14)
 
+plt.show()
 
 #--------w over chunks (delta,gamma)----------#
 print("\nProcessing w...")
 plt.figure()
 for c in range(n_chunks):
     plt.suptitle("Weighting function parameters envolvment for each subject from the CPT-species", fontsize=18)
-    plt.subplot(2,5,c+1)
-    plt.title(f"Chunk {i+1}", fontsize=16)
-    plt.scatter(map_subjects_delta[i], map_subjects_gamma[c])
+    plt.subplot(1,5,c+1)
+    plt.title(f"Chunk {c+1}", fontsize=16)
+    plt.scatter(map_subjects_delta[c], map_subjects_gamma[c])
     plt.xlim([0,1])
     plt.ylim([0,1])
     plt.ylabel("$\\delta_e$", fontsize=14)
@@ -70,9 +134,9 @@ plt.suptitle("Weighting function envolvment for CPT-species", fontsize=18)
 x = np.linspace(0,1,100)
 for c in range(n_chunks):
     w = cpt_weighting_function(x,map_chunks_gamma[c], map_chunks_delta[c])
-    w_true = cpt_weighting_function(x, np.median(gamma_true), np.median(delta_true))
+    w_true = cpt_weighting_function(x, np.median(delta_true), np.median(gamma_true))
     
-    plt.subplot(2,5,c+1)
+    plt.subplot(1,5,c+1)
     plt.plot(x,w, label="Estimated")
     plt.plot(x,w_true, label="True")
     plt.ylabel("Probability weight - $w(x)$", fontsize=14)
