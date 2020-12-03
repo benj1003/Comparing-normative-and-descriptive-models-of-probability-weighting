@@ -73,7 +73,7 @@ df_metadata_all_gambles = pd.DataFrame(columns=cols, index=range(nGambles))
 data_all_gamles = []
 for g in range(nGambles):
     print(g)
-    data_one_gamble, metadata_one_gamble = trial_generation(gambles_df, g, nTrial=1000, nAgent=50)
+    data_one_gamble, metadata_one_gamble = trial_generation(gambles_df, g, nTrial=250, nAgent=50)
     df_metadata_all_gambles.loc[g] = metadata_one_gamble
     data_all_gamles.append(data_one_gamble)
 
