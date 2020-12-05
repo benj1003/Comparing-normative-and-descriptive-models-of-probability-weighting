@@ -23,7 +23,7 @@ addpath(fullfile(pwd,'/data'));%set path to include data folder
 addpath(fullfile(pwd,'/samples_stats'));%set path to include samples_stats folder
 
 %% Set model name
-modelName = 'JAGS'; %same model used for all modes
+modelName = 'JAGS_CPT'; %same model used for all modes
 
 %% Set bounds of hyperpriors
 
@@ -101,14 +101,14 @@ switch mode
     case 5 %parameter recovery for CPT data
         dataSource = sprintf('Choices_simulated_from_CPT_Gamble_%.0f',g);
         outputName = 'parameter_recovery_CPT'; priorName='';
-        pz=[1,0];
+        pz=[1];
         nChunks = 5; %to examine changes over time
         load('all_gambles');
         
     case 6 %parameter recovery for LML data
         dataSource = sprintf('Choices_simulated_from_LML_Gamble_%.0f',g);
         outputName = 'parameter_recovery_LML'; priorName='';
-        pz=[1,0];
+        pz=[1];
         nChunks = 5; %to examine changes over time
         load('all_gambles');
 end
@@ -180,13 +180,13 @@ switch mode
 
                 choice(i,c,chunkInds)=samples.y(1,1,i,1,trialInds);%assign to temporary variables
 
-                dx1(i,c,trialInds)=Data{g,i}.maxA(trialInds);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
-                dx2(i,c,trialInds)=Data{g,i}.minA(trialInds);%same for outcome 2 etc.
-                dx3(i,c,trialInds)=Data{g,i}.maxB(trialInds);
-                dx4(i,c,trialInds)=Data{g,i}.minB(trialInds);
+                dx1(i,c,chunkInds)=Data{g,i}.maxA(trialInds);%assign changes in wealth dx for outcome 1 (note same amount for all trials)
+                dx2(i,c,chunkInds)=Data{g,i}.minA(trialInds);%same for outcome 2 etc.
+                dx3(i,c,chunkInds)=Data{g,i}.maxB(trialInds);
+                dx4(i,c,chunkInds)=Data{g,i}.minB(trialInds);
 
-                p_a1(i,c,trialInds)=Data{g,i}.p_maxA(trialInds);%assign changes in 'probability' for outcome 1
-                p_b1(i,c,trialInds)=Data{g,i}.p_maxB(trialInds);
+                p_a1(i,c,chunkInds)=Data{g,i}.p_maxA(trialInds);%assign changes in 'probability' for outcome 1
+                p_b1(i,c,chunkInds)=Data{g,i}.p_maxB(trialInds);
             end 
         end 
 
@@ -242,8 +242,8 @@ for i = 1:nChains
             S=struct; init0(i)=S; %sets initial values as empty so randomly seeded
             
         case {5,6}  %Parameter recovery
-            monitorParameters = {'alpha_pt','gamma_pt','delta_pt','beta_pt',...
-                'beta_lml', 'alpha_lml'};
+            monitorParameters = {'alpha_pt','gamma_pt','delta_pt','beta_pt'};%,...
+                %'beta_lml', 'alpha_lml'};
             S=struct; init0(i)=S; %sets initial values as empty so randomly seeded
                       
     end

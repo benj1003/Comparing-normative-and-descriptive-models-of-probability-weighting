@@ -20,9 +20,9 @@ addpath(genpath(pwd));%adds base directory and subfolders to path, important for
 %% Specify variables
 mode=5;
 whichJAGS=1;
-whichQuals=2;
+whichQuals=1;
 nGambles=1;
-doParallel=1;
+doParallel=0;
 nAgents=50;
 
 
