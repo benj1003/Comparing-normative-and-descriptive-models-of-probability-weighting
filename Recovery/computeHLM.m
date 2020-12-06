@@ -64,7 +64,8 @@ switch mode
 end
 
 %%wrapped around the rest as JAGS cannot handle higher than 3 dimensions (until line 458)
-for g = 1:nGambles 
+%for g = 1:nGambles 
+g = nGambles;
 
 %% Choose & load data    
 switch mode
@@ -102,14 +103,14 @@ switch mode
         dataSource = sprintf('Choices_simulated_from_CPT_Gamble_%.0f',g);
         outputName = 'parameter_recovery_CPT'; priorName='';
         pz=[1];
-        nChunks = 5; %to examine changes over time
+        nChunks = 1; %to examine changes over time
         load('all_gambles');
         
     case 6 %parameter recovery for LML data
         dataSource = sprintf('Choices_simulated_from_LML_Gamble_%.0f',g);
         outputName = 'parameter_recovery_LML'; priorName='';
         pz=[1];
-        nChunks = 5; %to examine changes over time
+        nChunks = 1; %to examine changes over time
         load('all_gambles');
 end
 
@@ -278,17 +279,17 @@ disp('saving samples and stats...')
 save(['samples_stats\',sprintf('%s_Gamble_%.0f',outputName,g)],'stats','samples','-v7.3')
 disp('**************');
 
-end %and wrapping of gambles
+%end %and wrapping of gambles
 
 %% Print readouts
 disp('stats:'),disp(stats)%print out structure of stats output
 disp('samples:'),disp(samples);%print out structure of samples output
-try
-    rhats=fields(stats.Rhat);
-    for lp = 1: length(rhats)
-        disp(['stats.Rhat.',rhats{lp}]);
-        eval(strcat('stats.Rhat.',rhats{lp}))
-    end
-catch
-    disp('no field for stats.Rhat')
+%try
+%    rhats=fields(stats.Rhat);
+%    for lp = 1: length(rhats)
+%        disp(['stats.Rhat.',rhats{lp}]);
+%        eval(strcat('stats.Rhat.',rhats{lp}))
+%    end
+%catch
+%    disp('no field for stats.Rhat')
 end
