@@ -22,9 +22,6 @@ addpath(fullfile(pwd,'/matjags'));%set path to include matjags folder
 addpath(fullfile(pwd,'/data'));%set path to include data folder
 addpath(fullfile(pwd,'/samples_stats'));%set path to include samples_stats folder
 
-%% Set model name
-modelName = 'JAGS_CPT'; %same model used for all modes
-
 %% Set bounds of hyperpriors
 
 switch mode
@@ -71,6 +68,7 @@ g = nGambles;
 switch mode
     case 1 %simulate choices with CPT
         dataSource = 'all_gambles';
+        modelName = 'JAGS_CPT';
         outputName = 'Choices_simulated_from_CPT'; priorName='';
         pz=[1,0];
         nChunks = 1;
@@ -79,6 +77,7 @@ switch mode
         
     case 2 %simulate choices with LML
         dataSource = 'all_gambles';
+        modelName = 'JAGS_LML';
         outputName = 'Choices_simulated_from_LML'; priorName='';
         pz=[0,1];
         nChunks = 1;
@@ -87,6 +86,7 @@ switch mode
         
     case 3 %Model comparison on data from CPT
         dataSource = sprintf('Choices_simulated_from_CPT_Gamble_%.0f',g);
+        modelName = 'JAGS';
         outputName = 'model_comparison_CPT'; priorName='flat prior';
         pz=[1/2,1/2];
         nChunks = 1;
@@ -94,6 +94,7 @@ switch mode
 
     case 4 %Model comparison on data from LML
         dataSource = sprintf('Choices_simulated_from_LML_Gamble_%.0f',g);
+        modelName = 'JAGS';
         outputName = 'model_comparison_LML'; priorName='flat prior';
         pz=[1/2,1/2];
         nChunks = 1;
@@ -102,6 +103,7 @@ switch mode
     case 5 %parameter recovery for CPT data
         dataSource = sprintf('Choices_simulated_from_CPT_Gamble_%.0f',g);
         outputName = 'parameter_recovery_CPT'; priorName='';
+        modelName = 'JAGS_CPT';
         pz=[1];
         nChunks = 1; %to examine changes over time
         load('all_gambles');
@@ -109,6 +111,7 @@ switch mode
     case 6 %parameter recovery for LML data
         dataSource = sprintf('Choices_simulated_from_LML_Gamble_%.0f',g);
         outputName = 'parameter_recovery_LML'; priorName='';
+        modelName = 'JAGS_CPT';
         pz=[1];
         nChunks = 1; %to examine changes over time
         load('all_gambles');
@@ -232,9 +235,13 @@ end
 %everything you want JAGS to monitor
 for i = 1:nChains
     switch mode  
-        case {1,2}  %Simulating choices
+        case {1}  %Simulating choices
             monitorParameters = {'y',...
                 'alpha_pt','gamma_pt','delta_pt','beta_pt'};
+            S=struct; init0(i)=S; %sets initial values as empty so randomly seeded
+            
+        case {2}
+            monitorParameters = {'y'};
             S=struct; init0(i)=S; %sets initial values as empty so randomly seeded
                        
         case {3,4}  %Model recovery
