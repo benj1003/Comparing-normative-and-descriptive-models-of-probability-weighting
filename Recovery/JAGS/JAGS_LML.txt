@@ -32,7 +32,7 @@ for (t in 1:nTrials){
 
 	sdev_lml[i,c,t]	  	= -1 * beta_lml[i,c] * dev_lml[i,c,t] 						#sensitivity-scaled difference in ev
 
-	theta[i,c,t,2] 		= (1)/(1+(exp(sdev_lml[i,c,t])))	
+	theta[i,c,t,1] 		= (1)/(1+(exp(sdev_lml[i,c,t])))	
 
         # Choice
         y[i,c,t]           	~ dbern(theta[i,c,t,1]) 
