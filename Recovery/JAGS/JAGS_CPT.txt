@@ -37,24 +37,13 @@ for (t in 1:nTrials){
 	theta[i,c,t,1] 		= (1)/(1+(exp(sdev_pt[i,c,t]))) 						#choice probability
 
         # Choice
-        y[i,c,t]           	~ dbern(theta[i,c,t,z[i]]) 
+        y[i,c,t]           	~ dbern(theta[i,c,t,1]) 
 
 }# end of trials 
 }# end of chunks
 }# end of agents
 
-##PRIORS
-
-#indicator variables 
-#the model indicator variable z can take on any value from 1:n, and is subject to two stochastic processes, to prevent getting stuck
-#the n values map onto just 2 models, and is simply a means of obtaining parameter expansion for the model indication
-for (i in 1:nAgents){    
-	px_z1[i]    ~ dcat(pz[])                                 #parameter expansion variable for z, takes on integers 1:n with equal probability
-	px_z2[i]    ~ dcat(pz[])                                 #parameter expansion variable for z, takes on integers 1:n with equal probability
-	delta_z1[i] = px_z2[i]-1                                 #parameter expansion variable for z, takes on integers 0:n-1 with equal probability
-	sum_z[i]    = px_z1[i]+delta_z1[i]                       #sum takes on integers 1:2*n -1 with equal probability
-	z[i]        = (sum_z[i] - (1 * trunc(sum_z[i]/1))) + 1   #modulo n, adding 1 to return to values 1 to 2
-}#end of agents       
+##PRIORS   
 
 #submodels
 for (i in 1:nAgents){	
