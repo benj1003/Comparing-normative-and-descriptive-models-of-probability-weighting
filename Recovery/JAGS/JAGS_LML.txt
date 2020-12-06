@@ -1,0 +1,84 @@
+# Latent mixture model used to (only including LML):
+# 1) Generate data from synthetic agents 
+#
+# LML model (lml) presented by Peters et al. (2020)
+
+model{
+
+##LIKELIHOOD
+for (i in 1:nAgents){
+for (c in 1:nChunks){
+for (t in 1:nTrials){
+	#-----------lml-model-----------
+	u_a1_lml[i,c,t]		= pow(dx1[i,c,t],alpha_lml[i,c])						#prospect utility, computed by exponentiating current wealth by alpha   	
+	u_a2_lml[i,c,t]		= pow(dx2[i,c,t],alpha_lml[i,c])	
+	u_b1_lml[i,c,t]		= pow(dx3[i,c,t],alpha_lml[i,c])
+	u_b2_lml[i,c,t]		= pow(dx4[i,c,t],alpha_lml[i,c])
+
+	tmp_w_a1_lml[i,c,t]	= pa1[i,c,t] + sqrt(pa1[i,c,t]/t) 						#weighfunction (numerator)
+	tmp_w_a2_lml[i,c,t]	= (1-pa1[i,c,t]) + sqrt((1-pa1[i,c,t])/t) 
+	tmp_w_b1_lml[i,c,t]	= pb1[i,c,t] + sqrt(pb1[i,c,t]/t)
+	tmp_w_b2_lml[i,c,t]	= (1-pb1[i,c,t]) + sqrt((1-pb1[i,c,t])/t) 
+
+	w_a1_lml[i,c,t]		= tmp_w_a1_lml[i,c,t] / ( tmp_w_a1_lml[i,c,t] + tmp_w_a2_lml[i,c,t] )		#normalizing the weights
+	w_a2_lml[i,c,t]		= tmp_w_a2_lml[i,c,t] / ( tmp_w_a1_lml[i,c,t] + tmp_w_a2_lml[i,c,t] )
+	w_b1_lml[i,c,t]		= tmp_w_b1_lml[i,c,t] / ( tmp_w_b1_lml[i,c,t] + tmp_w_b2_lml[i,c,t] )
+	w_b2_lml[i,c,t]		= tmp_w_b2_lml[i,c,t] / ( tmp_w_b1_lml[i,c,t] + tmp_w_b2_lml[i,c,t] )
+	
+	ev_a_lml[i,c,t]		= u_a1_lml[i,c,t] * w_a1_lml[i,c,t] + u_a2_lml[i,c,t] * w_a2_lml[i,c,t]		#The expected value of the gamble is the utility multiplied with the weight
+	ev_b_lml[i,c,t]		= u_b1_lml[i,c,t] * w_b1_lml[i,c,t] + u_b2_lml[i,c,t] * w_b2_lml[i,c,t]
+
+	dev_lml[i,c,t] 		= ev_a_lml[i,c,t] - ev_b_lml[i,c,t]						#difference in expected values 
+
+	sdev_lml[i,c,t]	  	= -1 * beta_lml[i,c] * dev_lml[i,c,t] 						#sensitivity-scaled difference in ev
+
+	theta[i,c,t,2] 		= (1)/(1+(exp(sdev_lml[i,c,t])))	
+
+        # Choice
+        y[i,c,t]           	~ dbern(theta[i,c,t,z[i]]) 
+
+}# end of trials 
+}# end of chunks
+}# end of agents
+
+##PRIORS
+
+#indicator variables 
+#the model indicator variable z can take on any value from 1:n, and is subject to two stochastic processes, to prevent getting stuck
+#the n values map onto just 2 models, and is simply a means of obtaining parameter expansion for the model indication
+for (i in 1:nAgents){    
+	px_z1[i]    ~ dcat(pz[])                                 #parameter expansion variable for z, takes on integers 1:n with equal probability
+	px_z2[i]    ~ dcat(pz[])                                 #parameter expansion variable for z, takes on integers 1:n with equal probability
+	delta_z1[i] = px_z2[i]-1                                 #parameter expansion variable for z, takes on integers 0:n-1 with equal probability
+	sum_z[i]    = px_z1[i]+delta_z1[i]                       #sum takes on integers 1:2*n -1 with equal probability
+	z[i]        = (sum_z[i] - (1 * trunc(sum_z[i]/1))) + 1   #modulo n, adding 1 to return to values 1 
+}#end of agents       
+
+#submodels
+for (i in 1:nAgents){	
+for (c in 1:nChunks){
+
+#-----------lml-----------
+beta_lml[i,c]		= exp(log_beta_lml[i,c])                        	#lognormally distributed priors
+log_beta_lml[i,c]	~ dnorm(mu_log_beta_lml[c], tau_log_beta_lml[c])  	#log beta_lml sampled from normal dist.
+
+alpha_lml[i,c]		= exp(log_alpha_lml[i,c])                        	#lognormally distributed priors
+log_alpha_lml[i,c]	~ dnorm(mu_log_alpha_lml[c], tau_log_alpha_lml[c])	#log alpha_lml sampled from normal dist.	
+
+}#end of chunks
+}#end of agents
+
+
+##HYPERPRIORS
+for (c in 1:nChunks){
+	#-----------lml-----------
+	mu_log_beta_lml[c]       ~ dunif(muLogBetaL,muLogBetaU)			#prior on mean of dist. of log beta_lml
+	tau_log_beta_lml[c]      = pow(sigma_log_beta_lml[c],-2)   		#prior on precision of dist. of log beta_lml
+	sigma_log_beta_lml[c]    ~ dunif(sigmaLogBetaL,sigmaLogBetaU)      	#prior on std of dist. of log beta_lml
+
+	mu_log_alpha_lml[c]      ~ dunif(muLogAlphaL,muLogAlphaU)         	#prior on mean of dist. of log alpha_pt 
+	tau_log_alpha_lml[c]     = pow(sigma_log_alpha_lml[c],-2)          	#prior on precision of dist. of log alpha_pt
+	sigma_log_alpha_lml[c]   ~ dunif(sigmaLogAlphaL,sigmaLogAlphaU) 	#prior on std of dist. of log alpha_pt
+}#end of chunks
+
+}
