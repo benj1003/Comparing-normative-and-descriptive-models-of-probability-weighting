@@ -234,8 +234,7 @@ for i = 1:nChains
     switch mode  
         case {1,2}  %Simulating choices
             monitorParameters = {'y',...
-                'alpha_pt','gamma_pt','delta_pt','beta_pt',...
-                'beta_lml', 'alpha_lml'};
+                'alpha_pt','gamma_pt','delta_pt','beta_pt'};
             S=struct; init0(i)=S; %sets initial values as empty so randomly seeded
                        
         case {3,4}  %Model recovery
@@ -243,8 +242,7 @@ for i = 1:nChains
             S=struct; init0(i)=S; %sets initial values as empty so randomly seeded
             
         case {5,6}  %Parameter recovery
-            monitorParameters = {'alpha_pt','gamma_pt','delta_pt','beta_pt'};%,...
-                %'beta_lml', 'alpha_lml'};
+            monitorParameters = {'alpha_pt','gamma_pt','delta_pt','beta_pt'};
             S=struct; init0(i)=S; %sets initial values as empty so randomly seeded
                       
     end
