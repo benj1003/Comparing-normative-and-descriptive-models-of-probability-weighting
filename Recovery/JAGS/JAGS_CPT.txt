@@ -36,6 +36,9 @@ for (t in 1:nTrials){
 
 	theta[i,c,t,1] 		= (1)/(1+(exp(sdev_pt[i,c,t]))) 						#choice probability
 
+        # Choice
+        y[i,c,t]           	~ dbern(theta[i,c,t,z[i]]) 
+
 }# end of trials 
 }# end of chunks
 }# end of agents
