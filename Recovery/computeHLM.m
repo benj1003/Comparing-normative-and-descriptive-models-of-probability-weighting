@@ -36,11 +36,11 @@ switch mode
 
         %Delta - prior on mean set by dirac function to 0.5
         muLogDeltaL=-0.21;muLogDeltaU=-0.19;%bounds on mean of distribution of log Delta
-        sigmaLogDeltaL=0.99;sigmaLogDeltaU=1.00; %bounds on std of distribution of log Delta
+        sigmaLogDeltaL=0.34;sigmaLogDeltaU=0.36; %bounds on std of distribution of log Delta
 
         %Gamma - prior on mean set by dirac function to 0.4
         muLogGammaL=-0.81;muLogGammaU=-0.79;%bounds on mean of distribution of log Gamma
-        sigmaLogGammaL=0.99;sigmaLogGammaU=1.00; %bounds on std of distribution of log Gamma
+        sigmaLogGammaL=0.34;sigmaLogGammaU=0.36; %bounds on std of distribution of log Gamma
 
     case {3,4,5,6}
         %beta - prior on log since cannot be less than 0; note same bounds used for independent priors on all models
@@ -105,7 +105,7 @@ switch mode
         outputName = 'parameter_recovery_CPT'; priorName='';
         modelName = 'JAGS_CPT';
         pz=[1];
-        nChunks = 1; %to examine changes over time
+        nChunks = 5; %to examine changes over time
         load('all_gambles');
         
     case 6 %parameter recovery for LML data
@@ -113,7 +113,7 @@ switch mode
         outputName = 'parameter_recovery_LML'; priorName='';
         modelName = 'JAGS_CPT';
         pz=[1];
-        nChunks = 1; %to examine changes over time
+        nChunks = 5; %to examine changes over time
         load('all_gambles');
 end
 
