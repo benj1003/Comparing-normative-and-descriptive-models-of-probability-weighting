@@ -36,11 +36,11 @@ switch mode
 
         %Delta - prior on mean set by dirac function to 0.5
         muLogDeltaL=-0.21;muLogDeltaU=-0.19;%bounds on mean of distribution of log Delta
-        sigmaLogDeltaL=0.34;sigmaLogDeltaU=0.36; %bounds on std of distribution of log Delta
+        sigmaLogDeltaL=0.49;sigmaLogDeltaU=0.50; %bounds on std of distribution of log Delta
 
         %Gamma - prior on mean set by dirac function to 0.4
         muLogGammaL=-0.81;muLogGammaU=-0.79;%bounds on mean of distribution of log Gamma
-        sigmaLogGammaL=0.34;sigmaLogGammaU=0.36; %bounds on std of distribution of log Gamma
+        sigmaLogGammaL=0.49;sigmaLogGammaU=0.50; %bounds on std of distribution of log Gamma
 
     case {3,4,5,6}
         %beta - prior on log since cannot be less than 0; note same bounds used for independent priors on all models
