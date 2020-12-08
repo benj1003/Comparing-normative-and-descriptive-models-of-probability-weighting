@@ -70,7 +70,6 @@ switch mode
         dataSource = 'all_gambles';
         modelName = 'JAGS_CPT';
         outputName = 'Choices_simulated_from_CPT'; priorName='';
-        pz=[1,0];
         nChunks = 1;
         nSamples = 1;
         nChains = 1;
@@ -79,7 +78,6 @@ switch mode
         dataSource = 'all_gambles';
         modelName = 'JAGS_LML';
         outputName = 'Choices_simulated_from_LML'; priorName='';
-        pz=[0,1];
         nChunks = 1;
         nSamples = 1;
         nChains = 1;
@@ -104,7 +102,6 @@ switch mode
         dataSource = sprintf('Choices_simulated_from_CPT_Gamble_%.0f',g);
         outputName = 'parameter_recovery_CPT'; priorName='';
         modelName = 'JAGS_CPT';
-        pz=[1];
         nChunks = 5; %to examine changes over time
         load('all_gambles');
         
@@ -112,7 +109,6 @@ switch mode
         dataSource = sprintf('Choices_simulated_from_LML_Gamble_%.0f',g);
         outputName = 'parameter_recovery_LML'; priorName='';
         modelName = 'JAGS_CPT';
-        pz=[1];
         nChunks = 5; %to examine changes over time
         load('all_gambles');
 end
@@ -206,8 +202,7 @@ switch mode
             'muLogBetaL',muLogBetaL,'muLogBetaU',muLogBetaU,'sigmaLogBetaL',sigmaLogBetaL,'sigmaLogBetaU',sigmaLogBetaU,...
             'muLogAlphaL',muLogAlphaL,'muLogAlphaU',muLogAlphaU,'sigmaLogAlphaL',sigmaLogAlphaL,'sigmaLogAlphaU',sigmaLogAlphaU,...
             'muLogDeltaL',muLogDeltaL,'muLogDeltaU',muLogDeltaU,'sigmaLogDeltaL',sigmaLogDeltaL,'sigmaLogDeltaU',sigmaLogDeltaU,...
-            'muLogGammaL',muLogGammaL,'muLogGammaU',muLogGammaU,'sigmaLogGammaL',sigmaLogGammaL,'sigmaLogGammaU',sigmaLogGammaU,...
-            'pz',pz);
+            'muLogGammaL',muLogGammaL,'muLogGammaU',muLogGammaU,'sigmaLogGammaL',sigmaLogGammaL,'sigmaLogGammaU',sigmaLogGammaU);
                
     case {3,4} %Model Recovery
         dataStruct = struct(...
@@ -228,8 +223,7 @@ switch mode
             'muLogBetaL',muLogBetaL,'muLogBetaU',muLogBetaU,'sigmaLogBetaL',sigmaLogBetaL,'sigmaLogBetaU',sigmaLogBetaU,...
             'muLogAlphaL',muLogAlphaL,'muLogAlphaU',muLogAlphaU,'sigmaLogAlphaL',sigmaLogAlphaL,'sigmaLogAlphaU',sigmaLogAlphaU,...
             'muLogDeltaL',muLogDeltaL,'muLogDeltaU',muLogDeltaU,'sigmaLogDeltaL',sigmaLogDeltaL,'sigmaLogDeltaU',sigmaLogDeltaU,...
-            'muLogGammaL',muLogGammaL,'muLogGammaU',muLogGammaU,'sigmaLogGammaL',sigmaLogGammaL,'sigmaLogGammaU',sigmaLogGammaU,...
-            'pz',pz);
+            'muLogGammaL',muLogGammaL,'muLogGammaU',muLogGammaU,'sigmaLogGammaL',sigmaLogGammaL,'sigmaLogGammaU',sigmaLogGammaU);
 end
 
 %everything you want JAGS to monitor
