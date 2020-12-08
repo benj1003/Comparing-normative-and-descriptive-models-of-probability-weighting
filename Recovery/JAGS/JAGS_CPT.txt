@@ -34,10 +34,12 @@ for (t in 1:nTrials){
 
 	sdev_pt[i,c,t]		= -1 * beta_pt[i,c] * dev_pt[i,c,t] 						#sensitivity-scaled difference in ev
 
-	theta[i,c,t,1] 		= (1)/(1+(exp(sdev_pt[i,c,t]))) 						#choice probability
-
-        # Choice
-        y[i,c,t]           	~ dbern(theta[i,c,t,1]) 
+	tmp[i,c,t] 		= (1)/(1+(exp(sdev_pt[i,c,t]))) 						#choice probability
+	
+	theta[i,c,t]		= max(0.000001,min(0.999999, tmp[i,c,t])) 					#ensure 0 < cp < 1
+        
+	# Choice
+        y[i,c,t]           	~ dbern(theta[i,c,t]) 
 
 }# end of trials 
 }# end of chunks

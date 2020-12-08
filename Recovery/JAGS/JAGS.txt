@@ -36,7 +36,9 @@ for (t in 1:nTrials){
 
 	sdev_pt[i,c,t]		= -1 * beta_pt[i,c] * dev_pt[i,c,t] 						#sensitivity-scaled difference in ev
 
-	theta[i,c,t,1] 		= (1)/(1+(exp(sdev_pt[i,c,t]))) 						#choice probability
+	tmp[i,c,t,1] 		= (1)/(1+(exp(sdev_pt[i,c,t]))) 						#choice probability
+	
+	theta[i,c,t,1]		= max(0.000001,min(0.999999, tmp[i,c,t,1])) 					#ensure 0 < cp < 1
 
 	#-----------lml-model-----------
 	u_a1_lml[i,c,t]		= pow(dx1[i,c,t],alpha_lml[i,c])						#prospect utility, computed by exponentiating current wealth by alpha   	
@@ -61,7 +63,9 @@ for (t in 1:nTrials){
 
 	sdev_lml[i,c,t]	  	= -1 * beta_lml[i,c] * dev_lml[i,c,t] 						#sensitivity-scaled difference in ev
 
-	theta[i,c,t,2] 		= (1)/(1+(exp(sdev_lml[i,c,t])))	
+	tmp[i,c,t,2] 		= (1)/(1+(exp(sdev_lml[i,c,t])))	
+	
+	theta[i,c,t,2]		= max(0.000001,min(0.999999, tmp[i,c,t,2])) 					#ensure 0 < cp < 1
 
         # Choice
         y[i,c,t]           	~ dbern(theta[i,c,t,z[i]]) 

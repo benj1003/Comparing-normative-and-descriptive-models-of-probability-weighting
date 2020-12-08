@@ -32,10 +32,12 @@ for (t in 1:nTrials){
 
 	sdev_lml[i,c,t]	  	= -1 * beta_lml[i,c] * dev_lml[i,c,t] 						#sensitivity-scaled difference in ev
 
-	theta[i,c,t,1] 		= (1)/(1+(exp(sdev_lml[i,c,t])))	
+	tmp[i,c,t] 		= (1)/(1+(exp(sdev_lml[i,c,t])))	
+	
+	theta[i,c,t]		= max(0.000001,min(0.999999, tmp[i,c,t])) 					#ensure 0 < cp < 1
 
         # Choice
-        y[i,c,t]           	~ dbern(theta[i,c,t,1]) 
+        y[i,c,t]           	~ dbern(theta[i,c,t]) 
 
 }# end of trials 
 }# end of chunks
