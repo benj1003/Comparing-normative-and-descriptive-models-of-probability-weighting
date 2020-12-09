@@ -67,11 +67,11 @@ for (t in 1:nTrials){
 	
 	theta[i,g,t,2]		= max(0.000001,min(0.999999, tmp[i,g,t,2])) 					#ensure 0 < cp < 1
 
-        # Choice
+        #-----------Choice-----------
         y[i,g,t]           	~ dbern(theta[i,g,t,z[i]]) 
 
 }# end of trials 
-}# end of chunks
+}# end of gambles
 }# end of agents
 
 ##PRIORS
@@ -90,24 +90,24 @@ for (i in 1:nAgents){
 #submodels
 for (i in 1:nAgents){	
 #-----------pt-----------
-beta_pt[i]	= exp(log_beta_pt[i])                          		#lognormally distributed priors
-log_beta_pt[i]	~ dnorm(mu_log_beta_pt[c], tau_log_beta_pt[c])  	#log beta_pt sampled from normal dist.
+beta_pt[i]	= exp(log_beta_pt[i])                          	#lognormally distributed priors
+log_beta_pt[i]	~ dnorm(mu_log_beta_pt, tau_log_beta_pt)  	#log beta_pt sampled from normal dist.
 
-alpha_pt[i]	= exp(log_alpha_pt[i])                          	#lognormally distributed priors
-log_alpha_pt[i]	~ dnorm(mu_log_alpha_pt[c], tau_log_alpha_pt[c])  	#log alpha_pt sampled from normal dist.
+alpha_pt[i]	= exp(log_alpha_pt[i])                          #lognormally distributed priors
+log_alpha_pt[i]	~ dnorm(mu_log_alpha_pt, tau_log_alpha_pt)  	#log alpha_pt sampled from normal dist.
 
-delta_pt[i]	= exp(log_delta_pt[i])                          	#lognormally distributed priors
-log_delta_pt[i]	~ dnorm(mu_log_delta_pt[c], tau_log_delta_pt[c])  	#log delta_pt sampled from normal dist.
+delta_pt[i]	= exp(log_delta_pt[i])                          #lognormally distributed priors
+log_delta_pt[i]	~ dnorm(mu_log_delta_pt, tau_log_delta_pt)  	#log delta_pt sampled from normal dist.
 
-gamma_pt[i]	= exp(log_gamma_pt[i])                          	#lognormally distributed priors
-log_gamma_pt[i]	~ dnorm(mu_log_gamma_pt[c], tau_log_gamma_pt[c])  	#log gamma_pt sampled from normal dist.	
+gamma_pt[i]	= exp(log_gamma_pt[i])                          #lognormally distributed priors
+log_gamma_pt[i]	~ dnorm(mu_log_gamma_pt, tau_log_gamma_pt)  	#log gamma_pt sampled from normal dist.	
 
 #-----------lml-----------
-beta_lml[i]	= exp(log_beta_lml[i])                        		#lognormally distributed priors
-log_beta_lml[i]	~ dnorm(mu_log_beta_lml[c], tau_log_beta_lml[c])  	#log beta_lml sampled from normal dist.
+beta_lml[i]	= exp(log_beta_lml[i])                        	#lognormally distributed priors
+log_beta_lml[i]	~ dnorm(mu_log_beta_lml, tau_log_beta_lml)  	#log beta_lml sampled from normal dist.
 
-alpha_lml[i]	= exp(log_alpha_lml[i])                        		#lognormally distributed priors
-log_alpha_lml[i]~ dnorm(mu_log_alpha_lml[c], tau_log_alpha_lml[c])	#log alpha_lml sampled from normal dist.	
+alpha_lml[i]	= exp(log_alpha_lml[i])                        	#lognormally distributed priors
+log_alpha_lml[i]~ dnorm(mu_log_alpha_lml, tau_log_alpha_lml)	#log alpha_lml sampled from normal dist.	
 
 }#end of agents
 
