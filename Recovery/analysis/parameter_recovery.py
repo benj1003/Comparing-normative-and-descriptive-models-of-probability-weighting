@@ -3,24 +3,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import sys
+import scipy.stats as sc
 
-cpt_file_name = 'parameter_recovery_CPT_Gamble_1.mat'
-lml_file_name = "test"
+cpt_file_name = 'parameter_recovery_CPT_Gamble_2.mat'
+lml_file_name = "parameter_recovery_LML_Gamble_2.mat"
 
 print("------------------------------------")
 print("Evaluating CPT data...\n")
 print("Reading output...")
-_,_,beta_cpt,beta_lml,delta,gamma = read_output(cpt_file_name,'parameter_recovery')
-_,_,beta_cpt_true,beta_lml_true,delta_true,gamma_true = read_output('Choices_simulated_from_CPT_Gamble_1.mat','parameter_recovery')
+_,beta,delta,gamma = read_output(cpt_file_name,'parameter_recovery')
+_,beta_true,delta_true,gamma_true = read_output('Choices_simulated_from_CPT_Gamble_2.mat','parameter_recovery')
 
-
-n_chunks = np.shape(beta_cpt)[0]
-n_subjects = np.shape(beta_cpt)[1]
-n_samples = np.shape(beta_cpt)[2]
-n_chains = np.shape(beta_cpt)[3]
+n_chunks = np.shape(beta)[0]
+n_agents = np.shape(beta)[1]
+n_samples = np.shape(beta)[2]
+n_chains = np.shape(beta)[3]
 
 print('---')
-print(f"Number of subjects = {n_subjects}")
+print(f"Number of agents = {n_agents}")
 print(f"Number of chunks = {n_chunks}")
 print(f"Number of chains = {n_chains}")
 print(f"Number of samples = {n_samples}")
@@ -28,175 +28,107 @@ print('---')
 
 #--------delta----------#
 print("\nProcessing Delta...")
-# map_marginal_delta, map_chunks_delta, map_subjects_delta = process_params(delta, n_chunks, n_subjects, n_chains, n_samples, output="map")
-
-dist_marginal, dist_subjects, dist_chunks=  process_params(delta, n_chunks, n_subjects, n_chains, n_samples, output="distributions")
-
-print(np.shape(dist_marginal))
-print(np.shape(dist_subjects))
-print(np.shape(dist_chunks))
+_,_, map_agent_delta = process_params(delta, n_chunks, n_agents, n_chains, n_samples, output="map")
 
 plt.figure()
-plt.hist(delta_true[:,0,0], bins=20)
-
-plt.figure()
-plt.hist(dist_marginal,bins=20)
-plt.show()
-sys.exit()
-
-plt.figure()
-plt.suptitle(f"Marginal distribution for $\eta$")
-sns.kdeplot(dist_marginal, label = 'Additive')
-for i in range(50):
-    plt.axvline(delta_true[i,0,0])
-plt.legend(loc = 'upper left')
-plt.show()
-
-dist_marginal, dist_subjects, dist_chunks=  process_params(gamma, n_chunks, n_subjects, n_chains, n_samples, output="distributions")
-dist_marginal_t, dist_subjects, dist_chunks=  process_params(gamma_true, n_chunks, n_subjects, n_chains, n_samples, output="distributions")
-
-
-print(np.shape(dist_marginal))
-print(np.shape(dist_subjects))
-print(np.shape(dist_chunks))
-
-plt.figure()
-plt.suptitle(f"Marginal distribution for $\eta$")
-sns.kdeplot(dist_marginal, label = 'Additive')
-sns.kdeplot(dist_marginal_t, label = 'true')
-plt.legend(loc = 'upper left')
-plt.show()
-
-sys.exit()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-plt.figure()
-plt.suptitle("Correlation of $\\delta_t$ and $\\delta_e$ for each subject from the CPT-species", fontsize=18)
+plt.suptitle("True value vs estimated (Delta) for each agent")
 for c in range(n_chunks):
     plt.subplot(1,5,c+1)
-    plt.title(f"Chunk {c+1}", fontsize=16)
-    plt.scatter(delta_true,map_subjects_delta[c])
-    plt.ylabel("Estimated $\\delta$", fontsize=14)
-    plt.xlabel("True $\\delta$", fontsize=14)
+    plt.title(f"Chunk {c+1}")
+    plt.xlabel("$\\delta_{est}$")
+    plt.ylabel("$\\delta_{true}$")
+    plt.scatter(map_agent_delta[c], delta_true[:,0,0])
+    plt.xlim([0,2])
+    plt.ylim([0,2])
+    corr,_ = sc.pearsonr(map_agent_delta[c],delta_true[:,0,0])
+    print(f"Pearson correlation coefficient for Delta in chunk {c+1}: {corr}")
 
 #--------gamma----------#
 print("\nProcessing Gamma...")
-map_marginal_gamma, map_chunks_gamma, map_subjects_gamma = process_params(gamma, n_chunks, n_subjects, n_chains, n_samples, output="map")
 
-plt.figure()
-plt.suptitle("Correlation of $\\gamma_t$ and $\\gamma_e$ for each subject from the CPT-species", fontsize=18)
+_,_, map_agent_gamma = process_params(gamma, n_chunks, n_agents, n_chains, n_samples, output="map")
+
 for c in range(n_chunks):
-    plt.subplot(1,5,c+1)
-    plt.title(f"Chunk {c+1}", fontsize=16)
-    plt.scatter(gamma_true,map_subjects_gamma[c])
-    plt.ylabel("Estimated $\\gamma$", fontsize=14)
-    plt.xlabel("True $\\gamma$", fontsize=14)
+    plt.figure()
+    plt.scatter(map_agent_gamma[c], gamma_true[:,0,0])
+    plt.xlim([0,2])
+    plt.ylim([0,2])
+    corr,_ = sc.pearsonr(map_agent_gamma[c],gamma_true[:,0,0])
+    print("Pearson correlation coefficient for Gamma: ", corr)
 
-plt.show()
 
-#--------w over chunks (delta,gamma)----------#
+#--------PW----------#
 print("\nProcessing w...")
-plt.figure()
 for c in range(n_chunks):
-    plt.suptitle("Weighting function parameters envolvment for each subject from the CPT-species", fontsize=18)
-    plt.subplot(1,5,c+1)
-    plt.title(f"Chunk {c+1}", fontsize=16)
-    plt.scatter(map_subjects_delta[c], map_subjects_gamma[c])
-    plt.xlim([0,1])
-    plt.ylim([0,1])
-    plt.ylabel("$\\delta_e$", fontsize=14)
-    plt.xlabel("$\\gamma_e$", fontsize=14)
+    plt.figure()
+    plt.scatter(map_agent_gamma[c], map_agent_delta[c])
+    plt.xlim([0,2])
+    plt.ylim([0,2])
 
 plt.figure()
 plt.suptitle("Weighting function envolvment for CPT-species", fontsize=18)
 x = np.linspace(0,1,100)
 for c in range(n_chunks):
-    w = cpt_weighting_function(x,map_chunks_gamma[c], map_chunks_delta[c])
-    w_true = cpt_weighting_function(x, np.median(delta_true), np.median(gamma_true))
-    
+    w = []
+    w_true = []
     plt.subplot(1,5,c+1)
-    plt.plot(x,w, label="Estimated")
-    plt.plot(x,w_true, label="True")
-    plt.ylabel("Probability weight - $w(x)$", fontsize=14)
-    plt.xlabel("Probability - $p(x)$", fontsize=14)
-    plt.legend()
+    for i in range(1):
+        w.append(cpt_weighting_function(x,map_agent_gamma[c][i], map_agent_delta[c][i]))
+        w_true.append(cpt_weighting_function(x, gamma_true[i,0,0], delta_true[i,0,0]))
+    
+        
+        plt.plot(x,w[i], label="Estimated")
+        plt.plot(x,w_true[i], label="True")
+        plt.ylabel("Probability weight - $w(x)$", fontsize=14)
+        plt.xlabel("Probability - $p(x)$", fontsize=14)
+        plt.legend()
 
 print("\nPlotting...")
 plt.show()
 
+
+plt.show()
+
+
+
 print("------------------------------------")
-
-sys.exit()
-print("Evaluating LML data\n")
+print("Evaluating LML data...\n")
 print("Reading output...")
-_,_,beta_cpt,beta_lml,delta,gamma = read_output(lml_file_name,'parameter_recovery')
-n_chunks = np.shape(beta_cpt)[0]
-n_subjects = np.shape(beta_cpt)[1]
-n_samples = np.shape(beta_cpt)[2]
-n_chains = np.shape(beta_cpt)[3]
+_,beta_LML,delta_LML,gamma_LML = read_output(lml_file_name,'parameter_recovery')
 
-print('---')
-print(f"Number of subjects = {n_subjects}")
-print(f"Number of chunks = {n_chunks}")
-print(f"Number of chains = {n_chains}")
-print(f"Number of samples = {n_samples}")
-print('---')
+n_chunks = np.shape(delta_LML)[0]
+n_agents = np.shape(delta_LML)[1]
+n_samples = np.shape(delta_LML)[2]
+n_chains = np.shape(delta_LML)[3]
 
-#--------delta----------#
 print("\nProcessing Delta...")
-map_marginal_delta, map_chunks_delta, map_subjects_delta = process_params(delta, n_chunks, n_subjects, n_chains, n_samples, output="map")
-
-#--------gamma----------#
+_,_, map_agent_delta_LML = process_params(delta_LML, n_chunks, n_agents, n_chains, n_samples, output="map")
 print("\nProcessing Gamma...")
-map_marginal_gamma, map_chunks_gamma, map_subjects_gamma = process_params(gamma, n_chunks, n_subjects, n_chains, n_samples, output="map")
+_,_, map_agent_gamma_LML = process_params(gamma_LML, n_chunks, n_agents, n_chains, n_samples, output="map")
 
-#--------w over chunks (delta,gamma)----------#
+#--------PW----------#
 print("\nProcessing w...")
 plt.figure()
 for c in range(n_chunks):
-    plt.suptitle("Weighting function parameters envolvment for each subject from the LML-species", fontsize=18)
-    plt.subplot(2,5,c+1)
-    plt.title(f"Chunk {c+1}", fontsize=16)
-    plt.scatter(map_chunks_delta[c], map_chunks_gamma[c])
-    plt.ylabel("$\\delta_e$", fontsize=14)
-    plt.xlabel("$\\gamma_e$", fontsize=14)
-    plt.xlim([0,1])
-    plt.ylim([0,1])
+    plt.subplot(1,5,c+1)
+    plt.scatter(map_agent_gamma_LML[c], map_agent_delta_LML[c])
+    plt.xlim([0,2])
+    plt.ylim([0,2])
 
 plt.figure()
-plt.suptitle("Weighting function envolvment for LML-species", fontsize=18)
+plt.suptitle("Weighting function envolvment for CPT-species", fontsize=18)
 x = np.linspace(0,1,100)
 for c in range(n_chunks):
-    w = cpt_weighting_function(x,map_chunks_gamma[c], map_chunks_delta[c])
-    
-    plt.subplot(2,5,c+1)
-    plt.plot(x,w, label="est")
-    # plt.plot(x,w_true, label="True") #MUST BE CHANGED!
-    plt.ylabel("Probability weight - $w(x)$", fontsize=14)
-    plt.xlabel("Probability - $p(x)$", fontsize=14)
-    plt.legend()
+    w = []
+    w_true = []
+    plt.subplot(1,5,c+1)
+    for i in range(1):
+        w.append(cpt_weighting_function(x,map_agent_gamma_LML[c][i], map_agent_delta_LML[c][i])) 
+        
+        plt.plot(x,w[i], label="Estimated")
+        plt.ylabel("Probability weight - $w(x)$", fontsize=14)
+        plt.xlabel("Probability - $p(x)$", fontsize=14)
+        plt.legend()
 
 print("\nPlotting...")
 plt.show()
