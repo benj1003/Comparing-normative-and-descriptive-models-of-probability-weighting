@@ -1,6 +1,9 @@
 import h5py
 import os
+import math
 import numpy as np
+import scipy.stats as sc
+
 
 def read_output(file_name,analysis):
     with h5py.File(os.path.join(os.path.dirname( __file__ ),'..','samples_stats',file_name), 'r') as file:
@@ -9,50 +12,30 @@ def read_output(file_name,analysis):
             return z
 
         if analysis == "parameter_recovery":
-            alpha_cpt = file['samples'].get('alpha_pt').value
-            alpha_lml = file['samples'].get('alpha_lml').value
-            beta_cpt = file['samples'].get('beta_pt').value
-            beta_lml = file['samples'].get('beta_lml').value
+            alpha = file['samples'].get('alpha_pt').value
+            beta = file['samples'].get('beta_pt').value
             delta = file['samples'].get('delta_pt').value
             gamma = file['samples'].get('gamma_pt').value
-            return alpha_cpt, alpha_lml, beta_cpt, beta_lml, delta, gamma
+            return alpha, beta, delta, gamma
 
-def process_params(param, n_chunks, n_subjects, n_chains, n_samples, output="map"):
-    dist_marginal = [] #marginal distribution for delta over all subjects and chunks
-    dist_chunks = [] #marginal distribution for delta over all subjects (within each chunk)
-    dist_subjects = [] #distribution for delta within each chunk and subject
-    for c in range(n_chunks):
-        tmp_chunk = []
-        for i in range(n_subjects):
-            tmp_subject = []
-            for s in range(n_samples):
-                for j in range(n_chains):
-                    dist_marginal.append(param[c,i,s,j])
-
-                    tmp_subject.append(param[c,i,s,j])
-            tmp_chunk.append(tmp_subject)
-        dist_subjects.append(tmp_chunk)
-        dist_chunks.append(tmp_subject)
-
-        if output=="distributions":
-            return dist_marginal, dist_subjects, dist_chunks
-    
-    map_marginal = []
-    map_chunks = []
-    map_subjects = []
-
-    hist, bin_edges = np.histogram(dist_marginal, bins=500)
-    map_marginal.append(bin_edges[np.argmax(hist)])
-    for c in range(n_chunks):
+def process_params(param, n_agents, n_chains, n_samples, output="map"):
+    dist_marginal = [] 
+    dist_agents = []
+    for i in range(n_agents):
         tmp = []
-        hist, bin_edges = np.histogram(dist_chunks[c], bins=500)
-        map_chunks.append(bin_edges[np.argmax(hist)])
-        for i in range(n_subjects):
-            hist, bin_edges = np.histogram(dist_subjects[c][i], bins=500)
-            tmp.append(bin_edges[np.argmax(hist)])
-        map_subjects.append(tmp)
+        for s in range(n_samples):
+            for j in range(n_chains):
+                dist_marginal.append(param[i,s,j])
+                tmp.append(param[i,s,j])
+        dist_agents.append(tmp)
+    if output == "dist":
+        return dist_marginal, dist_agents
 
-    return map_marginal, map_chunks, map_subjects
+    map_marginal = sc.mode(dist_marginal)[0][0]
+    map_agent = []
+    for i in range(n_agents):
+        map_agent.append(sc.mode(dist_agents[i])[0][0])
+    return map_marginal, map_agent
 
 def cpt_weighting_function(x, delta, gamma):
     w = []
@@ -61,8 +44,16 @@ def cpt_weighting_function(x, delta, gamma):
         w.append(delta*i**gamma/denumerator)
     return w
 
+def lml_weighting_function(x,T):
+    w = []
+    for i in x:
+        xn = 1-i
+        n = i + math.sqrt(i/T)
+        d = n + (xn+math.sqrt(xn/T))
+        w.append(n/d)
+    return w
 
-def model_select(z, n_subjects, n_chains, n_samples):
+def model_select(z, n_subjects, n_chains, n_samples): #NOT DONE!
     lml = 0
     cpt = 0
     z_choices_subject = []
