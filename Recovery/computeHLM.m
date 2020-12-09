@@ -66,7 +66,7 @@ switch mode
     case {1,2,3,4}
         nTrials = [100];
     case {5,6}
-        nTrials = [20,100];
+        nTrials = [10,50,100];
 end
 doDIC=0;%compute Deviance information criteria? This is the hierarchical equivalent of an AIC, the lower the better
 
@@ -244,7 +244,7 @@ fprintf( 'Running JAGS ...\n' ); % start clock to time % display
     'monitorparams', monitorParameters, ...   % List of latent variables to monitor
     'savejagsoutput' , 1 , ...                % Save command line output produced by JAGS?
     'verbosity' , 1 , ...                     % 0=do not produce any output; 1=minimal text output; 2=maximum text output
-    'cleanup' , 1 ,...                        % clean up of temporary files?
+    'cleanup' , 0 ,...                        % clean up of temporary files?
     'rndseed',1);                             % Randomise seed; 0=no; 1=yes
 
 disp('\n**************');
