@@ -1,0 +1,71 @@
+# Latent mixture model used to (Only LML):
+# 1) Generate data from synthetic agents 
+#
+# LML model (lml) presented by Peters et al. (2020)
+
+model{
+
+##LIKELIHOOD
+for (i in 1:nAgents){
+for (g in 1:nGambles){
+for (t in 1:nTrials){
+	#-----------lml-model-----------
+	u_a1_lml[i,g,t]		= pow(dx1[i,g,t],alpha_lml[i])							#prospect utility, computed by exponentiating current wealth by alpha   	
+	u_a2_lml[i,g,t]		= pow(dx2[i,g,t],alpha_lml[i])	
+	u_b1_lml[i,g,t]		= pow(dx3[i,g,t],alpha_lml[i])
+	u_b2_lml[i,g,t]		= pow(dx4[i,g,t],alpha_lml[i])
+
+	tmp_w_a1_lml[i,g,t]	=    pa1[i,g,t]  + sqrt(   pa1[i,g,t] /t) 					#weighfunction (numerator)
+	tmp_w_a2_lml[i,g,t]	= (1-pa1[i,g,t]) + sqrt((1-pa1[i,g,t])/t) 
+	tmp_w_b1_lml[i,g,t]	=    pb1[i,g,t]  + sqrt(   pb1[i,g,t] /t)
+	tmp_w_b2_lml[i,g,t]	= (1-pb1[i,g,t]) + sqrt((1-pb1[i,g,t])/t) 
+
+	w_a1_lml[i,g,t]		= tmp_w_a1_lml[i,g,t] / ( tmp_w_a1_lml[i,g,t] + tmp_w_a2_lml[i,g,t] )		#normalizing the weights
+	w_a2_lml[i,g,t]		= tmp_w_a2_lml[i,g,t] / ( tmp_w_a1_lml[i,g,t] + tmp_w_a2_lml[i,g,t] )
+	w_b1_lml[i,g,t]		= tmp_w_b1_lml[i,g,t] / ( tmp_w_b1_lml[i,g,t] + tmp_w_b2_lml[i,g,t] )
+	w_b2_lml[i,g,t]		= tmp_w_b2_lml[i,g,t] / ( tmp_w_b1_lml[i,g,t] + tmp_w_b2_lml[i,g,t] )
+	
+	ev_a_lml[i,g,t]		= u_a1_lml[i,g,t] * w_a1_lml[i,g,t] + u_a2_lml[i,g,t] * w_a2_lml[i,g,t]		#The expected value of the gamble is the utility multiplied with the weight
+	ev_b_lml[i,g,t]		= u_b1_lml[i,g,t] * w_b1_lml[i,g,t] + u_b2_lml[i,g,t] * w_b2_lml[i,g,t]
+
+	dev_lml[i,g,t] 		= ev_a_lml[i,g,t] - ev_b_lml[i,g,t]						#difference in expected values 
+
+	sdev_lml[i,g,t]	  	= -1 * beta_lml[i] * dev_lml[i,g,t] 						#sensitivity-scaled difference in ev
+
+	tmp[i,g,t,2] 		= (1)/(1+(exp(sdev_lml[i,g,t])))	
+	
+	theta[i,g,t,2]		= max(0.000001,min(0.999999, tmp[i,g,t,2])) 					#ensure 0 < cp < 1
+
+        #-----------Choice-----------
+        y[i,g,t]           	~ dbern(theta[i,g,t,2]) 
+
+}# end of trials 
+}# end of gambles
+}# end of agents
+
+##PRIORS   
+
+#submodels
+for (i in 1:nAgents){	
+#-----------lml-----------
+beta_lml[i]	= exp(log_beta_lml[i])                        	#lognormally distributed priors
+log_beta_lml[i]	~ dnorm(mu_log_beta_lml, tau_log_beta_lml)  	#log beta_lml sampled from normal dist.
+
+alpha_lml[i]	= exp(log_alpha_lml[i])                        	#lognormally distributed priors
+log_alpha_lml[i]~ dnorm(mu_log_alpha_lml, tau_log_alpha_lml)	#log alpha_lml sampled from normal dist.	
+
+}#end of agents
+
+
+##HYPERPRIORS
+
+#-----------lml-----------
+mu_log_beta_lml       ~ dunif(muLogBetaL,muLogBetaU)		#prior on mean of dist. of log beta_lml
+tau_log_beta_lml      = pow(sigma_log_beta_lml,-2)   		#prior on precision of dist. of log beta_lml
+sigma_log_beta_lml    ~ dunif(sigmaLogBetaL,sigmaLogBetaU)      #prior on std of dist. of log beta_lml
+
+mu_log_alpha_lml      ~ dunif(muLogAlphaL,muLogAlphaU)         	#prior on mean of dist. of log alpha_pt 
+tau_log_alpha_lml     = pow(sigma_log_alpha_lml,-2)          	#prior on precision of dist. of log alpha_pt
+sigma_log_alpha_lml   ~ dunif(sigmaLogAlphaL,sigmaLogAlphaU) 	#prior on std of dist. of log alpha_pt
+
+}
