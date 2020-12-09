@@ -60,6 +60,18 @@ switch mode
         sigmaLogGammaL=0.01;sigmaLogGammaU=1.60;%bounds on std of distribution of log Gamma
 end
 
+%% Set key variables
+
+switch mode
+    case {1,2,3,4}
+        nTrials = [100];
+    case {5,6}
+        nTrials = [20,100];
+end
+doDIC=0;%compute Deviance information criteria? This is the hierarchical equivalent of an AIC, the lower the better
+
+for trial_n = 1:length(nTrials)
+    
 %% Choose & load data    
 switch mode
     case 1 %simulate choices with CPT
@@ -79,7 +91,7 @@ switch mode
         nChains = 1;
         
     case 3 %Model comparison on data from CPT
-        dataSource = sprintf('Choices_simulated_from_CPT_Gamble_%.0f',g);
+        dataSource = sprintf('Choices_simulated_from_CPT');
         modelName = 'JAGS';
         outputName = 'model_comparison_CPT'; 
         running = 'Model recovery on choices from CPT species';
@@ -87,7 +99,7 @@ switch mode
         load('all_gambles');
 
     case 4 %Model comparison on data from LML
-        dataSource = sprintf('Choices_simulated_from_LML_Gamble_%.0f',g);
+        dataSource = sprintf('Choices_simulated_from_LML');
         modelName = 'JAGS';
         outputName = 'model_comparison_LML'; 
         running = 'Model recovery on choices from LML species';
@@ -95,33 +107,21 @@ switch mode
         load('all_gambles');
         
     case 5 %parameter recovery for CPT data
-        dataSource = sprintf('Choices_simulated_from_CPT_Gamble_%.0f',g);
+        dataSource = sprintf('Choices_simulated_from_CPT');
         outputName = 'parameter_recovery_CPT';
         modelName = 'JAGS_CPT';
         running = 'Parameter recovery on choices from CPT species';
         load('all_gambles');
         
     case 6 %parameter recovery for LML data
-        dataSource = sprintf('Choices_simulated_from_LML_Gamble_%.0f',g);
-        outputName = 'parameter_recovery_LML'; priorName='';
+        dataSource = sprintf('Choices_simulated_from_LML');
+        outputName = 'parameter_recovery_LML';
         modelName = 'JAGS_CPT';
         running = 'Parameter recovery on choices from LML species';
         load('all_gambles');
 end
 
 load(dataSource)
-
-%% Set key variables
-
-switch mode
-    case {1,2,3,4}
-        nTrials = [250];
-    case {5,6}
-        nTrials = [50,250];
-end
-doDIC=0;%compute Deviance information criteria? This is the hierarchical equivalent of an AIC, the lower the better
-
-for trial_n = 1:length(nTrials)
 %% Print information for user
 disp('**************');
 disp([running]);
@@ -156,7 +156,7 @@ switch mode
             end
         end    
            
-    case {3,4} %Recovery
+    case {3,4,5,6} %Recovery
         for i = 1:nAgents
             for g = 1:nGambles %nChunks = 1
                 choice(i,g,trialInds)=samples.y(1,1,i,g,trialInds);%assign to temporary variables
@@ -252,7 +252,12 @@ toc % end clock
 
 %% Save stats and samples
 disp('saving samples and stats...')
-save(['samples_stats\',sprintf('%s_Chunk_%.0f',outputName,trial_n)],'stats','samples','-v7.3')
+switch mode
+    case {1,2,3,4}
+        save(['samples_stats\',outputName],'stats','samples','-v7.3')
+    case {5,6}
+        save(['samples_stats\',sprintf('%s_Chunk_%.0f',outputName,trial_n)],'stats','samples','-v7.3')
+end
 disp('**************');
 
 %% Print readouts
