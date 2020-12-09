@@ -63,7 +63,7 @@ def trial_generation(gamble_df, g, nTrial, nAgent, threshold=1):
 #Import gambles
 gambles_df = pd.read_csv('Generating gambles\Gambles.csv', sep=";")
 nGambles = gambles_df.shape[0] 
-nGambles = 2
+nGambles = 5
 
 #Generate empty dataframe
 cols = ['Gamble_nr','maxA','minA','maxB','nAgents','nTrials']
@@ -73,7 +73,7 @@ df_metadata_all_gambles = pd.DataFrame(columns=cols, index=range(nGambles))
 data_all_gamles = []
 for g in range(nGambles):
     print(g)
-    data_one_gamble, metadata_one_gamble = trial_generation(gambles_df, g, nTrial=100, nAgent=50)
+    data_one_gamble, metadata_one_gamble = trial_generation(gambles_df, g, nTrial=500, nAgent=10)
     df_metadata_all_gambles.loc[g] = metadata_one_gamble
     data_all_gamles.append(data_one_gamble)
 
