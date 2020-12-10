@@ -40,7 +40,7 @@ def process_params(param, n_agents, n_chains, n_samples, output="map"):
 def cpt_weighting_function(x, delta, gamma):
     w = []
     for i in x:
-        denumerator = delta*i**gamma + delta*(1-i)**gamma
+        denumerator = delta*i**gamma + (1-i)**gamma
         w.append(delta*i**gamma/denumerator)
     return w
 
