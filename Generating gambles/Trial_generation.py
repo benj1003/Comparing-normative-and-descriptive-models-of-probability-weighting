@@ -63,7 +63,6 @@ def trial_generation(gamble_df, g, nTrial, nAgent, threshold=1):
 #Import gambles
 gambles_df = pd.read_csv('Generating gambles\Gambles.csv', sep=";")
 nGambles = gambles_df.shape[0] 
-nGambles = 5
 
 #Generate empty dataframe
 cols = ['Gamble_nr','maxA','minA','maxB','nAgents','nTrials']
