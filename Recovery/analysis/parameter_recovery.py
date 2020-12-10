@@ -4,6 +4,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import sys
 import scipy.stats as sc
+import matplotlib.patches as mpatches
+
+print("------------------------------------")
+print("Parameter recovery")
 
 cpt_parameter_recovery_file_1 = 'parameter_recovery_CPT_chunk_1.mat'
 cpt_parameter_recovery_file_2 = 'parameter_recovery_CPT_chunk_2.mat'
@@ -16,8 +20,12 @@ LML_parameter_recovery_file_3 = 'parameter_recovery_LML_chunk_3.mat'
 
 x = np.linspace(0,1,300)
 
-show_cpt = False
+show_cpt = True
 show_lml = True
+
+A      = [0,1,2,3]
+marker = ['^','s','o','v']
+color  = ['r','b','g','m']
 
 if show_cpt:
     print("------------------------------------")
@@ -45,27 +53,40 @@ if show_cpt:
     _,map_agent_cpt_delta_2 = process_params(delta_cpt_2, n_agents, n_chains, n_samples, output="map")
     _,map_agent_cpt_delta_3 = process_params(delta_cpt_3, n_agents, n_chains, n_samples, output="map")
 
+    corr1,_ = sc.pearsonr(map_agent_cpt_delta_1,delta_cpt_true[:,0,0])
+    corr2,_ = sc.pearsonr(map_agent_cpt_delta_2,delta_cpt_true[:,0,0])
+    corr3,_ = sc.pearsonr(map_agent_cpt_delta_3,delta_cpt_true[:,0,0])
+    print(f"Pearson correlation coefficient for Delta in chunk 1: {corr1:.3f}")
+    print(f"Pearson correlation coefficient for Delta in chunk 2: {corr2:.3f}")
+    print(f"Pearson correlation coefficient for Delta in chunk 3: {corr3:.3f}")
+
     plt.figure()
-    plt.title("True vs. estimated Delta (CPT)")
-    plt.subplot(1,3,1)
-    plt.scatter(delta_cpt_true[:,0,0],map_agent_cpt_delta_1)
-    plt.plot(x,x)
-    plt.ylabel("Estimated")
-    plt.xlabel("True")
-    plt.ylim([0,3])
-    plt.xlim([0,3])
-    plt.subplot(1,3,2)
-    plt.scatter(delta_cpt_true[:,0,0],map_agent_cpt_delta_2)
-    plt.ylabel("Estimated")
-    plt.xlabel("True")
-    plt.ylim([0,3])
-    plt.xlim([0,3])
-    plt.subplot(1,3,3)
-    plt.scatter(delta_cpt_true[:,0,0],map_agent_cpt_delta_3)
-    plt.ylabel("Estimated")
-    plt.xlabel("True")
-    plt.ylim([0,3])
-    plt.xlim([0,3])
+    plt.suptitle("True delta vs estimated delta",fontsize=18)
+    for i in range(n_agents):
+        # plt.subplot(1,2,1)
+        if i in A:
+            plt.scatter(delta_cpt_true[i,0,0],map_agent_cpt_delta_1[i], marker=marker[i], edgecolor='b', facecolors='none')
+            plt.scatter(delta_cpt_true[i,0,0],map_agent_cpt_delta_2[i], marker=marker[i], edgecolor='r', facecolors='none')
+            plt.scatter(delta_cpt_true[i,0,0],map_agent_cpt_delta_3[i], marker=marker[i], edgecolor='g', facecolors='none')
+        else:
+            plt.scatter(delta_cpt_true[i,0,0],map_agent_cpt_delta_1[i], marker='x', c='b')
+            plt.scatter(delta_cpt_true[i,0,0],map_agent_cpt_delta_2[i], marker='x', c='r')
+            plt.scatter(delta_cpt_true[i,0,0],map_agent_cpt_delta_3[i], marker='x', c='g')
+        plt.ylim([0,1.8])
+        plt.xlim([0,1.8])
+    #Dummies for legend
+    plt.scatter(10,10,c='b',label="Chunk 1", marker=">")
+    plt.scatter(10,10,c='r',label="Chunk 2", marker=">")
+    plt.scatter(10,10,c='g',label="Chunk 3", marker=">")
+    plt.scatter(10,10, facecolors='none',label=" ")
+    plt.scatter(10,10,label="Agent 1", marker=marker[0], edgecolor='k', facecolors='none')
+    plt.scatter(10,10,label="Agent 2", marker=marker[1], edgecolor='k', facecolors='none')
+    plt.scatter(10,10,label="Agent 3", marker=marker[2], edgecolor='k', facecolors='none')
+    plt.scatter(10,10,label="Agent 4", marker=marker[3], edgecolor='k', facecolors='none')
+    plt.scatter(10,10,marker='x',c='k',label="Agents 5-10")
+    plt.xlabel("$\\delta_{'Ground-truth'}$",fontsize=14)
+    plt.ylabel("$\delta_e$",fontsize=14)
+    plt.legend(loc='upper left')
 
     #--------gamma----------#
     print("\nProcessing Gamma...")
@@ -73,75 +94,137 @@ if show_cpt:
     _,map_agent_cpt_gamma_2 = process_params(gamma_cpt_2, n_agents, n_chains, n_samples, output="map")
     _,map_agent_cpt_gamma_3 = process_params(gamma_cpt_3, n_agents, n_chains, n_samples, output="map")
 
+    corr1,_ = sc.pearsonr(map_agent_cpt_gamma_1,gamma_cpt_true[:,0,0])
+    corr2,_ = sc.pearsonr(map_agent_cpt_gamma_2,gamma_cpt_true[:,0,0])
+    corr3,_ = sc.pearsonr(map_agent_cpt_gamma_3,gamma_cpt_true[:,0,0])
+    print(f"Pearson correlation coefficient for Gamma in chunk 1: {corr1:.3f}")
+    print(f"Pearson correlation coefficient for Gamma in chunk 2: {corr2:.3f}")
+    print(f"Pearson correlation coefficient for Gamma in chunk 3: {corr3:.3f}")
+
     plt.figure()
-    plt.title("True vs. estimated Gamma (CPT)")
-    plt.subplot(1,3,1)
-    plt.scatter(gamma_cpt_true[:,0,0],map_agent_cpt_gamma_1)
-    plt.plot(x,x)
-    plt.ylabel("Estimated")
-    plt.xlabel("True")
-    plt.ylim([0,3])
-    plt.xlim([0,3])
-    plt.subplot(1,3,2)
-    plt.scatter(gamma_cpt_true[:,0,0],map_agent_cpt_gamma_2)
-    plt.ylabel("Estimated")
-    plt.xlabel("True")
-    plt.ylim([0,3])
-    plt.xlim([0,3])
-    plt.subplot(1,3,3)
-    plt.scatter(gamma_cpt_true[:,0,0],map_agent_cpt_gamma_3)
-    plt.ylabel("Estimated")
-    plt.xlabel("True")
-    plt.ylim([0,3])
-    plt.xlim([0,3])
+    plt.suptitle("True gamma vs estimated gamma",fontsize=18)
+    for i in range(n_agents):
+        # plt.subplot(1,2,1)
+        if i in A:
+            plt.scatter(gamma_cpt_true[i,0,0],map_agent_cpt_gamma_1[i], marker=marker[i], edgecolor='k', facecolors='none')
+            plt.scatter(gamma_cpt_true[i,0,0],map_agent_cpt_gamma_2[i], marker=marker[i], edgecolor='r', facecolors='none')
+            plt.scatter(gamma_cpt_true[i,0,0],map_agent_cpt_gamma_3[i], marker=marker[i], edgecolor='g', facecolors='none')
+        else:
+            plt.scatter(gamma_cpt_true[i,0,0],map_agent_cpt_gamma_1[i], marker='x', c='k')
+            plt.scatter(gamma_cpt_true[i,0,0],map_agent_cpt_gamma_2[i], marker='x', c='r')
+            plt.scatter(gamma_cpt_true[i,0,0],map_agent_cpt_gamma_3[i], marker='x', c='g')
+        plt.ylim([0,1.8])
+        plt.xlim([0,1.8])
+    #Dummies for legend
+    plt.scatter(10,10,c='k',label="Chunk 1", marker=">")
+    plt.scatter(10,10,c='r',label="Chunk 2", marker=">")
+    plt.scatter(10,10,c='g',label="Chunk 3", marker=">")
+    plt.scatter(10,10, facecolors='none',label=" ")
+    plt.scatter(10,10,label="Agent 1", marker=marker[0], edgecolor='k', facecolors='none')
+    plt.scatter(10,10,label="Agent 2", marker=marker[1], edgecolor='k', facecolors='none')
+    plt.scatter(10,10,label="Agent 3", marker=marker[2], edgecolor='k', facecolors='none')
+    plt.scatter(10,10,label="Agent 4", marker=marker[3], edgecolor='k', facecolors='none')
+    plt.scatter(10,10,marker='x',c='k',label="Agents 5-10")
+    plt.xlabel("$\\gamma_{'Ground-truth'}$",fontsize=14)
+    plt.ylabel("$\gamma_e$",fontsize=14)
+    plt.legend(loc='upper left')
 
     # #--------PW----------#
     print("\nProcessing w...")
     plt.figure()
-    # plt.subplot(1,2,1)
-    plt.scatter(map_agent_cpt_delta_1,map_agent_cpt_gamma_1)
-    plt.ylim([0,3])
-    plt.xlim([0,3])
-    # plt.subplot(1,2,2)
-    plt.scatter(map_agent_cpt_delta_2,map_agent_cpt_gamma_2)
-    # plt.ylim([0,3])
-    # plt.xlim([0,3]) 
-    plt.scatter(map_agent_cpt_delta_3,map_agent_cpt_gamma_3)
-    # plt.ylim([0,3])
-    # plt.xlim([0,3]) 
-    plt.legend()
-
+    plt.suptitle("Estimated delta vs estimated gamma",fontsize=18)
+    for i in range(n_agents):
+        # plt.subplot(1,2,1)
+        if i in A:
+            plt.scatter(map_agent_cpt_delta_1[i],map_agent_cpt_gamma_1[i], marker=marker[i], edgecolor='b', facecolors='none')
+            plt.scatter(map_agent_cpt_delta_2[i],map_agent_cpt_gamma_2[i], marker=marker[i], edgecolor='r', facecolors='none')
+            plt.scatter(map_agent_cpt_delta_3[i],map_agent_cpt_gamma_3[i], marker=marker[i], edgecolor='g', facecolors='none')
+        else:
+            plt.scatter(map_agent_cpt_delta_1[i],map_agent_cpt_gamma_1[i], marker='x', c='b')
+            plt.scatter(map_agent_cpt_delta_2[i],map_agent_cpt_gamma_2[i], marker='x', c='r')
+            plt.scatter(map_agent_cpt_delta_3[i],map_agent_cpt_gamma_3[i], marker='x', c='g')
+        plt.ylim([0,1.8])
+        plt.xlim([0,1.8])
+    #Dummies for legend
+    plt.scatter(10,10,c='b',label="Chunk 1", marker=">")
+    plt.scatter(10,10,c='r',label="Chunk 2", marker=">")
+    plt.scatter(10,10,c='g',label="Chunk 3", marker=">")
+    plt.scatter(10,10, facecolors='none',label=" ")
+    plt.scatter(10,10,label="Agent 1", marker=marker[0], edgecolor='k', facecolors='none')
+    plt.scatter(10,10,label="Agent 2", marker=marker[1], edgecolor='k', facecolors='none')
+    plt.scatter(10,10,label="Agent 3", marker=marker[2], edgecolor='k', facecolors='none')
+    plt.scatter(10,10,label="Agent 4", marker=marker[3], edgecolor='k', facecolors='none')
+    plt.scatter(10,10,marker='x',c='k',label="Agents 5-10")
+    plt.xlabel("$\\delta_e$",fontsize=14)
+    plt.ylabel("$\gamma_e$",fontsize=14)
+    plt.legend(loc='upper left')
   
-    plt.suptitle("Weighting function envolvment for CPT-species", fontsize=18)
+    
     
 
-    for i in range(n_agents): #agents
+    for i in A: #agents
         plt.figure()
+        plt.suptitle(f"Weighting function envolvment for CPT-Agent {i+1}", fontsize=18)
+        
+        plt.subplot(2,3,1)
+        plt.title(f"Chunk 1",fontsize=16)
+        plt.scatter(map_agent_cpt_delta_1[i],map_agent_cpt_gamma_1[i], edgecolor='b', facecolors='none', marker='^', label="Estimated")
+        plt.scatter(delta_cpt_true[i,0,0],gamma_cpt_true[i,0,0], edgecolor='r',facecolor='none', label="'Ground truth'")
+        # plt.scatter(1,1,c='k', marker='x', label="No weighting")
+        plt.ylim([0,1.8])
+        plt.xlim([0,1.8])
+        plt.xlabel("$\\delta$",fontsize=14)
+        plt.ylabel("$\\gamma$",fontsize=14)
+        plt.legend(loc='upper left')
+        plt.subplot(2,3,2)
+        plt.title(f"Chunk 2",fontsize=16)
+        plt.scatter(map_agent_cpt_delta_2[i],map_agent_cpt_gamma_2[i], edgecolor='b',facecolors='none', marker='^', label="Estimated")
+        plt.scatter(delta_cpt_true[i,0,0],gamma_cpt_true[i,0,0], edgecolor='r',facecolor='none', marker='o', label="'Ground truth'")
+        # plt.scatter(1,1,c='k',marker='x', label="No weighting")
+        plt.ylim([0,1.8])
+        plt.xlim([0,1.8])
+        plt.xlabel("$\\delta$",fontsize=14)
+        plt.ylabel("$\\gamma$",fontsize=14)
+        plt.legend(loc='upper left')
+        plt.subplot(2,3,3)
+        plt.title(f"Chunk 3",fontsize=16)
+        plt.scatter(map_agent_cpt_delta_3[i],map_agent_cpt_gamma_3[i], edgecolor='b',facecolors='none', marker='^', label="Estimated")
+        plt.scatter(delta_cpt_true[i,0,0],gamma_cpt_true[i,0,0], edgecolor='r',facecolor='none',marker='o', label="'Ground truth'")
+        # plt.scatter(1,1,c='k',marker='x', label="No weighting")
+        plt.ylim([0,1.8])
+        plt.xlim([0,1.8])
+        plt.xlabel("$\\delta$",fontsize=14)
+        plt.ylabel("$\gamma$",fontsize=14)
+        plt.legend(loc='upper left')
+        
         w_1 = cpt_weighting_function(x, map_agent_cpt_delta_1[i],map_agent_cpt_gamma_1[i])
         w_2 = cpt_weighting_function(x, map_agent_cpt_delta_2[i],map_agent_cpt_gamma_2[i])
         w_3 = cpt_weighting_function(x, map_agent_cpt_delta_3[i],map_agent_cpt_gamma_3[i])
         w_true = cpt_weighting_function(x, delta_cpt_true[i,0,0], gamma_cpt_true[i,0,0])
 
-        plt.subplot(1,3,1)
-        plt.plot(x,w_1, label="Estimated")
-        plt.plot(x,w_true, label="True")
-        plt.plot(x,x, label = "No weighting")
-        plt.xlim([0,1])
-        plt.legend()
-        plt.subplot(1,3,2)
-        plt.plot(x,w_2, label="Estimated")
-        plt.plot(x,w_true, label="True")
-        plt.plot(x,x, label = "No weighting")
-        plt.legend()
-        plt.subplot(1,3,3)
-        plt.plot(x,w_3, label="Estimated")
-        plt.plot(x,w_true, label="True")
-        plt.plot(x,x, label = "No weighting")
-        plt.xlim([0,1])
-        plt.legend()
+        plt.subplot(2,3,4)
+        plt.plot(x,w_1, 'b--', label="Estimated")
+        plt.plot(x,w_true, 'r-.', label="'Ground truth'")
+        plt.plot(x,x,'k-', label="No weighting")
+        plt.xlabel("$\hat{p}(x)$",fontsize=14)
+        plt.ylabel("$w(x)$",fontsize=14)
+        plt.legend(loc='upper left')
+        plt.subplot(2,3,5)
+        plt.plot(x,w_2, 'b--', label="Estimated")
+        plt.plot(x,w_true, 'r-.', label="'Ground truth'")
+        plt.plot(x,x,'k-', label="No weighting")
+        plt.xlabel("$\hat{p}(x)$",fontsize=14)
+        plt.ylabel("$w(x)$",fontsize=14)
+        plt.legend(loc='upper left')
+        plt.subplot(2,3,6)
+        plt.plot(x,w_3, 'b--', label="Estimated")
+        plt.plot(x,w_true, 'r-.', label="'Ground truth'")
+        plt.plot(x,x,'k-', label="No weighting")
+        plt.xlabel("$\hat{p}(x)$",fontsize=14)
+        plt.ylabel("$w(x)$",fontsize=14)
+        plt.legend(loc='upper left')
 
     print("\nPlotting...")
-    plt.show()
 
 if show_lml:
     print("------------------------------------")
@@ -177,24 +260,62 @@ if show_lml:
     #--------PW----------#
     print("\nProcessing w...")
     plt.figure()
-    # plt.subplot(1,3,1)
-    plt.scatter(map_agent_lml_delta_1,map_agent_lml_gamma_1, label="Chunk 1")
-    plt.ylim([0.7,1])
-    plt.xlim([0.85,1.1])
-    # plt.subplot(1,3,1)
-    plt.scatter(map_agent_lml_delta_2,map_agent_lml_gamma_2, label="Chunk 2")
-    # plt.ylim([0.7,1.1])
-    # plt.xlim([0.7,1.1])
-    # plt.subplot(1,3,3)    
-    plt.scatter(map_agent_lml_delta_3,map_agent_lml_gamma_3, label="Chunk 3")
-    # plt.ylim([0.7,1.1])
-    # plt.xlim([0.7,1.1])
-    plt.xlabel("Delta")
-    plt.ylabel("Gamma")
-    plt.legend()
-    
-    for i in range(n_agents): #agents
+    plt.suptitle("Estimated delta vs estimated gamma", fontsize=18)
+    for i in range(n_agents):
+        if i in A:
+            plt.scatter(map_agent_lml_delta_1[i],map_agent_lml_gamma_1[i], marker=marker[i], edgecolor='b', facecolors='none')
+            plt.scatter(map_agent_lml_delta_2[i],map_agent_lml_gamma_2[i], marker=marker[i], edgecolor='r', facecolors='none')
+            plt.scatter(map_agent_lml_delta_3[i],map_agent_lml_gamma_3[i], marker=marker[i], edgecolor='g', facecolors='none')
+        else:
+            plt.scatter(map_agent_lml_delta_1[i],map_agent_lml_gamma_1[i], marker='x', c='b')
+            plt.scatter(map_agent_lml_delta_2[i],map_agent_lml_gamma_2[i], marker='x', c='r')
+            plt.scatter(map_agent_lml_delta_3[i],map_agent_lml_gamma_3[i], marker='x', c='g')
+        plt.ylim([0.7,1.05])
+        plt.xlim([0.9,1.05])
+    plt.xlabel("$\\delta$",fontsize=14)
+    plt.ylabel("$\gamma$",fontsize=14)
+    plt.scatter(10,10,c='b',label="Chunk 1", marker=">")
+    plt.scatter(10,10,c='r',label="Chunk 2", marker=">")
+    plt.scatter(10,10,c='g',label="Chunk 3", marker=">")
+    plt.scatter(10,10, facecolors='none',label=" ")
+    plt.scatter(10,10, marker=marker[0], edgecolor='k', facecolors='none', label=f"Agent 1")
+    plt.scatter(10,10, marker=marker[1], edgecolor='k', facecolors='none', label=f"Agent 2")
+    plt.scatter(10,10, marker=marker[2], edgecolor='k', facecolors='none', label=f"Agent 3")
+    plt.scatter(10,10, marker=marker[3], edgecolor='k', facecolors='none', label=f"Agent 4")
+    plt.scatter(10,10,marker='x',c='k',label="Agents 5-10")
+    plt.legend(loc='upper left')
+
+    for i in range(1): #agents
         plt.figure()
+        plt.suptitle(f"Weighting function envolvment for CPT-Agent {i+1}", fontsize=18)
+        plt.subplot(2,3,1)
+        plt.title(f"Chunk 1",fontsize=16)
+        plt.scatter(map_agent_lml_delta_1[i],map_agent_lml_gamma_1[i], edgecolor='b', facecolors='none', marker='^', label="Estimated")
+        # plt.scatter(1,1,c='k', marker='x', label="No weighting")
+        plt.ylim([0.7,1.05])
+        plt.xlim([0.9,1.05])
+        plt.xlabel("$\\delta$",fontsize=14)
+        plt.ylabel("$\\gamma$",fontsize=14)
+        plt.legend(loc='upper left')
+        plt.subplot(2,3,2)
+        plt.title(f"Chunk 2",fontsize=16)
+        plt.scatter(map_agent_lml_delta_2[i],map_agent_lml_gamma_2[i], edgecolor='b',facecolors='none', marker='^', label="Estimated")
+        # plt.scatter(1,1,c='k',marker='x', label="No weighting")
+        plt.ylim([0.7,1.05])
+        plt.xlim([0.9,1.05])
+        plt.xlabel("$\\delta$",fontsize=14)
+        plt.ylabel("$\\gamma$",fontsize=14)
+        plt.legend(loc='upper left')
+        plt.subplot(2,3,3)
+        plt.title(f"Chunk 3",fontsize=16)
+        plt.scatter(map_agent_lml_delta_3[i],map_agent_lml_gamma_3[i], edgecolor='b',facecolors='none', marker='^', label="Estimated")
+        # plt.scatter(1,1,c='k',marker='x', label="No weighting")
+        plt.ylim([0.7,1.05])
+        plt.xlim([0.9,1.05])
+        plt.xlabel("$\\delta$",fontsize=14)
+        plt.ylabel("$\gamma$",fontsize=14)
+        plt.legend(loc='upper left')
+
         w_1 = cpt_weighting_function(x, map_agent_lml_delta_1[i],map_agent_lml_gamma_1[i])
         w_2 = cpt_weighting_function(x, map_agent_lml_delta_2[i],map_agent_lml_gamma_2[i])
         w_3 = cpt_weighting_function(x, map_agent_lml_delta_3[i],map_agent_lml_gamma_3[i])
@@ -202,168 +323,29 @@ if show_lml:
         w_true_2 = lml_weighting_function(x,50)
         w_true_3 = lml_weighting_function(x,100)
 
-        plt.subplot(1,3,1)
-        plt.plot(x,w_1, label="Estimated")
-        plt.plot(x,w_true_1, label="Predicted")
-        plt.plot(x,x, label = "No weighting")
-        plt.xlim([0,1])
-        plt.ylim([0,1])
-        plt.legend()
-        plt.subplot(1,3,2)
-        plt.plot(x,w_2, label="Estimated")
-        plt.plot(x,w_true_2, label="Predicted")
-        plt.plot(x,x, label = "No weighting")
-        plt.xlim([0,1])
-        plt.ylim([0,1])
-        plt.legend()
-        plt.subplot(1,3,3)
-        plt.plot(x,w_3, label="Estimated")
-        plt.plot(x,w_true_3, label="True")
-        plt.plot(x,x, label = "No weighting")
-        plt.xlim([0,1])
-        plt.ylim([0,1])
-        plt.legend()
+        plt.subplot(2,3,4)
+        plt.plot(x,w_1, 'b--', label="Estimated")
+        plt.plot(x,w_true_1,'r-.', label="Predicted")
+        plt.plot(x,x,'k-', label = "No weighting")
+        plt.xlabel("$\hat{p}(x)$", fontsize=14)
+        plt.ylabel("$w(x)$", fontsize=14)
+        plt.legend(loc='upper left')
+        plt.subplot(2,3,5)
+        plt.plot(x,w_2,'b--', label="Estimated")
+        plt.plot(x,w_true_2,'r-.', label="Predicted")
+        plt.plot(x,x,'k-', label = "No weighting")
+        plt.xlabel("$\hat{p}(x)$", fontsize=14)
+        plt.ylabel("$w(x)$", fontsize=14)
+        plt.legend(loc='upper left')
+        plt.subplot(2,3,6)
+        plt.plot(x,w_3,'b--', label="Estimated")
+        plt.plot(x,w_true_3,'r-.', label="Predicted")
+        plt.plot(x,x,'k-', label = "No weighting")
+        plt.xlabel("$\hat{p}(x)$", fontsize=14)
+        plt.ylabel("$w(x)$", fontsize=14)
+        plt.legend(loc='upper left')
     
     print("\nPlotting...")
-    plt.show()
+plt.show()
 
-
-
-
-
-
-
-
-
-sys.exit()
-
-show_cpt = True
-show_lml = True
-
-if show_cpt:
-    print("------------------------------------")
-    print("Evaluating CPT data...\n")
-    print("Reading output...")
-    _,beta,delta,gamma = read_output(cpt_file_name,'parameter_recovery')
-    _,beta_true,delta_true,gamma_true = read_output('Choices_simulated_from_CPT_Gamble_2.mat','parameter_recovery')
-
-    n_chunks = np.shape(beta)[0]
-    n_agents = np.shape(beta)[1]
-    n_samples = np.shape(beta)[2]
-    n_chains = np.shape(beta)[3]
-
-    print('---')
-    print(f"Number of agents = {n_agents}")
-    print(f"Number of chunks = {n_chunks}")
-    print(f"Number of chains = {n_chains}")
-    print(f"Number of samples = {n_samples}")
-    print('---')
-
-
-    _,_, map_agent_delta = process_params(delta, n_chunks, n_agents, n_chains, n_samples, output="map")
-
-    plt.figure()
-    plt.suptitle("True value vs estimated (Delta) for each agent")
-    for c in range(n_chunks):
-        plt.subplot(1,5,c+1)
-        plt.title(f"Chunk {c+1}")
-        plt.xlabel("$\\delta_{est}$")
-        plt.ylabel("$\\delta_{true}$")
-        plt.scatter(map_agent_delta[c], delta_true[:,0,0])
-        plt.xlim([0,2])
-        plt.ylim([0,2])
-        corr,_ = sc.pearsonr(map_agent_delta[c],delta_true[:,0,0])
-        print(f"Pearson correlation coefficient for Delta in chunk {c+1}: {corr}")
-
-    #--------gamma----------#
-    print("\nProcessing Gamma...")
-
-    _,_, map_agent_gamma = process_params(gamma, n_chunks, n_agents, n_chains, n_samples, output="map")
-    
-    plt.figure()
-    for c in range(n_chunks):
-        plt.subplot(1,5,c+1)
-        plt.scatter(map_agent_gamma[c], gamma_true[:,0,0])
-        plt.xlim([0,2])
-        plt.ylim([0,2])
-        corr,_ = sc.pearsonr(map_agent_gamma[c],gamma_true[:,0,0])
-        print("Pearson correlation coefficient for Gamma: ", corr)
-
-
-    #--------PW----------#
-    print("\nProcessing w...")
-    plt.figure()
-    for c in range(n_chunks):
-        plt.subplot(1,5,c+1)
-        plt.scatter(map_agent_gamma[c], map_agent_delta[c])
-        plt.xlim([0,2])
-        plt.ylim([0,2])
-
-    plt.figure()
-    plt.suptitle("Weighting function envolvment for CPT-species", fontsize=18)
-    x = np.linspace(0,1,100)
-    for c in range(n_chunks):
-        w = []
-        w_true = []
-        plt.subplot(1,5,c+1)
-        for i in range(1):
-            w.append(cpt_weighting_function(x,map_agent_gamma[c][i], map_agent_delta[c][i]))
-            w_true.append(cpt_weighting_function(x, gamma_true[i,0,0], delta_true[i,0,0]))
-        
-            
-            plt.plot(x,w[i], label="Estimated")
-            plt.plot(x,w_true[i], label="True")
-            plt.ylabel("Probability weight - $w(x)$", fontsize=14)
-            plt.xlabel("Probability - $p(x)$", fontsize=14)
-            plt.legend()
-
-    print("\nPlotting...")
-    plt.show()
-
-
-    plt.show()
-
-if show_lml:
-    print("------------------------------------")
-    print("Evaluating LML data...\n")
-    print("Reading output...")
-    _,beta_LML,delta_LML,gamma_LML = read_output(lml_file_name,'parameter_recovery')
-
-    n_chunks = np.shape(delta_LML)[0]
-    n_agents = np.shape(delta_LML)[1]
-    n_samples = np.shape(delta_LML)[2]
-    n_chains = np.shape(delta_LML)[3]
-
-    print("\nProcessing Delta...")
-    _,_, map_agent_delta_LML = process_params(delta_LML, n_chunks, n_agents, n_chains, n_samples, output="map")
-    print("\nProcessing Gamma...")
-    _,_, map_agent_gamma_LML = process_params(gamma_LML, n_chunks, n_agents, n_chains, n_samples, output="map")
-
-    #--------PW----------#
-    print("\nProcessing w...")
-    plt.figure()
-    for c in range(n_chunks):
-        plt.subplot(1,5,c+1)
-        plt.scatter(map_agent_gamma_LML[c], map_agent_delta_LML[c])
-        plt.xlim([0,2])
-        plt.ylim([0,2])
-
-    plt.figure()
-    plt.suptitle("Weighting function envolvment for CPT-species", fontsize=18)
-    x = np.linspace(0,1,100)
-    for c in range(n_chunks):
-        w = []
-        w_true = []
-        plt.subplot(1,5,c+1)
-        for i in range(1):
-            w.append(cpt_weighting_function(x,map_agent_gamma_LML[c][i], map_agent_delta_LML[c][i])) 
-            w_true.append(lml_weighting_function(x,(c+1)*50))
-
-            plt.plot(x,w[i], label="Estimated")
-            plt.plot(x,w_true[i], label="Predicted")
-            plt.ylabel("Probability weight - $w(x)$", fontsize=14)
-            plt.xlabel("Probability - $p(x)$", fontsize=14)
-            plt.legend()
-
-    print("\nPlotting...")
-    plt.show()
+print("------------------------------------")
