@@ -6,6 +6,11 @@ import sys
 import scipy.stats as sc
 import matplotlib.patches as mpatches
 import pandas as pd
+import matplotlib.pylab as pylab
+
+params = {'axes.labelsize': 14,
+         'axes.titlesize':16}
+pylab.rcParams.update(params)
 
 fig_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ),'..','..', 'Figures','tmp_figs'))
 
@@ -21,9 +26,9 @@ LML_parameter_recovery_files = ['parameter_recovery_LML_chunk_1.mat','parameter_
 x = np.linspace(0,1,300)
 n_chunks = len(cpt_parameter_recovery_files)
 
-show_cpt   = False
+show_cpt   = True
 show_lml   = True
-show_plots = False
+show_plots = True
 
 A      = [0,1,2,3]
 marker = ['^','s','o','v']
@@ -80,8 +85,8 @@ if show_cpt:
     plt.scatter(10,10,label="Agent 3", marker=marker[2], edgecolor='k', facecolors='none')
     plt.scatter(10,10,label="Agent 4", marker=marker[3], edgecolor='k', facecolors='none')
     plt.scatter(10,10,marker='x',c='k',label="Agents 5-10")
-    plt.xlabel("$\\delta_{'Ground-truth'}$",fontsize=14)
-    plt.ylabel("$\delta_e$",fontsize=14)
+    plt.xlabel("$\\delta_{'Ground-truth'}$")
+    plt.ylabel("$\delta_e$")
     plt.legend(loc='upper left')
     plt.savefig(os.path.join(fig_path,"results-cpt-delta.png"))
 
@@ -113,8 +118,8 @@ if show_cpt:
     plt.scatter(10,10,label="Agent 3", marker=marker[2], edgecolor='k', facecolors='none')
     plt.scatter(10,10,label="Agent 4", marker=marker[3], edgecolor='k', facecolors='none')
     plt.scatter(10,10,marker='x',c='k',label="Agents 5-10")
-    plt.xlabel("$\\gamma_{'Ground-truth'}$",fontsize=14)
-    plt.ylabel("$\gamma_e$",fontsize=14)
+    plt.xlabel("$\\gamma_{'Ground-truth'}$")
+    plt.ylabel("$\gamma_e$")
     plt.legend(loc='upper left')
     plt.savefig(os.path.join(fig_path,"results-cpt-gamma.png"))
 
@@ -140,8 +145,8 @@ if show_cpt:
     plt.scatter(10,10,label="Agent 3", marker=marker[2], edgecolor='k', facecolors='none')
     plt.scatter(10,10,label="Agent 4", marker=marker[3], edgecolor='k', facecolors='none')
     plt.scatter(10,10,marker='x',c='k',label="Agents 5-10")
-    plt.ylabel("$\\delta_e$",fontsize=14)
-    plt.xlabel("$\gamma_e$",fontsize=14)
+    plt.ylabel("$\\delta_e$")
+    plt.xlabel("$\gamma_e$")
     plt.legend(loc='upper right')
     plt.savefig(os.path.join(fig_path,"results-cpt-params.png"))
   
@@ -162,8 +167,8 @@ if show_cpt:
             
             plt.xlim([0,1.8])
             plt.ylim([0,1.8])
-            plt.ylabel("$\\delta$",fontsize=14)
-            plt.xlabel("$\\gamma$",fontsize=14)
+            plt.ylabel("$\\delta$")
+            plt.xlabel("$\\gamma$")
             plt.legend(prop={'size':8}, markerscale=0.7)
            
             w[c] = cpt_weighting_function(x, map_agent_cpt_delta[c][i],map_agent_cpt_gamma[c][i])
@@ -196,11 +201,11 @@ if show_cpt:
         sns.lineplot(ax = ax[c],data = df,ci=95,x = '$\hat{p}(x)$', y = '$\hat{p}(x)-w(x)$')
         ax[c].collections[0].set_label('95 pct. confidence interval')
         ax[c].hlines(y=0, xmin=0, xmax=len(x), color='k', linestyle='--')
-        ax[c].set(title=f"Chunk {c+1}")
+        ax[c].set_title(f"Chunk {c+1}", fontsize = 14)
         ax[c].legend(loc='upper left')
         ax[c].set_ylim([-0.1,0.1])
         plt.tight_layout()
-    plt.show()
+    plt.savefig(os.path.join(fig_path,"results-cpt-difference.png"))
 
 #-------------------------------------------------------------------------------------------------------------
 #--------------------------------LML--------------------------------------------------------------------------
@@ -252,8 +257,8 @@ if show_lml:
             else:
                 plt.scatter(map_agent_lml_gamma[c][i],map_agent_lml_delta[c][i], marker='x', c=colors[c], s=50)
         plt.scatter(10,10,c=colors[c],label=f"Chunk {c+1}", marker=">")
-    plt.ylabel("$\\delta_e$",fontsize=14)
-    plt.xlabel("$\gamma_e$",fontsize=14)
+    plt.ylabel("$\\delta_e$")
+    plt.xlabel("$\gamma_e$")
     plt.xlim([0.7,1.05])
     plt.ylim([0.9,1.05])
     plt.scatter(10,10, facecolors='none',label=" ")
@@ -284,8 +289,8 @@ if show_lml:
             plt.scatter(map_agent_lml_gamma[c][i],map_agent_lml_delta[c][i], edgecolor='b', facecolors='none', marker='^', label="Estimated", s=100)
             plt.xlim([0.7,1.05])
             plt.ylim([0.9,1.05])
-            plt.ylabel("$\\delta$",fontsize=14)
-            plt.xlabel("$\\gamma$",fontsize=14)
+            plt.ylabel("$\\delta$")
+            plt.xlabel("$\\gamma$")
             plt.legend(loc='upper left', prop={'size':8}, markerscale=0.7)
 
             w[c] = cpt_weighting_function(x, map_agent_lml_delta[c][i],map_agent_lml_gamma[c][i])
@@ -302,8 +307,8 @@ if show_lml:
             plt.plot(x,w[c], 'b--', label="Estimated")
             plt.plot(x,w_true[c],'r-.', label="Predicted")
             plt.plot(x,x,'k-', label = "No weighting")
-            plt.xlabel("$\hat{p}(x)$", fontsize=14)
-            plt.ylabel("$w(x)$", fontsize=14)
+            plt.xlabel("$\hat{p}(x)$")
+            plt.ylabel("$w(x)$")
             plt.legend(loc='upper left', prop={'size':8})
         plt.subplots_adjust(wspace=0.3,hspace=0.3)
     plt.savefig(os.path.join(fig_path,f"results-lml-w-agent{i+1}.png"))
@@ -317,9 +322,10 @@ if show_lml:
         sns.lineplot(ax = ax[c],data = df,ci=95,x = '$\hat{p}(x)$', y = '$\hat{p}(x)-w(x)$')
         ax[c].collections[0].set_label('95 pct. confidence interval')
         ax[c].hlines(y=0, xmin=0, xmax=len(x), color='k', linestyle='--')
-        ax[c].set(title=f"Chunk {c+1}")
-        ax[c].legend()
+        ax[c].set_title(f"Chunk {c+1}", fontsize=14)
+        ax[c].legend(loc='upper left')
         plt.tight_layout()
+    plt.savefig(os.path.join(fig_path,"results-LML-difference.png"))
 
     plt.show()
 if show_plots:
