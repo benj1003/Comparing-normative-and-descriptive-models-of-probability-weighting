@@ -18,13 +18,15 @@
 addpath(genpath(pwd));%adds base directory and subfolders to path, important for running shell scripts from terminal
 
 %% Specify variables
-mode=5;
+for i =0:1
+mode=3+i;
 whichJAGS=1;
-whichQuals=3;
-nGambles=5;
+whichQuals=1;
+nGambles=24;
 doParallel=0;
 nAgents=10;
 
 
 %% Call setHLM
 setHLM(mode,whichJAGS,whichQuals,doParallel,nGambles,nAgents)
+end
