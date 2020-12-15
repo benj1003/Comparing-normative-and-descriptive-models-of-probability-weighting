@@ -41,8 +41,25 @@ switch mode
         %Gamma - prior on mean set by dirac function to 0.4
         muLogGammaL=-0.81;muLogGammaU=-0.79;%bounds on mean of distribution of log Gamma
         sigmaLogGammaL=0.49;sigmaLogGammaU=0.50; %bounds on std of distribution of log Gamma
+       
+    case {3}
+        %beta - prior on log since cannot be less than 0; note same bounds used for independent priors on all models
+        muLogBetaL=-2.3;muLogBetaU=3.4; %bounds on mean of distribution log beta
+        sigmaLogBetaL=0.01;sigmaLogBetaU=1.60;%bounds on the std of distribution of log beta
+        
+        %Alpha - prior set by dirac function to 1
+        muLogAlphaL=-0.01;muLogAlphaU=0.01;%bounds on mean of distribution of log Alpha
+        sigmaLogAlphaL=0.01;sigmaLogAlphaU=0.02;%bounds on std of distribution of log Alpha
 
-    case {3,4,5,6}
+        %Delta - prior on mean set by dirac function to 0.5
+        muLogDeltaL=-0.21;muLogDeltaU=-0.19;%bounds on mean of distribution of log Delta
+        sigmaLogDeltaL=0.49;sigmaLogDeltaU=0.50; %bounds on std of distribution of log Delta
+
+        %Gamma - prior on mean set by dirac function to 1.5
+        muLogGammaL=0.49;muLogGammaU=0.5;%bounds on mean of distribution of log Gamma
+        sigmaLogGammaL=0.19;sigmaLogGammaU=0.20; %bounds on std of distribution of log Gamma
+
+    case {4,5,6,7}
         %beta - prior on log since cannot be less than 0; note same bounds used for independent priors on all models
         muLogBetaL=-2.3;muLogBetaU=3.4; %bounds on mean of distribution log beta
         sigmaLogBetaL=0.01;sigmaLogBetaU=1.60;%bounds on the std of distribution of log beta
@@ -63,10 +80,10 @@ end
 %% Set key variables
 
 switch mode
-    case {1,2,3,4}
-        nTrials = [100];
-    case {5,6}
-        nTrials = [10,50,100];
+    case {1,2,3,4,5}
+        nTrials = [200];
+    case {6,7}
+        nTrials = [10,50,200];
 end
 doDIC=0;%compute Deviance information criteria? This is the hierarchical equivalent of an AIC, the lower the better
 
@@ -90,7 +107,15 @@ switch mode
         nSamples = 1;
         nChains = 1;
         
-    case 3 %Model comparison on data from CPT
+    case 3 %simulate choices with CPT regular-S
+        dataSource = 'all_gambles';
+        modelName = 'JAGS_CPT';
+        outputName = 'Choices_simulated_from_CPT-regular-S';
+        running = 'Simulating choices from CPT-regular-S';
+        nSamples = 1;
+        nChains = 1;
+        
+    case 4 %Model comparison on data from CPT
         dataSource = sprintf('Choices_simulated_from_CPT');
         modelName = 'JAGS';
         outputName = 'model_comparison_CPT'; 
@@ -98,7 +123,7 @@ switch mode
         pz=[1/2,1/2];
         load('all_gambles');
 
-    case 4 %Model comparison on data from LML
+    case 5 %Model comparison on data from LML
         dataSource = sprintf('Choices_simulated_from_LML');
         modelName = 'JAGS';
         outputName = 'model_comparison_LML'; 
@@ -106,14 +131,14 @@ switch mode
         pz=[1/2,1/2];
         load('all_gambles');
         
-    case 5 %parameter recovery for CPT data
+    case 6 %parameter recovery for CPT data
         dataSource = sprintf('Choices_simulated_from_CPT');
         outputName = 'parameter_recovery_CPT';
         modelName = 'JAGS_CPT';
         running = 'Parameter recovery on choices from CPT species';
         load('all_gambles');
         
-    case 6 %parameter recovery for LML data
+    case 7 %parameter recovery for LML data
         dataSource = sprintf('Choices_simulated_from_LML');
         outputName = 'parameter_recovery_LML';
         modelName = 'JAGS_CPT';
@@ -140,7 +165,7 @@ p_a1  = nan(nAgents,nGambles,nTrials(trial_n)); p_b1 = p_a1; %initialise channge
 %split into chunks for parameter recovery (mode 5 and 6)
 trialInds=1:nTrials(trial_n);%generate indices for each trial
 switch mode
-    case {1,2} %simulating choices
+    case {1,2,3} %simulating choices
         for i = 1:nAgents
             for g = 1:nGambles
                 
@@ -156,7 +181,7 @@ switch mode
             end
         end    
            
-    case {3,4,5,6} %Recovery
+    case {4,5,6,7} %Recovery
         for i = 1:nAgents
             for g = 1:nGambles %nChunks = 1
                 choice(i,g,trialInds)=samples.y(1,1,i,g,trialInds);%assign to temporary variables
@@ -174,7 +199,7 @@ end
 %% Configure data structure for graphical model & parameters to monitor
 %everything you want JAGS to use
 switch mode
-    case {1,2} %Simulating choices
+    case {1,2,3} %Simulating choices
         dataStruct = struct(...
             'nAgents', nAgents,'nGambles',nGambles,'nTrials',nTrials(trial_n),...
             'dx1',dx1,'dx2',dx2,'dx3',dx3,'dx4',dx4,...
@@ -184,7 +209,7 @@ switch mode
             'muLogDeltaL',muLogDeltaL,'muLogDeltaU',muLogDeltaU,'sigmaLogDeltaL',sigmaLogDeltaL,'sigmaLogDeltaU',sigmaLogDeltaU,...
             'muLogGammaL',muLogGammaL,'muLogGammaU',muLogGammaU,'sigmaLogGammaL',sigmaLogGammaL,'sigmaLogGammaU',sigmaLogGammaU);
                
-    case {3,4} %Model Recovery
+    case {4,5} %Model Recovery
         dataStruct = struct(...
             'nAgents', nAgents,'nGambles',nGambles,'nTrials',nTrials(trial_n),'y',choice,...
             'dx1',dx1,'dx2',dx2,'dx3',dx3,'dx4',dx4,...
@@ -195,7 +220,7 @@ switch mode
             'muLogGammaL',muLogGammaL,'muLogGammaU',muLogGammaU,'sigmaLogGammaL',sigmaLogGammaL,'sigmaLogGammaU',sigmaLogGammaU,...
             'pz',pz);
         
-    case {5,6} %Parameter Recovery
+    case {6,7} %Parameter Recovery
         dataStruct = struct(...
             'nAgents', nAgents,'nGambles',nGambles,'nTrials',nTrials(trial_n),'y',choice,...
             'dx1',dx1,'dx2',dx2,'dx3',dx3,'dx4',dx4,...
@@ -208,7 +233,7 @@ end
 %everything you want JAGS to monitor
 for i = 1:nChains
     switch mode  
-        case {1}  %Simulating choices
+        case {1,3}  %Simulating choices
             monitorParameters = {'y',...
                 'alpha_pt','gamma_pt','delta_pt','beta_pt'};
             S=struct; init0(i)=S; %sets initial values as empty so randomly seeded
@@ -217,11 +242,11 @@ for i = 1:nChains
             monitorParameters = {'y'};
             S=struct; init0(i)=S; %sets initial values as empty so randomly seeded
 
-        case {3,4}  %Model recovery
+        case {4,5}  %Model recovery
             monitorParameters = {'z'};
             S=struct; init0(i)=S; %sets initial values as empty so randomly seeded
 
-        case {5,6}  %Parameter recovery
+        case {6,7}  %Parameter recovery
             monitorParameters = {'alpha_pt','gamma_pt','delta_pt','beta_pt'};
             S=struct; init0(i)=S; %sets initial values as empty so randomly seeded
     end
@@ -253,9 +278,9 @@ toc % end clock
 %% Save stats and samples
 disp('saving samples and stats...')
 switch mode
-    case {1,2,3,4}
+    case {1,2,3,4,5}
         save(['samples_stats\',outputName],'stats','samples','-v7.3')
-    case {5,6}
+    case {6,7}
         save(['samples_stats\',sprintf('%s_Chunk_%.0f',outputName,trial_n)],'stats','samples','-v7.3')
 end
 disp('**************');
