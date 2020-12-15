@@ -20,6 +20,8 @@ print("------------------------------------")
 
 cpt_parameter_recovery_files = ['parameter_recovery_CPT_chunk_1.mat', 'parameter_recovery_CPT_chunk_2.mat','parameter_recovery_CPT_chunk_3.mat']
 cpt_ground_truth_file         = "Choices_simulated_from_CPT.mat"
+cpt2_parameter_recovery_files = ['parameter_recovery_CPT_regular_S_chunk_1.mat', 'parameter_recovery_CPT_regular_S_chunk_2.mat','parameter_recovery_CPT_regular_S_chunk_3.mat']
+cpt2_ground_truth_file         = "Choices_simulated_from_CPT_regular_S.mat"
 
 LML_parameter_recovery_files = ['parameter_recovery_LML_chunk_1.mat','parameter_recovery_LML_chunk_2.mat','parameter_recovery_LML_chunk_3.mat']
 
@@ -47,6 +49,13 @@ if show_cpt:
         _,beta_cpt[c],   delta_cpt[c],   gamma_cpt[c]    = read_output(cpt_parameter_recovery_files[c],'parameter_recovery')
     _,beta_cpt_true,delta_cpt_true,gamma_cpt_true = read_output(cpt_ground_truth_file,'parameter_recovery')
 
+    beta_cpt2  = [None]*n_chunks
+    delta_cpt2 = [None]*n_chunks
+    gamma_cpt2 = [None]*n_chunks
+    for c in range(n_chunks):
+        _,beta_cpt2[c],   delta_cpt2[c],   gamma_cpt2[c]    = read_output(cpt2_parameter_recovery_files[c],'parameter_recovery')
+    _,beta2_cpt_true,delta_cpt2_true,gamma_cpt2_true = read_output(cpt2_ground_truth_file,'parameter_recovery')
+
     n_agents = np.shape(beta_cpt[0])[0]
     n_samples = np.shape(beta_cpt[0])[1]
     n_chains = np.shape(beta_cpt[0])[2]
@@ -61,10 +70,12 @@ if show_cpt:
     #--------delta----------#
     print("\nProcessing Delta...")
     map_agent_cpt_delta = [None]*n_chunks
+    map_agent_cpt2_delta = [None]*n_chunks
     for c in range(n_chunks):
-        _,map_agent_cpt_delta[c] = process_params(delta_cpt[c], n_agents, n_chains, n_samples, output="map")
-        corr,_ = sc.pearsonr(map_agent_cpt_delta[c],delta_cpt_true[:,0,0])
-        print(f"Pearson correlation coefficient for Delta in chunk {c+1}: {corr:.3f}")
+        _,map_agent_cpt_delta[c]  = process_params(delta_cpt[c] , n_agents, n_chains, n_samples, output="map")
+        _,map_agent_cpt2_delta[c] = process_params(delta_cpt2[c], n_agents, n_chains, n_samples, output="map")
+        # corr,_ = sc.pearsonr(map_agent_cpt_delta[c]+map_agent_cpt2_delta[c],delta_cpt_true[:,0,0]+delta_cpt2_true[:,0,0])
+        # print(f"Pearson correlation coefficient for Delta in chunk {c+1}: {corr:.3f}")
 
     plt.figure()
     # plt.suptitle("True delta vs estimated delta",fontsize=18)
@@ -72,9 +83,11 @@ if show_cpt:
     for c in range(n_chunks):
         for i in range(n_agents):
             if i in A:
-                plt.scatter(delta_cpt_true[i,0,0],map_agent_cpt_delta[c][i], marker=marker[i], edgecolor=colors[c], facecolors='none', s=80)
+                plt.scatter(delta_cpt_true[i,0,0] ,map_agent_cpt_delta[c][i] , marker=marker[i], edgecolor=colors[c], facecolors='none', s=80)
+                plt.scatter(delta_cpt2_true[i,0,0],map_agent_cpt2_delta[c][i], marker=marker[i], edgecolor=colors[c], facecolors='none', s=80)
             else:
-                plt.scatter(delta_cpt_true[i,0,0],map_agent_cpt_delta[c][i], marker='x', c=colors[c], s=80)
+                plt.scatter(delta_cpt_true[i,0,0] ,map_agent_cpt_delta[c][i] , marker='x', c=colors[c], s=80)
+                plt.scatter(delta_cpt2_true[i,0,0],map_agent_cpt2_delta[c][i], marker='x', c=colors[c], s=80)
             plt.ylim([0,1.8])
             plt.xlim([0,1.8])
         #Dummies for legend
@@ -92,11 +105,13 @@ if show_cpt:
 
     #--------gamma----------#
     print("\nProcessing Gamma...")
-    map_agent_cpt_gamma = [None]*n_chunks
+    map_agent_cpt_gamma  = [None]*n_chunks
+    map_agent_cpt2_gamma = [None]*n_chunks
     for c in range(n_chunks):
-        _,map_agent_cpt_gamma[c] = process_params(gamma_cpt[c], n_agents, n_chains, n_samples, output="map")
-        corr,_ = sc.pearsonr(map_agent_cpt_gamma[c],gamma_cpt_true[:,0,0])
-        print(f"Pearson correlation coefficient for Gamma in chunk {c+1}: {corr:.3f}")
+        _,map_agent_cpt_gamma[c]  = process_params(gamma_cpt[c] , n_agents, n_chains, n_samples, output="map")
+        _,map_agent_cpt2_gamma[c] = process_params(gamma_cpt2[c], n_agents, n_chains, n_samples, output="map")
+        # corr,_ = sc.pearsonr(map_agent_cpt_gamma[c]+map_agent_cpt2_gamma[c],gamma_cpt_true[:,0,0]+gamma_cpt2_true[:,0,0])
+        # print(f"Pearson correlation coefficient for Gamma in chunk {c+1}: {corr:.3f}")
 
     plt.figure()
     colors = ['b','r','g']
@@ -105,11 +120,13 @@ if show_cpt:
         for i in range(n_agents):
             # plt.subplot(1,2,1)
             if i in A:
-                plt.scatter(gamma_cpt_true[i,0,0],map_agent_cpt_gamma[c][i], marker=marker[i], edgecolor=colors[c], facecolors='none', s=80)
+                plt.scatter(gamma_cpt_true[i,0,0],map_agent_cpt_gamma[c][i] , marker=marker[i], edgecolor=colors[c], facecolors='none', s=80)
+                plt.scatter(gamma_cpt2_true[i,0,0],map_agent_cpt2_gamma[c][i], marker=marker[i], edgecolor=colors[c], facecolors='none', s=80)
             else:
-                plt.scatter(gamma_cpt_true[i,0,0],map_agent_cpt_gamma[c][i], marker='x', c=colors[c], s=80)
-            plt.ylim([0,1.8])
-            plt.xlim([0,1.8])
+                plt.scatter(gamma_cpt_true[i,0,0],map_agent_cpt_gamma[c][i] , marker='x', c=colors[c], s=80)
+                plt.scatter(gamma_cpt2_true[i,0,0],map_agent_cpt2_gamma[c][i], marker='x', c=colors[c], s=80)
+            plt.ylim([0,2])
+            plt.xlim([0,2])
         #Dummies for legend
         plt.scatter(10,10,c=colors[c],label=f"Chunk {c+1}", marker=">")
     plt.scatter(10,10, facecolors='none',label=" ")
@@ -123,6 +140,9 @@ if show_cpt:
     plt.legend(loc='upper left')
     plt.savefig(os.path.join(fig_path,"results-cpt-gamma.png"))
 
+    plt.show()
+    sys.exit()
+
     # #--------PW----------#
     print("\nProcessing w...")
     plt.figure()
@@ -132,9 +152,11 @@ if show_cpt:
         for i in range(n_agents):
             # plt.subplot(1,2,1)
             if i in A:
-                plt.scatter(map_agent_cpt_gamma[c][i],map_agent_cpt_delta[c][i], marker=marker[i], edgecolor=colors[c], facecolors='none', s=80)
+                plt.scatter(map_agent_cpt_gamma[c][i],map_agent_cpt_delta[c][i] , marker=marker[i], edgecolor=colors[c], facecolors='none', s=80)
+                plt.scatter(map_agent_cpt_gamma[c][i],map_agent_cpt2_delta[c][i], marker=marker[i], edgecolor=colors[c], facecolors='none', s=80)
             else:
-                plt.scatter(map_agent_cpt_gamma[c][i],map_agent_cpt_delta[c][i], marker='x', c=colors[c], s=80)
+                plt.scatter(map_agent_cpt_gamma[c][i],map_agent_cpt_delta[c][i] , marker='x', c=colors[c], s=80)
+                plt.scatter(map_agent_cpt_gamma[c][i],map_agent_cpt2_delta[c][i], marker='x', c=colors[c], s=80)
             plt.xlim([0,1.8])
             plt.ylim([0,1.8])
         #Dummies for legend
@@ -192,13 +214,52 @@ if show_cpt:
         plt.subplots_adjust(wspace=0.3,hspace=0.3)
         plt.savefig(os.path.join(fig_path,f"results-cpt-w-agent{i+1}.png"))
 
+
+    for i in range(n_agents): #agents
+        plt.figure(figsize=(12,15))
+        plt.suptitle(f"Probability Weighting function for CPT2-Agent {i+1}", fontsize=18)
+        w_true = cpt_weighting_function(x, delta_cpt2_true[i,0,0], gamma_cpt2_true[i,0,0])
+        w = [None]*n_chunks
+        for c in range(n_chunks):
+            plt.subplot(3,2,(c*2)+1)
+            if c == 0: plt.title("Parameter space", fontsize=14)
+            plt.scatter(map_agent_cpt2_gamma[c][i],map_agent_cpt2_delta[c][i], edgecolor='b', facecolors='none', marker='^', label="Estimated", s=100)
+            plt.scatter(gamma_cpt2_true[i,0,0],delta_cpt2_true[i,0,0], edgecolor='r',facecolor='none', label="'Ground truth'", s=100)
+            
+            plt.xlim([0,1.8])
+            plt.ylim([0,1.8])
+            plt.ylabel("$\\delta$")
+            plt.xlabel("$\\gamma$")
+            plt.legend(prop={'size':8}, markerscale=0.7)
+           
+            w[c] = cpt_weighting_function(x, map_agent_cpt2_delta[c][i],map_agent_cpt2_gamma[c][i])
+
+            if c == 0: 
+                w_1_diff.append([a_i - b_i for a_i, b_i in zip(w_true,w[c])])
+            elif c == 1:
+                w_2_diff.append([a_i - b_i for a_i, b_i in zip(w_true,w[c])])
+            else:
+                w_3_diff.append([a_i - b_i for a_i, b_i in zip(w_true,w[c])])
+
+            plt.subplot(3,2,(c*2)+2)
+            if c == 0: plt.title("Weighting function", fontsize=14)
+            plt.plot(x,w[c], 'b--', label="Estimated")
+            plt.plot(x,w_true, 'r-.', label="'Ground truth'")
+            plt.plot(x,x,'k-', label="No weighting")
+            plt.xlabel("$\hat{p}(x)$",fontsize=14)
+            plt.ylabel("$w(x)$",fontsize=14)
+            plt.legend(loc='upper left', prop={'size':8})
+
+        plt.subplots_adjust(wspace=0.3,hspace=0.3)
+        plt.savefig(os.path.join(fig_path,f"results-cpt2-w-agent{i+1}.png"))
+
     diff = [w_1_diff,w_2_diff,w_3_diff]
     fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(7,10))
     plt.setp(ax, xticks=[0, 150, 300], xticklabels=['0', '0.5', '1'], yticks=[-0.1, 0, 0.1])
     for c in range(n_chunks):
         df = pd.DataFrame(diff[c])
-        df = pd.melt(frame = df, var_name = '$\hat{p}(x)$', value_name = '$\hat{p}(x)-w(x)$')
-        sns.lineplot(ax = ax[c],data = df,ci=95,x = '$\hat{p}(x)$', y = '$\hat{p}(x)-w(x)$')
+        df = pd.melt(frame = df, var_name = '$\hat{p}(x)$', value_name = '$\\bar{w}(x)-w(x)$')
+        sns.lineplot(ax = ax[c],data = df,ci=95,x = '$\hat{p}(x)$', y = '$\\bar{w}(x)-w(x)$')
         ax[c].collections[0].set_label('95 pct. confidence interval')
         ax[c].hlines(y=0, xmin=0, xmax=len(x), color='k', linestyle='--')
         ax[c].set_title(f"Chunk {c+1}", fontsize = 14)
@@ -206,6 +267,10 @@ if show_cpt:
         ax[c].set_ylim([-0.1,0.1])
         plt.tight_layout()
     plt.savefig(os.path.join(fig_path,"results-cpt-difference.png"))
+
+    if show_plots:
+        print("\nPlotting...")
+        plt.show()
 
 #-------------------------------------------------------------------------------------------------------------
 #--------------------------------LML--------------------------------------------------------------------------
@@ -318,8 +383,8 @@ if show_lml:
     plt.setp(ax, xticks=[0, 150, 300], xticklabels=['0', '0.5', '1'], yticks=[-0.01, 0, 0.01])
     for c in range(n_chunks):
         df = pd.DataFrame(diff[c])
-        df = pd.melt(frame = df, var_name = '$\hat{p}(x)$', value_name = '$\hat{p}(x)-w(x)$')
-        sns.lineplot(ax = ax[c],data = df,ci=95,x = '$\hat{p}(x)$', y = '$\hat{p}(x)-w(x)$')
+        df = pd.melt(frame = df, var_name = '$\hat{p}(x)$', value_name = '$\\bar{w}(x)-w(x)$')
+        sns.lineplot(ax = ax[c],data = df,ci=95,x = '$\hat{p}(x)$', y = '$\\bar{w}(x)-w(x)$')
         ax[c].collections[0].set_label('95 pct. confidence interval')
         ax[c].hlines(y=0, xmin=0, xmax=len(x), color='k', linestyle='--')
         ax[c].set_title(f"Chunk {c+1}", fontsize=14)
@@ -327,9 +392,8 @@ if show_lml:
         plt.tight_layout()
     plt.savefig(os.path.join(fig_path,"results-LML-difference.png"))
 
-    plt.show()
-if show_plots:
-    print("\nPlotting...")
-    plt.show()
+    if show_plots:
+        print("\nPlotting...")
+        plt.show()
 
 print("------------------------------------")
