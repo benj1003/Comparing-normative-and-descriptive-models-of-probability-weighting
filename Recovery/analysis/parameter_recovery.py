@@ -9,7 +9,8 @@ import pandas as pd
 import matplotlib.pylab as pylab
 
 params = {'axes.labelsize': 14,
-         'axes.titlesize':16}
+         'axes.titlesize':16,
+         'figure.max_open_warning': 0}
 pylab.rcParams.update(params)
 
 fig_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ),'..','..', 'Figures','tmp_figs'))
@@ -18,10 +19,10 @@ print("------------------------------------")
 print("          Parameter recovery")
 print("------------------------------------")
 
-cpt_parameter_recovery_files = ['parameter_recovery_CPT_chunk_1.mat', 'parameter_recovery_CPT_chunk_2.mat','parameter_recovery_CPT_chunk_3.mat']
+cpt_parameter_recovery_files  = ['parameter_recovery_CPT_chunk_1.mat', 'parameter_recovery_CPT_chunk_2.mat','parameter_recovery_CPT_chunk_3.mat']
 cpt_ground_truth_file         = "Choices_simulated_from_CPT.mat"
 cpt2_parameter_recovery_files = ['parameter_recovery_CPT_regular_S_chunk_1.mat', 'parameter_recovery_CPT_regular_S_chunk_2.mat','parameter_recovery_CPT_regular_S_chunk_3.mat']
-cpt2_ground_truth_file         = "Choices_simulated_from_CPT_regular_S.mat"
+cpt2_ground_truth_file        = "Choices_simulated_from_CPT_regular_S.mat"
 
 LML_parameter_recovery_files = ['parameter_recovery_LML_chunk_1.mat','parameter_recovery_LML_chunk_2.mat','parameter_recovery_LML_chunk_3.mat']
 
@@ -74,8 +75,8 @@ if show_cpt:
     for c in range(n_chunks):
         _,map_agent_cpt_delta[c]  = process_params(delta_cpt[c] , n_agents, n_chains, n_samples, output="map")
         _,map_agent_cpt2_delta[c] = process_params(delta_cpt2[c], n_agents, n_chains, n_samples, output="map")
-        # corr,_ = sc.pearsonr(map_agent_cpt_delta[c]+map_agent_cpt2_delta[c],delta_cpt_true[:,0,0]+delta_cpt2_true[:,0,0])
-        # print(f"Pearson correlation coefficient for Delta in chunk {c+1}: {corr:.3f}")
+        corr,_ = sc.pearsonr(np.concatenate((map_agent_cpt_delta[c],map_agent_cpt2_delta[c]),axis=0),np.concatenate((delta_cpt_true[:,0,0],delta_cpt2_true[:,0,0]),axis=0))
+        print(f"Pearson correlation coefficient for Delta in chunk {c+1}: {corr:.3f}")
 
     plt.figure()
     # plt.suptitle("True delta vs estimated delta",fontsize=18)
@@ -116,8 +117,8 @@ if show_cpt:
     for c in range(n_chunks):
         _,map_agent_cpt_gamma[c]  = process_params(gamma_cpt[c] , n_agents, n_chains, n_samples, output="map")
         _,map_agent_cpt2_gamma[c] = process_params(gamma_cpt2[c], n_agents, n_chains, n_samples, output="map")
-        # corr,_ = sc.pearsonr(map_agent_cpt_gamma[c]+map_agent_cpt2_gamma[c],gamma_cpt_true[:,0,0]+gamma_cpt2_true[:,0,0])
-        # print(f"Pearson correlation coefficient for Gamma in chunk {c+1}: {corr:.3f}")
+        corr,_ = sc.pearsonr(np.concatenate((map_agent_cpt_gamma[c],map_agent_cpt2_gamma[c]),axis=0),np.concatenate((gamma_cpt_true[:,0,0],gamma_cpt2_true[:,0,0]),axis=0))
+        print(f"Pearson correlation coefficient for Gamma in chunk {c+1}: {corr:.3f}")
 
     plt.figure()
     colors = ['b','r','g']
