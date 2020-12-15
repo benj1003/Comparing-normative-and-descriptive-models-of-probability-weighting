@@ -27,11 +27,12 @@ cpt2_ground_truth_file        = "Choices_simulated_from_CPT_regular_S.mat"
 LML_parameter_recovery_files = ['parameter_recovery_LML_chunk_1.mat','parameter_recovery_LML_chunk_2.mat','parameter_recovery_LML_chunk_3.mat']
 
 x = np.linspace(0,1,300)
+x2 = np.linspace(0,10,1000)
 n_chunks = len(cpt_parameter_recovery_files)
 
 show_cpt   = True
-show_lml   = True
-show_plots = True
+show_lml   = False
+show_plots = False
 
 A      = [0,1,2,3]
 marker = ['^','s','o','v']
@@ -79,6 +80,7 @@ if show_cpt:
         print(f"Pearson correlation coefficient for Delta in chunk {c+1}: {corr:.3f}")
 
     plt.figure()
+    plt.plot(x2,x2, color='lightgray', zorder=-1)
     # plt.suptitle("True delta vs estimated delta",fontsize=18)
     for c in range(n_chunks):
         for i in range(n_agents):
@@ -93,11 +95,11 @@ if show_cpt:
         #Dummies for legend
         plt.scatter(10,10,c='w',label=f"Chunk {c+1}")
     plt.scatter(10,10, facecolors='none',label=" ")
-    plt.scatter(10,10,label="Agent 1", marker=marker[0], edgecolor='k', facecolors='none')
-    plt.scatter(10,10,label="Agent 2", marker=marker[1], edgecolor='k', facecolors='none')
-    plt.scatter(10,10,label="Agent 3", marker=marker[2], edgecolor='k', facecolors='none')
-    plt.scatter(10,10,label="Agent 4", marker=marker[3], edgecolor='k', facecolors='none')
-    plt.scatter(10,10,marker='x',c='k',label="Agents 5-10")
+    plt.scatter(10,10,label="Agent 1 & 11", marker=marker[0], edgecolor='k', facecolors='none')
+    plt.scatter(10,10,label="Agent 2 & 12", marker=marker[1], edgecolor='k', facecolors='none')
+    plt.scatter(10,10,label="Agent 3 & 13", marker=marker[2], edgecolor='k', facecolors='none')
+    plt.scatter(10,10,label="Agent 4 & 14", marker=marker[3], edgecolor='k', facecolors='none')
+    plt.scatter(10,10,marker='x',c='k',label="Other agents")
     plt.xlabel("$\\delta_{'Ground-truth'}$")
     plt.ylabel("$\delta_e$")
     l = plt.legend(loc='upper left')
@@ -121,6 +123,7 @@ if show_cpt:
         print(f"Pearson correlation coefficient for Gamma in chunk {c+1}: {corr:.3f}")
 
     plt.figure()
+    plt.plot(x2,x2, color='lightgray', zorder=-1)
     colors = ['b','r','g']
     # plt.suptitle("True gamma vs estimated gamma",fontsize=18)
     for c in range(n_chunks):
@@ -137,11 +140,11 @@ if show_cpt:
         #Dummies for legend
         plt.scatter(10,10,c='w',label=f"Chunk {c+1}")
     plt.scatter(10,10, facecolors='none',label=" ")
-    plt.scatter(10,10,label="Agent 1", marker=marker[0], edgecolor='k', facecolors='none')
-    plt.scatter(10,10,label="Agent 2", marker=marker[1], edgecolor='k', facecolors='none')
-    plt.scatter(10,10,label="Agent 3", marker=marker[2], edgecolor='k', facecolors='none')
-    plt.scatter(10,10,label="Agent 4", marker=marker[3], edgecolor='k', facecolors='none')
-    plt.scatter(10,10,marker='x',c='k',label="Agents 5-10")
+    plt.scatter(10,10,label="Agent 1 & 11", marker=marker[0], edgecolor='k', facecolors='none')
+    plt.scatter(10,10,label="Agent 2 & 12", marker=marker[1], edgecolor='k', facecolors='none')
+    plt.scatter(10,10,label="Agent 3 & 13", marker=marker[2], edgecolor='k', facecolors='none')
+    plt.scatter(10,10,label="Agent 4 & 14", marker=marker[3], edgecolor='k', facecolors='none')
+    plt.scatter(10,10,marker='x',c='k',label="Other agents")
     plt.xlabel("$\\gamma_{'Ground-truth'}$")
     plt.ylabel("$\gamma_e$")
     l = plt.legend(loc='upper left')
@@ -168,16 +171,17 @@ if show_cpt:
             else:
                 plt.scatter(map_agent_cpt_gamma[c][i],map_agent_cpt_delta[c][i] , marker='x', c=colors[c], s=80)
                 plt.scatter(map_agent_cpt2_gamma[c][i],map_agent_cpt2_delta[c][i], marker='x', c=colors[c], s=80)
-            plt.xlim([0,2.9])
+            plt.xlim([0,3.2])
             plt.ylim([0,1.9])
+            plt.xticks([0,0.5,1,1.5,2,2.5])
         #Dummies for legend
         plt.scatter(10,10,c='w',label=f"Chunk {c+1}")
     plt.scatter(10,10, facecolors='none',label=" ")
-    plt.scatter(10,10,label="Agent 1", marker=marker[0], edgecolor='k', facecolors='none')
-    plt.scatter(10,10,label="Agent 2", marker=marker[1], edgecolor='k', facecolors='none')
-    plt.scatter(10,10,label="Agent 3", marker=marker[2], edgecolor='k', facecolors='none')
-    plt.scatter(10,10,label="Agent 4", marker=marker[3], edgecolor='k', facecolors='none')
-    plt.scatter(10,10,marker='x',c='k',label="Agents 5-10")
+    plt.scatter(10,10,label="Agent 1 & 11", marker=marker[0], edgecolor='k', facecolors='none')
+    plt.scatter(10,10,label="Agent 2 & 12", marker=marker[1], edgecolor='k', facecolors='none')
+    plt.scatter(10,10,label="Agent 3 & 13", marker=marker[2], edgecolor='k', facecolors='none')
+    plt.scatter(10,10,label="Agent 4 & 14", marker=marker[3], edgecolor='k', facecolors='none')
+    plt.scatter(10,10,marker='x',c='k',label="Other agents")
     plt.ylabel("$\\delta_e$")
     plt.xlabel("$\gamma_e$")
     l=plt.legend(loc='upper right')
@@ -202,8 +206,10 @@ if show_cpt:
             else:
                 plt.scatter(map_agent_cpt_gamma[c][i],map_agent_cpt_delta[c][i] , marker='x', c=colors[c], s=80)
                 plt.scatter(map_agent_cpt2_gamma[c][i],map_agent_cpt2_delta[c][i], marker='x', c=colors[c], s=80)
-            plt.xlim([0.7,1.4])
-            plt.ylim([0.95,1.2])
+            plt.xlim([1,1.4])
+            plt.ylim([1,1.2])
+            plt.xticks([1,1.1,1.2,1.3,1.4],fontsize=16)
+            plt.yticks([1,1.05,1.1,1.15,1.2], fontsize=16)
         #Dummies for legend
         # plt.scatter(10,10,c='w',label=f"Chunk {c+1}")
     # plt.scatter(10,10, facecolors='none',label=" ")
@@ -222,7 +228,7 @@ if show_cpt:
     #         text.set_color('r') 
     #     elif text.get_text() == "Chunk 3": 
     #         text.set_color('g')
-    plt.savefig(os.path.join(fig_path,"results-cpt-params.png"))
+    plt.savefig(os.path.join(fig_path,"results-cpt-params-zoom.png"))
 
     w_1_diff = []
     w_2_diff = []
@@ -269,7 +275,7 @@ if show_cpt:
 
     for i in range(n_agents): #agents
         plt.figure(figsize=(12,15))
-        plt.suptitle(f"Probability Weighting function for CPT2-Agent {i+1}", fontsize=18)
+        plt.suptitle(f"Probability Weighting function for CPT-Agent {i+11}", fontsize=18)
         w_true = cpt_weighting_function(x, delta_cpt2_true[i,0,0], gamma_cpt2_true[i,0,0])
         w = [None]*n_chunks
         for c in range(n_chunks):
@@ -306,7 +312,7 @@ if show_cpt:
         plt.savefig(os.path.join(fig_path,f"results-cpt2-w-agent{i+1}.png"))
 
     diff = [w_1_diff,w_2_diff,w_3_diff]
-    fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(7,10))
+    fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(5,8))
     plt.setp(ax, xticks=[0, 150, 300], xticklabels=['0', '0.5', '1'], yticks=[-0.1, 0, 0.1])
     for c in range(n_chunks):
         df = pd.DataFrame(diff[c])
@@ -407,6 +413,8 @@ if show_lml:
     # plt.xlabel("$\gamma_e$")
     plt.xlim([0.75,1])
     plt.ylim([0.94,1.05])
+    plt.xticks([0.75,0.8,0.85,0.9,0.95,1],fontsize=16)
+    plt.yticks([0.94,0.96,0.98,1,1.02,1.04], fontsize=16)
     # plt.scatter(10,10, facecolors='none',label=" ")
     # plt.scatter(10,10, marker=marker[0], edgecolor='k', facecolors='none', label=f"Agent 1")
     # plt.scatter(10,10, marker=marker[1], edgecolor='k', facecolors='none', label=f"Agent 2")
@@ -464,10 +472,10 @@ if show_lml:
             plt.ylabel("$w(x)$")
             plt.legend(loc='upper left', prop={'size':8})
         plt.subplots_adjust(wspace=0.3,hspace=0.3)
-    plt.savefig(os.path.join(fig_path,f"results-lml-w-agent{i+1}.png"))
+        plt.savefig(os.path.join(fig_path,f"results-lml-w-agent{i+1}.png"))
 
     diff = [w_1_diff,w_2_diff,w_3_diff]
-    fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(7,10))
+    fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(5,8))
     plt.setp(ax, xticks=[0, 150, 300], xticklabels=['0', '0.5', '1'], yticks=[-0.1, 0,0.1])
     for c in range(n_chunks):
         df = pd.DataFrame(diff[c])
@@ -481,7 +489,7 @@ if show_lml:
         plt.tight_layout()
     plt.savefig(os.path.join(fig_path,"results-LML-difference.png"))
 
-    fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(7,10))
+    fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(5,8))
     plt.setp(ax, xticks=[0, 150, 300], xticklabels=['0', '0.5', '1'], yticks=[-0.01, 0,0.01])
     for c in range(n_chunks):
         df = pd.DataFrame(diff[c])
@@ -493,7 +501,7 @@ if show_lml:
         ax[c].set_ylim([-0.015,0.015])
         ax[c].legend(loc='upper left')
         plt.tight_layout()
-    plt.savefig(os.path.join(fig_path,"results-LML-difference.png"))
+    plt.savefig(os.path.join(fig_path,"results-LML-difference-zoom.png"))
 
     if show_plots:
         print("\nPlotting...")
