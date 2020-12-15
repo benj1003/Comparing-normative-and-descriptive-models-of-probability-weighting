@@ -59,7 +59,7 @@ switch mode
         muLogGammaL=0.49;muLogGammaU=0.5;%bounds on mean of distribution of log Gamma
         sigmaLogGammaL=0.19;sigmaLogGammaU=0.20; %bounds on std of distribution of log Gamma
 
-    case {4,5,6,7}
+    case {4,5,6,7,8,9}
         %beta - prior on log since cannot be less than 0; note same bounds used for independent priors on all models
         muLogBetaL=-2.3;muLogBetaU=3.4; %bounds on mean of distribution log beta
         sigmaLogBetaL=0.01;sigmaLogBetaU=1.60;%bounds on the std of distribution of log beta
@@ -80,9 +80,9 @@ end
 %% Set key variables
 
 switch mode
-    case {1,2,3,4,5}
+    case {1,2,3,4,5,6}
         nTrials = [200];
-    case {6,7}
+    case {7,8,9}
         nTrials = [10,50,200];
 end
 doDIC=0;%compute Deviance information criteria? This is the hierarchical equivalent of an AIC, the lower the better
@@ -110,7 +110,7 @@ switch mode
     case 3 %simulate choices with CPT regular-S
         dataSource = 'all_gambles';
         modelName = 'JAGS_CPT';
-        outputName = 'Choices_simulated_from_CPT-regular-S';
+        outputName = 'Choices_simulated_from_CPT_regular_S';
         running = 'Simulating choices from CPT-regular-S';
         nSamples = 1;
         nChains = 1;
@@ -131,18 +131,33 @@ switch mode
         pz=[1/2,1/2];
         load('all_gambles');
         
-    case 6 %parameter recovery for CPT data
+    case 6 %Model comparison on data from CPT regular-S
+        dataSource = sprintf('Choices_simulated_from_CPT_regular_S');
+        modelName = 'JAGS';
+        outputName = 'model_comparison_CPT_regular_S'; 
+        running = 'Model recovery on choices from CPT (Regular-S) species';
+        pz=[1/2,1/2];
+        load('all_gambles');
+        
+    case 7 %parameter recovery for CPT data
         dataSource = sprintf('Choices_simulated_from_CPT');
         outputName = 'parameter_recovery_CPT';
         modelName = 'JAGS_CPT';
         running = 'Parameter recovery on choices from CPT species';
         load('all_gambles');
         
-    case 7 %parameter recovery for LML data
+    case 8 %parameter recovery for LML data
         dataSource = sprintf('Choices_simulated_from_LML');
         outputName = 'parameter_recovery_LML';
         modelName = 'JAGS_CPT';
         running = 'Parameter recovery on choices from LML species';
+        load('all_gambles');
+        
+    case 9 %parameter recovery for CPT (regular-S) data
+        dataSource = sprintf('Choices_simulated_from_CPT_regular_S');
+        outputName = 'parameter_recovery_CPT';
+        modelName = 'JAGS_CPT';
+        running = 'Parameter recovery on choices from CPT species';
         load('all_gambles');
 end
 
@@ -181,7 +196,7 @@ switch mode
             end
         end    
            
-    case {4,5,6,7} %Recovery
+    case {4,5,6,7,8,9} %Recovery
         for i = 1:nAgents
             for g = 1:nGambles %nChunks = 1
                 choice(i,g,trialInds)=samples.y(1,1,i,g,trialInds);%assign to temporary variables
@@ -209,7 +224,7 @@ switch mode
             'muLogDeltaL',muLogDeltaL,'muLogDeltaU',muLogDeltaU,'sigmaLogDeltaL',sigmaLogDeltaL,'sigmaLogDeltaU',sigmaLogDeltaU,...
             'muLogGammaL',muLogGammaL,'muLogGammaU',muLogGammaU,'sigmaLogGammaL',sigmaLogGammaL,'sigmaLogGammaU',sigmaLogGammaU);
                
-    case {4,5} %Model Recovery
+    case {4,5,6} %Model Recovery
         dataStruct = struct(...
             'nAgents', nAgents,'nGambles',nGambles,'nTrials',nTrials(trial_n),'y',choice,...
             'dx1',dx1,'dx2',dx2,'dx3',dx3,'dx4',dx4,...
@@ -220,7 +235,7 @@ switch mode
             'muLogGammaL',muLogGammaL,'muLogGammaU',muLogGammaU,'sigmaLogGammaL',sigmaLogGammaL,'sigmaLogGammaU',sigmaLogGammaU,...
             'pz',pz);
         
-    case {6,7} %Parameter Recovery
+    case {7,8,9} %Parameter Recovery
         dataStruct = struct(...
             'nAgents', nAgents,'nGambles',nGambles,'nTrials',nTrials(trial_n),'y',choice,...
             'dx1',dx1,'dx2',dx2,'dx3',dx3,'dx4',dx4,...
@@ -242,11 +257,11 @@ for i = 1:nChains
             monitorParameters = {'y'};
             S=struct; init0(i)=S; %sets initial values as empty so randomly seeded
 
-        case {4,5}  %Model recovery
+        case {4,5,6}  %Model recovery
             monitorParameters = {'z'};
             S=struct; init0(i)=S; %sets initial values as empty so randomly seeded
 
-        case {6,7}  %Parameter recovery
+        case {7,8,9}  %Parameter recovery
             monitorParameters = {'alpha_pt','gamma_pt','delta_pt','beta_pt'};
             S=struct; init0(i)=S; %sets initial values as empty so randomly seeded
     end
@@ -278,9 +293,9 @@ toc % end clock
 %% Save stats and samples
 disp('saving samples and stats...')
 switch mode
-    case {1,2,3,4,5}
+    case {1,2,3,4,5,6}
         save(['samples_stats\',outputName],'stats','samples','-v7.3')
-    case {6,7}
+    case {7,8,9}
         save(['samples_stats\',sprintf('%s_Chunk_%.0f',outputName,trial_n)],'stats','samples','-v7.3')
 end
 disp('**************');
