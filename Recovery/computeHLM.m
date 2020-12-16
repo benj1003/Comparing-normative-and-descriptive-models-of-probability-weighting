@@ -81,9 +81,9 @@ end
 
 switch mode
     case {1,2,3,4,5,6}
-        nTrials = [200];
+        nTrials = [100];
     case {7,8,9}
-        nTrials = [10,50,200];
+        nTrials = [10,50,100];
 end
 doDIC=0;%compute Deviance information criteria? This is the hierarchical equivalent of an AIC, the lower the better
 
@@ -155,7 +155,7 @@ switch mode
         
     case 9 %parameter recovery for CPT (regular-S) data
         dataSource = sprintf('Choices_simulated_from_CPT_regular_S');
-        outputName = 'parameter_recovery_CPT';
+        outputName = 'parameter_recovery_CPT_regular_S';
         modelName = 'JAGS_CPT';
         running = 'Parameter recovery on choices from CPT species';
         load('all_gambles');
