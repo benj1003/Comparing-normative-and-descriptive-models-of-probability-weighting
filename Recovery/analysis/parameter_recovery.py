@@ -31,7 +31,7 @@ x2 = np.linspace(0,10,1000)
 n_chunks = len(cpt_parameter_recovery_files)
 
 show_cpt   = True
-show_lml   = False
+show_lml   = True
 show_plots = False
 
 A      = [0,1,2,3]
@@ -63,7 +63,7 @@ if show_cpt:
     n_chains = np.shape(beta_cpt[0])[2]
 
     print('---')
-    print(f"Number of agents = {n_agents}")
+    print(f"Number of agents = {n_agents*2}")
     print(f"Number of chains = {n_chains}")
     print(f"Number of samples = {n_samples}")
     print(f"Number of chunks = {n_chunks}")
@@ -195,21 +195,21 @@ if show_cpt:
     plt.savefig(os.path.join(fig_path,"results-cpt-params.png"))
     
     #Zoom of above
-    plt.figure()
+    plt.figure(figsize=(5,4))
     # plt.suptitle("Estimated delta vs estimated gamma",fontsize=18)
     for c in range(n_chunks):
         for i in range(n_agents):
             # plt.subplot(1,2,1)
             if i in A:
-                plt.scatter(map_agent_cpt_gamma[c][i],map_agent_cpt_delta[c][i] , marker=marker[i], edgecolor=colors[c], facecolors='none', s=80)
-                plt.scatter(map_agent_cpt2_gamma[c][i],map_agent_cpt2_delta[c][i], marker=marker[i], edgecolor=colors[c], facecolors='none', s=80)
+                plt.scatter(map_agent_cpt_gamma[c][i],map_agent_cpt_delta[c][i] , marker=marker[i], edgecolor=colors[c], facecolors='none', s=170)
+                plt.scatter(map_agent_cpt2_gamma[c][i],map_agent_cpt2_delta[c][i], marker=marker[i], edgecolor=colors[c], facecolors='none', s=170)
             else:
-                plt.scatter(map_agent_cpt_gamma[c][i],map_agent_cpt_delta[c][i] , marker='x', c=colors[c], s=80)
-                plt.scatter(map_agent_cpt2_gamma[c][i],map_agent_cpt2_delta[c][i], marker='x', c=colors[c], s=80)
-            plt.xlim([1,1.4])
+                plt.scatter(map_agent_cpt_gamma[c][i],map_agent_cpt_delta[c][i] , marker='x', c=colors[c], s=170)
+                plt.scatter(map_agent_cpt2_gamma[c][i],map_agent_cpt2_delta[c][i], marker='x', c=colors[c], s=170)
+            plt.xlim([0.95,1.4])
             plt.ylim([1,1.2])
-            plt.xticks([1,1.1,1.2,1.3,1.4],fontsize=16)
-            plt.yticks([1,1.05,1.1,1.15,1.2], fontsize=16)
+            plt.xticks([1,1.1,1.2,1.3,1.4])
+            plt.yticks([1,1.05,1.1,1.15,1.2])
         #Dummies for legend
         # plt.scatter(10,10,c='w',label=f"Chunk {c+1}")
     # plt.scatter(10,10, facecolors='none',label=" ")
@@ -228,7 +228,7 @@ if show_cpt:
     #         text.set_color('r') 
     #     elif text.get_text() == "Chunk 3": 
     #         text.set_color('g')
-    plt.savefig(os.path.join(fig_path,"results-cpt-params-zoom.png"))
+    plt.savefig(os.path.join(fig_path,"results-cpt-params-zoom.png"),bbox_inches='tight')
 
     w_1_diff = []
     w_2_diff = []
@@ -309,7 +309,7 @@ if show_cpt:
             plt.legend(loc='upper left', prop={'size':8})
 
         plt.subplots_adjust(wspace=0.3,hspace=0.3)
-        plt.savefig(os.path.join(fig_path,f"results-cpt2-w-agent{i+1}.png"))
+        plt.savefig(os.path.join(fig_path,f"results-cpt-w-agent{i+11}.png"))
 
     diff = [w_1_diff,w_2_diff,w_3_diff]
     fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(5,8))
@@ -319,7 +319,7 @@ if show_cpt:
         df = pd.melt(frame = df, var_name = '$\hat{p}(x)$', value_name = '$\\bar{w}(x)-w(x)$')
         sns.lineplot(ax = ax[c],data = df,ci=95,x = '$\hat{p}(x)$', y = '$\\bar{w}(x)-w(x)$')
         ax[c].collections[0].set_label('95 pct. confidence interval')
-        ax[c].hlines(y=0, xmin=0, xmax=len(x), color='k', linestyle='--')
+        ax[c].hlines(y=0, xmin=0, xmax=len(x), color='k', linestyle='-')
         ax[c].set_title(f"Chunk {c+1}", fontsize = 14)
         ax[c].legend(loc='upper left')
         ax[c].set_ylim([-0.15,0.15])
@@ -400,21 +400,21 @@ if show_lml:
     plt.savefig(os.path.join(fig_path,"results-lml-params.png"))
 
     #Zoom of above
-    plt.figure()
+    plt.figure(figsize=(5,4))
     # plt.suptitle("Estimated delta vs estimated gamma", fontsize=18)
     for c in range(n_chunks):
         for i in range(n_agents):
             if i in A:
-                plt.scatter(map_agent_lml_gamma[c][i],map_agent_lml_delta[c][i], marker=marker[i], edgecolor=colors[c], facecolors='none', s=50)
+                plt.scatter(map_agent_lml_gamma[c][i],map_agent_lml_delta[c][i], marker=marker[i], edgecolor=colors[c], facecolors='none', s=110)
             else:
-                plt.scatter(map_agent_lml_gamma[c][i],map_agent_lml_delta[c][i], marker='x', c=colors[c], s=50)
+                plt.scatter(map_agent_lml_gamma[c][i],map_agent_lml_delta[c][i], marker='x', c=colors[c], s=110)
         plt.scatter(10,10,c='w',label=f"Chunk {c+1}")
     # plt.ylabel("$\\delta_e$")
     # plt.xlabel("$\gamma_e$")
     plt.xlim([0.75,1])
     plt.ylim([0.94,1.05])
-    plt.xticks([0.75,0.8,0.85,0.9,0.95,1],fontsize=16)
-    plt.yticks([0.94,0.96,0.98,1,1.02,1.04], fontsize=16)
+    plt.xticks([0.75,0.8,0.85,0.9,0.95,1])
+    plt.yticks([0.94,0.96,0.98,1,1.02,1.04])
     # plt.scatter(10,10, facecolors='none',label=" ")
     # plt.scatter(10,10, marker=marker[0], edgecolor='k', facecolors='none', label=f"Agent 1")
     # plt.scatter(10,10, marker=marker[1], edgecolor='k', facecolors='none', label=f"Agent 2")
@@ -429,7 +429,7 @@ if show_lml:
     #         text.set_color('r') 
     #     elif text.get_text() == "Chunk 3": 
     #         text.set_color('g')
-    plt.savefig(os.path.join(fig_path,"results-lml-params-zoom.png"))
+    plt.savefig(os.path.join(fig_path,"results-lml-params-zoom.png"), bbox_inches='tight')
 
     w_1_diff = []
     w_2_diff = []
@@ -482,10 +482,11 @@ if show_lml:
         df = pd.melt(frame = df, var_name = '$\hat{p}(x)$', value_name = '$\\bar{w}(x)-w(x)$')
         sns.lineplot(ax = ax[c],data = df,ci=95,x = '$\hat{p}(x)$', y = '$\\bar{w}(x)-w(x)$')
         ax[c].collections[0].set_label('95 pct. confidence interval')
-        ax[c].hlines(y=0, xmin=0, xmax=len(x), color='k', linestyle='--')
+        ax[c].hlines(y=0, xmin=0, xmax=len(x), color='k', linestyle='-')
         ax[c].set_title(f"Chunk {c+1}", fontsize=14)
         ax[c].set_ylim([-0.15,0.15])
         ax[c].legend(loc='upper left')
+        ax[c].set_ylabel(" ")
         plt.tight_layout()
     plt.savefig(os.path.join(fig_path,"results-LML-difference.png"))
 
@@ -496,9 +497,10 @@ if show_lml:
         df = pd.melt(frame = df, var_name = '$\hat{p}(x)$', value_name = '$\\bar{w}(x)-w(x)$')
         sns.lineplot(ax = ax[c],data = df,ci=95,x = '$\hat{p}(x)$', y = '$\\bar{w}(x)-w(x)$')
         ax[c].collections[0].set_label('95 pct. confidence interval')
-        ax[c].hlines(y=0, xmin=0, xmax=len(x), color='k', linestyle='--')
+        ax[c].hlines(y=0, xmin=0, xmax=len(x), color='k', linestyle='-')
         ax[c].set_title(f"Chunk {c+1}", fontsize=14)
         ax[c].set_ylim([-0.015,0.015])
+        ax[c].set_ylabel(" ")
         ax[c].legend(loc='upper left')
         plt.tight_layout()
     plt.savefig(os.path.join(fig_path,"results-LML-difference-zoom.png"))
