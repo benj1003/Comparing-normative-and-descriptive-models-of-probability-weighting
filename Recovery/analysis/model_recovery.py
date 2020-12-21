@@ -56,7 +56,7 @@ try:
     ax.set_ylabel("Agents")
     fig.colorbar(plot, ax=ax)
     plot.set_clim(0.0, 1.0)
-    plt.show()
+    # plt.show()
     plt.savefig(os.path.join(fig_path,"model_recovery.png"))
 except:
     print("______________________________ \nYou must run the choice-posteriors through the VBA_tool box!")
