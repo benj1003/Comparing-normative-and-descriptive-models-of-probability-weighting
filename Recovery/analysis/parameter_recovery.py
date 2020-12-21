@@ -31,7 +31,7 @@ x2 = np.linspace(0,10,1000)
 n_chunks = len(cpt_parameter_recovery_files)
 
 show_cpt   = True
-show_lml   = True
+show_lml   = False
 show_plots = False
 
 A      = [0,1,2,3]
@@ -171,7 +171,7 @@ if show_cpt:
             else:
                 plt.scatter(map_agent_cpt_gamma[c][i],map_agent_cpt_delta[c][i] , marker='x', c=colors[c], s=80)
                 plt.scatter(map_agent_cpt2_gamma[c][i],map_agent_cpt2_delta[c][i], marker='x', c=colors[c], s=80)
-            plt.xlim([0,3.2])
+            plt.xlim([0,3.6])
             plt.ylim([0,1.9])
             plt.xticks([0,0.5,1,1.5,2,2.5])
         #Dummies for legend
@@ -313,7 +313,7 @@ if show_cpt:
 
     diff = [w_1_diff,w_2_diff,w_3_diff]
     fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(5,8))
-    plt.setp(ax, xticks=[0, 150, 300], xticklabels=['0', '0.5', '1'], yticks=[-0.1, 0, 0.1])
+    plt.setp(ax, xticks=[0, 150, 300], xticklabels=['0', '0.5', '1'], yticks=[-0.02, 0, 0.02])
     for c in range(n_chunks):
         df = pd.DataFrame(diff[c])
         df = pd.melt(frame = df, var_name = '$\hat{p}(x)$', value_name = '$\\bar{w}(x)-w(x)$')
@@ -322,7 +322,7 @@ if show_cpt:
         ax[c].hlines(y=0, xmin=0, xmax=len(x), color='k', linestyle='-')
         ax[c].set_title(f"Chunk {c+1}", fontsize = 14)
         ax[c].legend(loc='upper left')
-        ax[c].set_ylim([-0.15,0.15])
+        ax[c].set_ylim([-0.025,0.025])
         plt.tight_layout()
     plt.savefig(os.path.join(fig_path,"results-cpt-difference.png"))
 
@@ -476,7 +476,7 @@ if show_lml:
 
     diff = [w_1_diff,w_2_diff,w_3_diff]
     fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(5,8))
-    plt.setp(ax, xticks=[0, 150, 300], xticklabels=['0', '0.5', '1'], yticks=[-0.1, 0,0.1])
+    plt.setp(ax, xticks=[0, 150, 300], xticklabels=['0', '0.5', '1'], yticks=[-0.02, 0,0.02])
     for c in range(n_chunks):
         df = pd.DataFrame(diff[c])
         df = pd.melt(frame = df, var_name = '$\hat{p}(x)$', value_name = '$\\bar{w}(x)-w(x)$')
@@ -484,26 +484,26 @@ if show_lml:
         ax[c].collections[0].set_label('95 pct. confidence interval')
         ax[c].hlines(y=0, xmin=0, xmax=len(x), color='k', linestyle='-')
         ax[c].set_title(f"Chunk {c+1}", fontsize=14)
-        ax[c].set_ylim([-0.15,0.15])
+        ax[c].set_ylim([-0.025,0.025])
         ax[c].legend(loc='upper left')
         ax[c].set_ylabel(" ")
         plt.tight_layout()
     plt.savefig(os.path.join(fig_path,"results-LML-difference.png"))
 
-    fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(5,8))
-    plt.setp(ax, xticks=[0, 150, 300], xticklabels=['0', '0.5', '1'], yticks=[-0.01, 0,0.01])
-    for c in range(n_chunks):
-        df = pd.DataFrame(diff[c])
-        df = pd.melt(frame = df, var_name = '$\hat{p}(x)$', value_name = '$\\bar{w}(x)-w(x)$')
-        sns.lineplot(ax = ax[c],data = df,ci=95,x = '$\hat{p}(x)$', y = '$\\bar{w}(x)-w(x)$')
-        ax[c].collections[0].set_label('95 pct. confidence interval')
-        ax[c].hlines(y=0, xmin=0, xmax=len(x), color='k', linestyle='-')
-        ax[c].set_title(f"Chunk {c+1}", fontsize=14)
-        ax[c].set_ylim([-0.015,0.015])
-        ax[c].set_ylabel(" ")
-        ax[c].legend(loc='upper left')
-        plt.tight_layout()
-    plt.savefig(os.path.join(fig_path,"results-LML-difference-zoom.png"))
+    # fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(5,8))
+    # plt.setp(ax, xticks=[0, 150, 300], xticklabels=['0', '0.5', '1'], yticks=[-0.01, 0,0.01])
+    # for c in range(n_chunks):
+    #     df = pd.DataFrame(diff[c])
+    #     df = pd.melt(frame = df, var_name = '$\hat{p}(x)$', value_name = '$\\bar{w}(x)-w(x)$')
+    #     sns.lineplot(ax = ax[c],data = df,ci=95,x = '$\hat{p}(x)$', y = '$\\bar{w}(x)-w(x)$')
+    #     ax[c].collections[0].set_label('95 pct. confidence interval')
+    #     ax[c].hlines(y=0, xmin=0, xmax=len(x), color='k', linestyle='-')
+    #     ax[c].set_title(f"Chunk {c+1}", fontsize=14)
+    #     ax[c].set_ylim([-0.015,0.015])
+    #     ax[c].set_ylabel(" ")
+    #     ax[c].legend(loc='upper left')
+    #     plt.tight_layout()
+    # plt.savefig(os.path.join(fig_path,"results-LML-difference-zoom.png"))
 
     if show_plots:
         print("\nPlotting...")
