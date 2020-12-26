@@ -53,7 +53,7 @@ try:
     ax.set_xticklabels(labels)
     ax.set_xlim([0,2])
     ax.set_xlabel("'Ground Truth' model")
-    ax.set_ylabel("Agents")
+    ax.set_ylabel("Agent number")
     fig.colorbar(plot, ax=ax)
     plot.set_clim(0.0, 1.0)
     # plt.show()
