@@ -81,28 +81,17 @@ if show_cpt:
 
     plt.figure()
     plt.plot(x2,x2, color='lightgray', zorder=-1)
-    # plt.suptitle("True delta vs estimated delta",fontsize=18)
     for c in range(n_chunks):
         for i in range(n_agents):
-            if i in A:
-                plt.scatter(delta_cpt_true[i,0,0] ,map_agent_cpt_delta[c][i] , marker=marker[i], edgecolor=colors[c], facecolors='none', s=80)
-                plt.scatter(delta_cpt2_true[i,0,0],map_agent_cpt2_delta[c][i], marker=marker[i], edgecolor=colors[c], facecolors='none', s=80)
-            else:
-                plt.scatter(delta_cpt_true[i,0,0] ,map_agent_cpt_delta[c][i] , marker='x', c=colors[c], s=80)
-                plt.scatter(delta_cpt2_true[i,0,0],map_agent_cpt2_delta[c][i], marker='x', c=colors[c], s=80)
+            plt.scatter(delta_cpt_true[i,0,0] ,map_agent_cpt_delta[c][i] , marker='x', c=colors[c], s=80)
+            plt.scatter(delta_cpt2_true[i,0,0],map_agent_cpt2_delta[c][i], marker='x', c=colors[c], s=80)
             plt.ylim([0,1.9])
             plt.xlim([0,1.9])
-        #Dummies for legend
+        #Dummy for legend
         plt.scatter(10,10,c='w',label=f"Chunk {c+1}")
-    plt.scatter(10,10, facecolors='none',label=" ")
-    plt.scatter(10,10,label="Agent 1 & 11", marker=marker[0], edgecolor='k', facecolors='none')
-    plt.scatter(10,10,label="Agent 2 & 12", marker=marker[1], edgecolor='k', facecolors='none')
-    plt.scatter(10,10,label="Agent 3 & 13", marker=marker[2], edgecolor='k', facecolors='none')
-    plt.scatter(10,10,label="Agent 4 & 14", marker=marker[3], edgecolor='k', facecolors='none')
-    plt.scatter(10,10,marker='x',c='k',label="Other agents")
     plt.xlabel("$\\delta_{'Ground-truth'}$")
     plt.ylabel("$\delta_e$")
-    l = plt.legend(loc='upper left')
+    l = plt.legend(loc='upper left', handlelength=0)
     for text in l.get_texts():
         if text.get_text() == "Chunk 1": 
             text.set_color('b') 
@@ -125,29 +114,17 @@ if show_cpt:
     plt.figure()
     plt.plot(x2,x2, color='lightgray', zorder=-1)
     colors = ['b','r','g']
-    # plt.suptitle("True gamma vs estimated gamma",fontsize=18)
     for c in range(n_chunks):
         for i in range(n_agents):
-            # plt.subplot(1,2,1)
-            if i in A:
-                plt.scatter(gamma_cpt_true[i,0,0],map_agent_cpt_gamma[c][i] , marker=marker[i], edgecolor=colors[c], facecolors='none', s=80)
-                plt.scatter(gamma_cpt2_true[i,0,0],map_agent_cpt2_gamma[c][i], marker=marker[i], edgecolor=colors[c], facecolors='none', s=80)
-            else:
-                plt.scatter(gamma_cpt_true[i,0,0],map_agent_cpt_gamma[c][i] , marker='x', c=colors[c], s=80)
-                plt.scatter(gamma_cpt2_true[i,0,0],map_agent_cpt2_gamma[c][i], marker='x', c=colors[c], s=80)
+            plt.scatter(gamma_cpt_true[i,0,0],map_agent_cpt_gamma[c][i] , marker='x', c=colors[c], s=80)
+            plt.scatter(gamma_cpt2_true[i,0,0],map_agent_cpt2_gamma[c][i], marker='x', c=colors[c], s=80)
             plt.ylim([0,2.9])
             plt.xlim([0,2.9])
         #Dummies for legend
         plt.scatter(10,10,c='w',label=f"Chunk {c+1}")
-    plt.scatter(10,10, facecolors='none',label=" ")
-    plt.scatter(10,10,label="Agent 1 & 11", marker=marker[0], edgecolor='k', facecolors='none')
-    plt.scatter(10,10,label="Agent 2 & 12", marker=marker[1], edgecolor='k', facecolors='none')
-    plt.scatter(10,10,label="Agent 3 & 13", marker=marker[2], edgecolor='k', facecolors='none')
-    plt.scatter(10,10,label="Agent 4 & 14", marker=marker[3], edgecolor='k', facecolors='none')
-    plt.scatter(10,10,marker='x',c='k',label="Other agents")
     plt.xlabel("$\\gamma_{'Ground-truth'}$")
     plt.ylabel("$\gamma_e$")
-    l = plt.legend(loc='upper left')
+    l = plt.legend(loc='upper left', handlelength=0)
     for text in l.get_texts():
         if text.get_text() == "Chunk 1": 
             text.set_color('b') 
@@ -157,14 +134,12 @@ if show_cpt:
             text.set_color('g')
     plt.savefig(os.path.join(fig_path,"results-cpt-gamma.png"))
 
+    sys.exit()
     # #--------PW----------#
     print("\nProcessing w...")
     plt.figure()
-
-    # plt.suptitle("Estimated delta vs estimated gamma",fontsize=18)
     for c in range(n_chunks):
         for i in range(n_agents):
-            # plt.subplot(1,2,1)
             if i in A:
                 plt.scatter(map_agent_cpt_gamma[c][i],map_agent_cpt_delta[c][i] , marker=marker[i], edgecolor=colors[c], facecolors='none', s=80)
                 plt.scatter(map_agent_cpt2_gamma[c][i],map_agent_cpt2_delta[c][i], marker=marker[i], edgecolor=colors[c], facecolors='none', s=80)
@@ -196,10 +171,8 @@ if show_cpt:
     
     #Zoom of above
     plt.figure(figsize=(5,4))
-    # plt.suptitle("Estimated delta vs estimated gamma",fontsize=18)
     for c in range(n_chunks):
         for i in range(n_agents):
-            # plt.subplot(1,2,1)
             if i in A:
                 plt.scatter(map_agent_cpt_gamma[c][i],map_agent_cpt_delta[c][i] , marker=marker[i], edgecolor=colors[c], facecolors='none', s=170)
                 plt.scatter(map_agent_cpt2_gamma[c][i],map_agent_cpt2_delta[c][i], marker=marker[i], edgecolor=colors[c], facecolors='none', s=170)
@@ -210,31 +183,13 @@ if show_cpt:
             plt.ylim([1,1.2])
             plt.xticks([1,1.1,1.2,1.3,1.4])
             plt.yticks([1,1.05,1.1,1.15,1.2])
-        #Dummies for legend
-        # plt.scatter(10,10,c='w',label=f"Chunk {c+1}")
-    # plt.scatter(10,10, facecolors='none',label=" ")
-    # plt.scatter(10,10,label="Agent 1", marker=marker[0], edgecolor='k', facecolors='none')
-    # plt.scatter(10,10,label="Agent 2", marker=marker[1], edgecolor='k', facecolors='none')
-    # plt.scatter(10,10,label="Agent 3", marker=marker[2], edgecolor='k', facecolors='none')
-    # plt.scatter(10,10,label="Agent 4", marker=marker[3], edgecolor='k', facecolors='none')
-    # plt.scatter(10,10,marker='x',c='k',label="Agents 5-10")
-    # plt.ylabel("$\\delta_e$")
-    # plt.xlabel("$\gamma_e$")
-    # l=plt.legend(loc='lower right')
-    # for text in l.get_texts():
-    #     if text.get_text() == "Chunk 1": 
-    #         text.set_color('b') 
-    #     elif text.get_text() == "Chunk 2": 
-    #         text.set_color('r') 
-    #     elif text.get_text() == "Chunk 3": 
-    #         text.set_color('g')
     plt.savefig(os.path.join(fig_path,"results-cpt-params-zoom.png"),bbox_inches='tight')
 
     w_1_diff = []
     w_2_diff = []
     w_3_diff = []
 
-    for i in range(n_agents): #agents
+    for i in range(n_agents):
         plt.figure(figsize=(12,15))
         plt.suptitle(f"Probability Weighting function for CPT-Agent {i+1}", fontsize=18)
         w_true = cpt_weighting_function(x, delta_cpt_true[i,0,0], gamma_cpt_true[i,0,0])
@@ -273,7 +228,7 @@ if show_cpt:
         plt.savefig(os.path.join(fig_path,f"results-cpt-w-agent{i+1}.png"))
 
 
-    for i in range(n_agents): #agents
+    for i in range(n_agents):
         plt.figure(figsize=(12,15))
         plt.suptitle(f"Probability Weighting function for CPT-Agent {i+11}", fontsize=18)
         w_true = cpt_weighting_function(x, delta_cpt2_true[i,0,0], gamma_cpt2_true[i,0,0])
@@ -371,7 +326,6 @@ if show_lml:
     #--------PW----------#
     print("\nProcessing w...")
     plt.figure()
-    # plt.suptitle("Estimated delta vs estimated gamma", fontsize=18)
     for c in range(n_chunks):
         for i in range(n_agents):
             if i in A:
@@ -401,7 +355,6 @@ if show_lml:
 
     #Zoom of above
     plt.figure(figsize=(5,4))
-    # plt.suptitle("Estimated delta vs estimated gamma", fontsize=18)
     for c in range(n_chunks):
         for i in range(n_agents):
             if i in A:
@@ -409,26 +362,10 @@ if show_lml:
             else:
                 plt.scatter(map_agent_lml_gamma[c][i],map_agent_lml_delta[c][i], marker='x', c=colors[c], s=110)
         plt.scatter(10,10,c='w',label=f"Chunk {c+1}")
-    # plt.ylabel("$\\delta_e$")
-    # plt.xlabel("$\gamma_e$")
     plt.xlim([0.75,1])
     plt.ylim([0.94,1.05])
     plt.xticks([0.75,0.8,0.85,0.9,0.95,1])
     plt.yticks([0.94,0.96,0.98,1,1.02,1.04])
-    # plt.scatter(10,10, facecolors='none',label=" ")
-    # plt.scatter(10,10, marker=marker[0], edgecolor='k', facecolors='none', label=f"Agent 1")
-    # plt.scatter(10,10, marker=marker[1], edgecolor='k', facecolors='none', label=f"Agent 2")
-    # plt.scatter(10,10, marker=marker[2], edgecolor='k', facecolors='none', label=f"Agent 3")
-    # plt.scatter(10,10, marker=marker[3], edgecolor='k', facecolors='none', label=f"Agent 4")
-    # plt.scatter(10,10,marker='x',c='k',label="Agents 5-10")
-    # l=plt.legend(loc='upper right')
-    # for text in l.get_texts():
-    #     if text.get_text() == "Chunk 1": 
-    #         text.set_color('b') 
-    #     elif text.get_text() == "Chunk 2": 
-    #         text.set_color('r') 
-    #     elif text.get_text() == "Chunk 3": 
-    #         text.set_color('g')
     plt.savefig(os.path.join(fig_path,"results-lml-params-zoom.png"), bbox_inches='tight')
 
     w_1_diff = []
@@ -440,7 +377,7 @@ if show_lml:
     for c in range(n_chunks):
         w_true[c] = lml_weighting_function(x,chunk_len[c])
     colors = ['b','r','g']
-    for i in range(n_agents): #agents
+    for i in range(n_agents): 
         plt.figure(figsize=(12,15))
         plt.suptitle(f"Probability Weighting function for LML-Agent {i+1}", fontsize=18)
         w = [None]*n_chunks
@@ -453,16 +390,13 @@ if show_lml:
             plt.ylabel("$\\delta$")
             plt.xlabel("$\\gamma$")
             plt.legend(loc='upper left', prop={'size':8}, markerscale=0.7)
-
             w[c] = cpt_weighting_function(x, map_agent_lml_delta[c][i],map_agent_lml_gamma[c][i])
-
             if c == 0: 
                 w_1_diff.append([a_i - b_i for a_i, b_i in zip(w_true[c],w[c])])
             elif c == 1:
                 w_2_diff.append([a_i - b_i for a_i, b_i in zip(w_true[c],w[c])])
             else:
                 w_3_diff.append([a_i - b_i for a_i, b_i in zip(w_true[c],w[c])])
-
             plt.subplot(3,2,(c*2)+2)
             if c == 0: plt.title("Weighting function", fontsize=14)
             plt.plot(x,w[c], 'b--', label="Estimated")
@@ -489,21 +423,6 @@ if show_lml:
         ax[c].set_ylabel(" ")
         plt.tight_layout()
     plt.savefig(os.path.join(fig_path,"results-LML-difference.png"))
-
-    # fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(5,8))
-    # plt.setp(ax, xticks=[0, 150, 300], xticklabels=['0', '0.5', '1'], yticks=[-0.01, 0,0.01])
-    # for c in range(n_chunks):
-    #     df = pd.DataFrame(diff[c])
-    #     df = pd.melt(frame = df, var_name = '$\hat{p}(x)$', value_name = '$\\bar{w}(x)-w(x)$')
-    #     sns.lineplot(ax = ax[c],data = df,ci=95,x = '$\hat{p}(x)$', y = '$\\bar{w}(x)-w(x)$')
-    #     ax[c].collections[0].set_label('95 pct. confidence interval')
-    #     ax[c].hlines(y=0, xmin=0, xmax=len(x), color='k', linestyle='-')
-    #     ax[c].set_title(f"Chunk {c+1}", fontsize=14)
-    #     ax[c].set_ylim([-0.015,0.015])
-    #     ax[c].set_ylabel(" ")
-    #     ax[c].legend(loc='upper left')
-    #     plt.tight_layout()
-    # plt.savefig(os.path.join(fig_path,"results-LML-difference-zoom.png"))
 
     if show_plots:
         print("\nPlotting...")
