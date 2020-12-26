@@ -2,9 +2,15 @@ function setHLM(mode,whichJAGS,whichQuals,doParallel,nGambles,nAgents)
 %% setHLM
 % setHLM sets up multiple HLM models to run sequentially according to inputs
 % This function takes the following inputs:
-% mode        - 1=simulate CPT choices,2=simulate LML choices, 
-%               3=model recovery for CPT choices, 4=model recovery for LML choices
-%               5=parameter revovery CPT, 6=parameter 'recovery' LML
+% mode        - 1=simulate CPT (inverse-S) choices,
+%               2=simulate LML choices, 
+%               3=simulate CPT (regular-S) choices,
+%               4=model recovery for CPT (inverse-S) choices, 
+%               5=model recovery for LML choices,
+%               6=model recovery for CPT (regular-S) choices, 
+%               7=parameter revovery CPT (inverse-S), 
+%               8=parameter 'recovery' LML,
+%               9=parameter revovery CPT (regular-S). 
 % whichJAGS   - which copy of matjags to run on. this allows parallel jobs to run as long as they use different matjags
 % whichQuals  - sets the order of qualities to run
 % nGambles    - Number of gambles to run over

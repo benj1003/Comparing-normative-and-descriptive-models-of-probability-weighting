@@ -305,13 +305,4 @@ disp('stats:'),disp(stats)%print out structure of stats output
 disp('samples:'),disp(samples);%print out structure of samples output
 
 end %end wrapping of chunks
-
-%try
-%    rhats=fields(stats.Rhat);
-%    for lp = 1: length(rhats)
-%        disp(['stats.Rhat.',rhats{lp}]);
-%        eval(strcat('stats.Rhat.',rhats{lp}))
-%    end
-%catch
-%    disp('no field for stats.Rhat')
 end
