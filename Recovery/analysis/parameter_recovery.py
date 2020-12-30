@@ -89,7 +89,7 @@ if show_cpt:
             plt.xlim([0,1.9])
         #Dummy for legend
         plt.scatter(10,10,c='w',label=f"Chunk {c+1}")
-    plt.xlabel("$\\delta_{'Ground-truth'}$")
+    plt.xlabel("$\\delta_{g}$")
     plt.ylabel("$\delta_e$")
     l = plt.legend(loc='upper left', handlelength=0)
     for text in l.get_texts():
@@ -122,7 +122,7 @@ if show_cpt:
             plt.xlim([0,2.9])
         #Dummies for legend
         plt.scatter(10,10,c='w',label=f"Chunk {c+1}")
-    plt.xlabel("$\\gamma_{'Ground-truth'}$")
+    plt.xlabel("$\\gamma_{g}$")
     plt.ylabel("$\gamma_e$")
     l = plt.legend(loc='upper left', handlelength=0)
     for text in l.get_texts():
