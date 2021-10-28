@@ -5,6 +5,9 @@ Probability weighting describes a systematic distortion of subjective probabilit
 
 **Keywords:** Decision Theory, Probability weighting, Prospect Theory, Bayesian Modeling
 
+## Manuscript
+The manuscript can be found [Here](https://researchers.one/articles/21.10.00007), as well as in the folder `manuscripts` (note that the project was originally a thesis by Benjamin Skjold - the manuscript from the thesis is available in the folder as well).
+
 ## Data
 The reposetory contains the data needed to replicate all findings. This includes all output files. I though emphasize that all code used to generate the pseudo-random data is uploaded and one can therefore produce the output files to replicate the full analysis. 
 
