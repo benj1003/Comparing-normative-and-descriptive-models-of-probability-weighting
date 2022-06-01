@@ -1,6 +1,7 @@
-import h5py
-import os
 import math
+import os
+
+import h5py
 import numpy as np
 import scipy.stats as sc
 
@@ -8,18 +9,18 @@ import scipy.stats as sc
 def read_output(file_name,analysis):
     with h5py.File(os.path.join(os.path.dirname( __file__ ),'..','samples_stats',file_name), 'r') as file:
         if analysis == "model_comparisson":
-            z = file['samples'].get('z').value
+            z = file['samples'].get('z')[:]
             return z
 
         if analysis == "parameter_recovery":
-            alpha = file['samples'].get('alpha_pt').value
-            beta = file['samples'].get('beta_pt').value
-            delta = file['samples'].get('delta_pt').value
-            gamma = file['samples'].get('gamma_pt').value
+            alpha = file['samples'].get('alpha_pt')[:]
+            beta = file['samples'].get('beta_pt')[:]
+            delta = file['samples'].get('delta_pt')[:]
+            gamma = file['samples'].get('gamma_pt')[:]
             return alpha, beta, delta, gamma
 
 def process_params(param, n_agents, n_chains, n_samples, output="map"):
-    dist_marginal = [] 
+    dist_marginal = []
     dist_agents = []
     for i in range(n_agents):
         tmp = []
