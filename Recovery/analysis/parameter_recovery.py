@@ -1,12 +1,13 @@
-from functions import *
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 import sys
-import scipy.stats as sc
+
 import matplotlib.patches as mpatches
-import pandas as pd
 import matplotlib.pylab as pylab
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import scipy.stats as sc
+import seaborn as sns
+from functions import *
 
 params = {'axes.labelsize': 14,
          'axes.titlesize':16,
@@ -31,7 +32,7 @@ x2 = np.linspace(0,10,1000)
 n_chunks = len(cpt_parameter_recovery_files)
 
 show_cpt   = True
-show_lml   = False
+show_lml   = True
 show_plots = False
 
 A      = [0,1,2,3]
@@ -93,13 +94,13 @@ if show_cpt:
     plt.ylabel("$\delta_e$")
     l = plt.legend(loc='upper left', handlelength=0)
     for text in l.get_texts():
-        if text.get_text() == "Chunk 1": 
-            text.set_color('b') 
-        elif text.get_text() == "Chunk 2": 
-            text.set_color('r') 
-        elif text.get_text() == "Chunk 3": 
+        if text.get_text() == "Chunk 1":
+            text.set_color('b')
+        elif text.get_text() == "Chunk 2":
+            text.set_color('r')
+        elif text.get_text() == "Chunk 3":
             text.set_color('g')
-    plt.savefig(os.path.join(fig_path,"results-cpt-delta.png"))
+    plt.savefig(os.path.join(fig_path,"Fig6Left.eps"))
 
     #--------gamma----------#
     print("\nProcessing Gamma...")
@@ -111,7 +112,7 @@ if show_cpt:
         corr,_ = sc.pearsonr(np.concatenate((map_agent_cpt_gamma[c],map_agent_cpt2_gamma[c]),axis=0),np.concatenate((gamma_cpt_true[:,0,0],gamma_cpt2_true[:,0,0]),axis=0))
         print(f"Pearson correlation coefficient for Gamma in chunk {c+1}: {corr:.3f}")
 
-    plt.figure()
+    plt.figure(figsize=(7.5,8.75))
     plt.plot(x2,x2, color='lightgray', zorder=-1)
     colors = ['b','r','g']
     for c in range(n_chunks):
@@ -126,18 +127,17 @@ if show_cpt:
     plt.ylabel("$\gamma_e$")
     l = plt.legend(loc='upper left', handlelength=0)
     for text in l.get_texts():
-        if text.get_text() == "Chunk 1": 
-            text.set_color('b') 
-        elif text.get_text() == "Chunk 2": 
-            text.set_color('r') 
-        elif text.get_text() == "Chunk 3": 
+        if text.get_text() == "Chunk 1":
+            text.set_color('b')
+        elif text.get_text() == "Chunk 2":
+            text.set_color('r')
+        elif text.get_text() == "Chunk 3":
             text.set_color('g')
-    plt.savefig(os.path.join(fig_path,"results-cpt-gamma.png"))
+    plt.savefig(os.path.join(fig_path,"Fig6Right.tiff"))
 
-    sys.exit()
     # #--------PW----------#
     print("\nProcessing w...")
-    plt.figure()
+    plt.figure(figsize=(7.5,8.75))
     for c in range(n_chunks):
         for i in range(n_agents):
             if i in A:
@@ -161,14 +161,14 @@ if show_cpt:
     plt.xlabel("$\gamma_e$")
     l=plt.legend(loc='upper right')
     for text in l.get_texts():
-        if text.get_text() == "Chunk 1": 
-            text.set_color('b') 
-        elif text.get_text() == "Chunk 2": 
-            text.set_color('r') 
-        elif text.get_text() == "Chunk 3": 
+        if text.get_text() == "Chunk 1":
+            text.set_color('b')
+        elif text.get_text() == "Chunk 2":
+            text.set_color('r')
+        elif text.get_text() == "Chunk 3":
             text.set_color('g')
-    plt.savefig(os.path.join(fig_path,"results-cpt-params.png"))
-    
+    plt.savefig(os.path.join(fig_path,"Fig8Left.eps"))
+
     #Zoom of above
     plt.figure(figsize=(5,4))
     for c in range(n_chunks):
@@ -183,7 +183,7 @@ if show_cpt:
             plt.ylim([1,1.2])
             plt.xticks([1,1.1,1.2,1.3,1.4])
             plt.yticks([1,1.05,1.1,1.15,1.2])
-    plt.savefig(os.path.join(fig_path,"results-cpt-params-zoom.png"),bbox_inches='tight')
+    plt.savefig(os.path.join(fig_path,"Fig8LeftZoom.eps"),bbox_inches='tight')
 
     w_1_diff = []
     w_2_diff = []
@@ -199,16 +199,16 @@ if show_cpt:
             if c == 0: plt.title("Parameter space", fontsize=14)
             plt.scatter(map_agent_cpt_gamma[c][i],map_agent_cpt_delta[c][i], edgecolor='b', facecolors='none', marker='^', label="Estimated", s=100)
             plt.scatter(gamma_cpt_true[i,0,0],delta_cpt_true[i,0,0], edgecolor='r',facecolor='none', label="'Ground truth'", s=100)
-            
+
             plt.xlim([0,2.9])
             plt.ylim([0,1.9])
             plt.ylabel("$\\delta$")
             plt.xlabel("$\\gamma$")
             plt.legend(loc='upper right',prop={'size':8}, markerscale=0.7)
-           
+
             w[c] = cpt_weighting_function(x, map_agent_cpt_delta[c][i],map_agent_cpt_gamma[c][i])
 
-            if c == 0: 
+            if c == 0:
                 w_1_diff.append([a_i - b_i for a_i, b_i in zip(w_true,w[c])])
             elif c == 1:
                 w_2_diff.append([a_i - b_i for a_i, b_i in zip(w_true,w[c])])
@@ -225,7 +225,7 @@ if show_cpt:
             plt.legend(loc='upper left', prop={'size':8})
 
         plt.subplots_adjust(wspace=0.3,hspace=0.3)
-        plt.savefig(os.path.join(fig_path,f"results-cpt-w-agent{i+1}.png"))
+        plt.savefig(os.path.join(fig_path,f"App-results-cpt-w-agent{i+1}.eps"))
 
 
     for i in range(n_agents):
@@ -238,16 +238,16 @@ if show_cpt:
             if c == 0: plt.title("Parameter space", fontsize=14)
             plt.scatter(map_agent_cpt2_gamma[c][i],map_agent_cpt2_delta[c][i], edgecolor='b', facecolors='none', marker='^', label="Estimated", s=100)
             plt.scatter(gamma_cpt2_true[i,0,0],delta_cpt2_true[i,0,0], edgecolor='r',facecolor='none', label="'Ground truth'", s=100)
-            
+
             plt.xlim([0,2.9])
             plt.ylim([0,1.9])
             plt.ylabel("$\\delta$")
             plt.xlabel("$\\gamma$")
             plt.legend(loc='upper left', prop={'size':8}, markerscale=0.7)
-           
+
             w[c] = cpt_weighting_function(x, map_agent_cpt2_delta[c][i],map_agent_cpt2_gamma[c][i])
 
-            if c == 0: 
+            if c == 0:
                 w_1_diff.append([a_i - b_i for a_i, b_i in zip(w_true,w[c])])
             elif c == 1:
                 w_2_diff.append([a_i - b_i for a_i, b_i in zip(w_true,w[c])])
@@ -264,7 +264,7 @@ if show_cpt:
             plt.legend(loc='upper left', prop={'size':8})
 
         plt.subplots_adjust(wspace=0.3,hspace=0.3)
-        plt.savefig(os.path.join(fig_path,f"results-cpt-w-agent{i+11}.png"))
+        plt.savefig(os.path.join(fig_path,f"app-results-cpt-w-agent{i+11}.eps"))
 
     diff = [w_1_diff,w_2_diff,w_3_diff]
     fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(5,8))
@@ -279,7 +279,7 @@ if show_cpt:
         ax[c].legend(loc='upper left')
         ax[c].set_ylim([-0.025,0.025])
         plt.tight_layout()
-    plt.savefig(os.path.join(fig_path,"results-cpt-difference.png"))
+    plt.savefig(os.path.join(fig_path,"Fig7Left.eps"))
 
     if show_plots:
         print("\nPlotting...")
@@ -345,13 +345,13 @@ if show_lml:
     plt.scatter(10,10,marker='x',c='k',label="Agents 5-10")
     l=plt.legend(loc='upper right')
     for text in l.get_texts():
-        if text.get_text() == "Chunk 1": 
-            text.set_color('b') 
-        elif text.get_text() == "Chunk 2": 
-            text.set_color('r') 
-        elif text.get_text() == "Chunk 3": 
+        if text.get_text() == "Chunk 1":
+            text.set_color('b')
+        elif text.get_text() == "Chunk 2":
+            text.set_color('r')
+        elif text.get_text() == "Chunk 3":
             text.set_color('g')
-    plt.savefig(os.path.join(fig_path,"results-lml-params.png"))
+    plt.savefig(os.path.join(fig_path,"Fig8Right.eps"))
 
     #Zoom of above
     plt.figure(figsize=(5,4))
@@ -366,7 +366,7 @@ if show_lml:
     plt.ylim([0.94,1.05])
     plt.xticks([0.75,0.8,0.85,0.9,0.95,1])
     plt.yticks([0.94,0.96,0.98,1,1.02,1.04])
-    plt.savefig(os.path.join(fig_path,"results-lml-params-zoom.png"), bbox_inches='tight')
+    plt.savefig(os.path.join(fig_path,"Fig8RightZoom.eps"), bbox_inches='tight')
 
     w_1_diff = []
     w_2_diff = []
@@ -377,7 +377,7 @@ if show_lml:
     for c in range(n_chunks):
         w_true[c] = lml_weighting_function(x,chunk_len[c])
     colors = ['b','r','g']
-    for i in range(n_agents): 
+    for i in range(n_agents):
         plt.figure(figsize=(12,15))
         plt.suptitle(f"Probability Weighting function for LML-Agent {i+1}", fontsize=18)
         w = [None]*n_chunks
@@ -391,7 +391,7 @@ if show_lml:
             plt.xlabel("$\\gamma$")
             plt.legend(loc='upper left', prop={'size':8}, markerscale=0.7)
             w[c] = cpt_weighting_function(x, map_agent_lml_delta[c][i],map_agent_lml_gamma[c][i])
-            if c == 0: 
+            if c == 0:
                 w_1_diff.append([a_i - b_i for a_i, b_i in zip(w_true[c],w[c])])
             elif c == 1:
                 w_2_diff.append([a_i - b_i for a_i, b_i in zip(w_true[c],w[c])])
@@ -406,7 +406,7 @@ if show_lml:
             plt.ylabel("$w(x)$")
             plt.legend(loc='upper left', prop={'size':8})
         plt.subplots_adjust(wspace=0.3,hspace=0.3)
-        plt.savefig(os.path.join(fig_path,f"results-lml-w-agent{i+1}.png"))
+        plt.savefig(os.path.join(fig_path,f"app-results-lml-w-agent{i+1}.eps"))
 
     diff = [w_1_diff,w_2_diff,w_3_diff]
     fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(5,8))
@@ -422,7 +422,7 @@ if show_lml:
         ax[c].legend(loc='upper left')
         ax[c].set_ylabel(" ")
         plt.tight_layout()
-    plt.savefig(os.path.join(fig_path,"results-LML-difference.png"))
+    plt.savefig(os.path.join(fig_path,"Fig7Right.eps"))
 
     if show_plots:
         print("\nPlotting...")
